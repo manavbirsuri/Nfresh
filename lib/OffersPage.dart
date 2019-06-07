@@ -60,9 +60,11 @@ class OfferOrderPage extends State<OfferOrder> {
                                 child: Padding(
                                   padding: EdgeInsets.only(right: 0),
                                   child: Text(
-                                    "fgsdfgsdfgsdfgfsdfasdfasdfasdfasdfafdsfasdfasdfasdfasdfasdfasdfasdfadfasdfasddasdasdasdasda",
-                                    style:
-                                        TextStyle(color: Colors.colorlightgrey),
+                                    "Coupon Name: Coupon $position",
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),

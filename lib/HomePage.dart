@@ -511,7 +511,7 @@ class HOrderPage extends State<HomePageOrder> {
                                               style: TextStyle(
                                                   color: Colors.colorgreen,
                                                   fontWeight: FontWeight.bold,
-                                                  fontSize: 24),
+                                                  fontSize: 20),
                                               textAlign: TextAlign.center,
                                             ),
                                           ),
