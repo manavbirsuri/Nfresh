@@ -1,0 +1,1039 @@
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'PromoCodePage.dart';
+
+class CartPage extends StatefulWidget {
+  @override
+  _MyCustomFormState createState() => _MyCustomFormState();
+}
+
+class _MyCustomFormState extends State<CartPage> {
+  Text totalText;
+  String code;
+  List<String> selectedValues = List();
+  var pos = 0;
+  String check = "";
+  String walletBalance = "₹110";
+  String appliedValue = "Apply promo code";
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {
+      checkIfPromoSaved().then((value) {
+        setState(() {
+          check = value;
+        });
+      });
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    selectedValues.clear();
+    selectedValues.add("1");
+    selectedValues.add("2");
+    selectedValues.add("3");
+    selectedValues.add("4");
+    selectedValues.add("5");
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            'Cart',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+        ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Flexible(
+              child: SingleChildScrollView(
+                child: Container(
+                  child: Column(
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: ListView.builder(
+                          itemBuilder: (context, position) {
+                            return getListItem(position);
+                          },
+                          itemCount: 3,
+                          physics: NeverScrollableScrollPhysics(),
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          primary: false,
+                        ),
+                      ),
+                      getCartDetailView(context),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            // Cart Bottom bar
+            Column(children: <Widget>[
+              Container(
+                height: 55,
+                color: Colors.colorlightgreyback,
+                padding: EdgeInsets.all(4),
+                child: Row(
+                  children: <Widget>[
+                    Flexible(
+                      child: GestureDetector(
+                        child: Container(
+                          child: Column(
+                            children: <Widget>[
+                              Flexible(
+                                child: Column(
+                                  children: <Widget>[
+                                    Text(
+                                      '₹250',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 26),
+                                    ),
+                                    Text(
+                                      'Total amount',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.colorPink,
+                                      ),
+                                    )
+                                  ],
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                ),
+                                flex: 1,
+                              ),
+                            ],
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                          ),
+                        ),
+                        onTap: () {
+//                      Scaffold.of(context).showSnackBar(SnackBar(
+//                        content: Text('View details Coming soon'),
+//                        duration: Duration(seconds: 1),
+//                      ));
+                        },
+                      ),
+                      flex: 1,
+                    ),
+                    Flexible(
+                      child: GestureDetector(
+                        child: Container(
+                          color: Colors.colorgreen,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Flexible(
+                                child: Row(
+                                  children: <Widget>[
+                                    Text(
+                                      'Place Order',
+                                      style: TextStyle(
+                                          fontSize: 18, color: Colors.white),
+                                    ),
+                                  ],
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                ),
+                                flex: 1,
+                              ),
+                            ],
+                          ),
+                        ),
+                        onTap: () {
+//                      Navigator.push(
+//                          context,
+//                          MaterialPageRoute(
+//                            builder: (context) => PlaceOrder(),
+//                          ));
+                        },
+                      ),
+                      flex: 1,
+                    ),
+                  ],
+                ),
+              ),
+            ]),
+          ],
+        ));
+  }
+
+  Widget getListItem(position) {
+    return IntrinsicHeight(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          IntrinsicHeight(
+            child: Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      child: Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Align(
+                          child: Image.asset(
+                            'assets/pea.png',
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                      ),
+                    ),
+                    flex: 2,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.all(0),
+                      child: Container(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Green Peas',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.colorgreen,
+                                  fontWeight: FontWeight.bold),
+                              textAlign: TextAlign.start,
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                              child: Text(
+                                'हरी मटर',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.colorlightgrey),
+                                textAlign: TextAlign.start,
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      '₹60.00  ',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.colorlightgrey,
+                                          fontWeight: FontWeight.bold),
+                                      textAlign: TextAlign.start,
+                                    ),
+                                    Text(
+                                      '₹70.00',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.colororange,
+                                          decoration:
+                                              TextDecoration.lineThrough),
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ]),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  Container(
+                                    height: 32,
+                                    width: 100,
+                                    decoration: myBoxDecoration3(),
+                                    child: Center(
+                                      child: Padding(
+                                        padding:
+                                            EdgeInsets.only(right: 8, left: 8),
+                                        child: DropdownButtonFormField<String>(
+                                          decoration: InputDecoration.collapsed(
+                                              hintText: ''),
+                                          value: selectedValues[pos],
+                                          items: <String>[
+                                            "1",
+                                            "2",
+                                            "3",
+                                            "4",
+                                            "5"
+                                          ].map((String value) {
+                                            return new DropdownMenuItem<String>(
+                                              value: value,
+                                              child: new Text(
+                                                value,
+                                                style: TextStyle(
+                                                    color: Colors.grey),
+                                              ),
+                                            );
+                                          }).toList(),
+                                          onChanged: (newValue) {
+                                            setState(() {
+                                              pos = 0;
+                                              for (int i = 0;
+                                                  i < selectedValues.length;
+                                                  i++) {
+                                                if (selectedValues[i] ==
+                                                    newValue) {
+                                                  pos = i;
+                                                  break;
+                                                }
+                                              }
+
+                                              selectedValues[pos] = newValue;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    flex: 2,
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: Container(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.only(right: 8),
+                              child: Align(
+                                alignment: Alignment.topRight,
+                                child: Image.asset(
+                                  'assets/delete.png',
+                                  height: 20,
+                                  width: 20,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(right: 0, left: 16),
+                              child: Container(
+                                  height: 32,
+                                  width: 80,
+                                  decoration: myBoxDecoration2(),
+                                  child: Align(
+                                    alignment: Alignment.bottomRight,
+                                    child: Row(
+                                      mainAxisSize: MainAxisSize.max,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: <Widget>[
+                                        Flexible(
+                                          child: Align(
+                                            alignment: Alignment.topCenter,
+                                            child: Padding(
+                                              padding: EdgeInsets.all(4),
+                                              child: Icon(
+                                                Icons.minimize,
+                                                color: Colors.colorgreen,
+                                                size: 16,
+                                              ),
+                                            ),
+                                          ),
+                                          flex: 1,
+                                        ),
+                                        Flexible(
+                                          child: Text(
+                                            "0",
+                                            style: TextStyle(
+                                                color: Colors.colorgreen,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 18),
+                                          ),
+                                          flex: 1,
+                                        ),
+                                        Flexible(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(4),
+                                            child: Icon(
+                                              Icons.add,
+                                              color: Colors.colorgreen,
+                                              size: 16,
+                                            ),
+                                          ),
+                                          flex: 1,
+                                        )
+                                      ],
+                                    ),
+                                  )),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    flex: 2,
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 16, bottom: 0),
+            child: Divider(
+              height: 1,
+              color: Colors.black,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  //Middle Portion of cart below products list
+  Widget getCartDetailView(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.only(left: 8, top: 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          ListTile(
+            title: Text(
+              'COUPONS',
+              style: TextStyle(fontSize: 16, color: Colors.colorgreen),
+            ),
+            subtitle: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (check.isEmpty) {
+                    Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) => new PromoCodePage()),
+                    ).then((value) {
+                      setState(() {
+                        checkIfPromoSaved().then((value) {
+                          check = value;
+                        });
+                      });
+                    });
+                  } else {
+                    removePromoFromPrefs();
+                  }
+                });
+              },
+              child: Container(
+                color: Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      appliedValue,
+                      style: TextStyle(fontSize: 18),
+                    ),
+
+                    check.isEmpty
+                        ? Icon(
+                            Icons.navigate_next,
+                            color: Colors.black38,
+                            size: 30.0,
+                          )
+                        : Image.asset(
+                            "assets/delete.png",
+                            height: 20,
+                            width: 20,
+                          ),
+//                    !check.isEmpty
+//                        ? Image.asset(
+//                            "assets/delete.png",
+//                            height: 20,
+//                            width: 20,
+//                          )
+//                        : Container(),
+
+//                Image.asset(
+//                  "assets/delete.png",
+//                  height: 20,
+//                  width: 20,
+//                )
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: 8,
+            ),
+            child: Divider(
+              color: Colors.grey,
+              height: 1,
+            ),
+          ),
+//          GestureDetector(
+//            onTap: () {
+//              setState(() {
+//                code = showDialog(
+//                  context: context,
+//                  builder: (_) => LogoutOverlay(),
+//                ) as String;
+//              });
+//            },
+//            child: ListTile(
+//              title: Text('Apply Promo Code'),
+//              trailing: Icon(Icons.navigate_next),
+//            ),
+//          ),
+//          Padding(
+//            padding: EdgeInsets.only(
+//              bottom: 16,
+//            ),
+//            child: Divider(
+//              color: Colors.grey,
+//              height: 1,
+//            ),
+//          ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: 8,
+            ),
+            child: ListTile(
+              //contentPadding: EdgeInsets.only(top: 0),
+              title: Text(
+                'PRICE DETAILS',
+                style: TextStyle(fontSize: 16, color: Colors.colorgreen),
+              ),
+              subtitle: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'Item Total',
+                          style: TextStyle(
+                              fontSize: 18, color: Colors.colorlightgrey),
+                        ),
+                        Text(
+                          '₹230',
+                          style: TextStyle(fontSize: 16, color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
+                  !check.isEmpty
+                      ? Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                'Coupon Discount',
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.colorlightgrey),
+                              ),
+                              Text(
+                                '-₹20',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(),
+                  Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Text(
+                          'Total',
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
+                          '₹250',
+                          style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 8, bottom: 8),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Material(
+                                  type: MaterialType.transparency,
+                                  child: Container(
+                                    child: DynamicDialog(),
+                                    padding:
+                                        EdgeInsets.only(top: 40, bottom: 40),
+                                  ),
+                                );
+                              }).then((value) {
+                            setState(() {
+                              getBalance().then((onValue) {
+                                walletBalance = onValue;
+                              });
+                            });
+                          });
+                        });
+                      },
+                      child: Container(
+                        color: Colors.white,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Text(
+                              'Wallet Balance',
+                              style: TextStyle(
+                                  fontSize: 18, color: Colors.colorlightgrey),
+                            ),
+                            Text(
+                              walletBalance,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.colorgreen,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+//                      Text(
+//                        'successfully applied',
+//                        style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+//                      ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          Padding(
+            padding: EdgeInsets.only(
+              top: 0,
+              bottom: 0,
+            ),
+            child: Divider(
+              color: Colors.grey,
+              height: 1,
+            ),
+          ),
+          ListTile(
+            title: Text(
+              'SHIPPING ADDRESS',
+              style: TextStyle(fontSize: 16, color: Colors.colorgreen),
+            ),
+            trailing: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(Icons.edit),
+              ],
+            ),
+          ),
+//          Padding(
+//            padding: EdgeInsets.only(
+//              top: 8,
+//              bottom: 0,
+//            ),
+//            child: Divider(
+//              color: Colors.grey,
+//              height: 1,
+//            ),
+//          ),
+          ListTile(
+            title: Text(
+              'Akshya nagar 1st block, 1st Cross, Rammurty nagar, Banglore-560016',
+              style: TextStyle(color: Colors.colorlightgrey),
+              // style: TextStyle(color: Colors.black),
+            ),
+          ),
+//          Padding(
+//            padding: EdgeInsets.only(top: 16),
+//            child: Text(
+//              'BILLING ADDRESS',
+//              style: TextStyle(fontSize: 18),
+//            ),
+//          ),
+//          Padding(
+//            padding: EdgeInsets.only(
+//              top: 8,
+//              bottom: 0,
+//            ),
+//            child: Divider(
+//              color: Colors.grey,
+//              height: 1,
+//            ),
+//          ),
+//          ListTile(
+//            title: Text(
+//              'Akshya nagar 1st block, 1st Cross, Rammurty nagar, Banglore-560016',
+//              // style: TextStyle(color: Colors.black),
+//            ),
+//          ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: 16,
+              bottom: 0,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  BoxDecoration myBoxDecoration2() {
+    return BoxDecoration(
+      border: Border.all(color: Colors.colorgreen, width: 1),
+      borderRadius: BorderRadius.all(Radius.circular(100)),
+    );
+  }
+
+  BoxDecoration myBoxDecoration3() {
+    return BoxDecoration(
+      border: Border.all(color: Colors.colorlightgrey),
+      borderRadius: BorderRadius.all(Radius.circular(8)),
+    );
+  }
+
+  Future checkIfPromoSaved() async {
+    setState(() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+//    int counter = (prefs.getInt('counter') ?? 0) + 1;
+//    print('Pressed $counter times.');
+      check = await prefs.getString('promoApplies') ?? "";
+      print("GGGGGGGGGGGGG $check");
+      if (check.isEmpty) {
+        appliedValue = "Apply promo code";
+      } else {
+        appliedValue = "Promo code applied";
+      }
+    });
+    return check;
+  }
+
+  Future removePromoFromPrefs() async {
+    setState(() async {
+      check = "";
+      appliedValue = "Apply promo code";
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+//    int counter = (prefs.getInt('counter') ?? 0) + 1;
+      await prefs.setString('promoApplies', "");
+    });
+  }
+
+  Future<String> getBalance() async {
+    setState(() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+//    int counter = (prefs.getInt('counter') ?? 0) + 1;
+//    print('Pressed $counter times.');
+      String vv = await prefs.getString('walletBal') ?? "";
+      print("GGGGGGGGGGGGGWWWW $vv ");
+      walletBalance = "-₹" + vv;
+      return vv;
+    });
+  }
+}
+
+class LogoutOverlay extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => LogoutOverlayState();
+}
+
+class LogoutOverlayState extends State<LogoutOverlay>
+    with SingleTickerProviderStateMixin {
+  AnimationController controller;
+  Animation<double> scaleAnimation;
+  final myController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    setState(() {});
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 450));
+    scaleAnimation =
+        CurvedAnimation(parent: controller, curve: Curves.elasticInOut);
+
+    controller.addListener(() {
+      setState(() {});
+    });
+
+    controller.forward();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Material(
+        color: Colors.transparent,
+        child: ScaleTransition(
+          scale: scaleAnimation,
+          child: Container(
+              margin: EdgeInsets.all(20.0),
+              padding: EdgeInsets.all(15.0),
+              height: 180.0,
+              decoration: ShapeDecoration(
+                  color: Color.fromRGBO(41, 167, 77, 10),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0))),
+              child: Column(
+                children: <Widget>[
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.only(
+                        top: 30.0, left: 20.0, right: 20.0),
+                    child: Text(
+                      "Please Enter Promo code",
+                      style: TextStyle(color: Colors.white, fontSize: 16.0),
+                    ),
+                  )),
+                  Expanded(
+                      child: Padding(
+                          padding: const EdgeInsets.only(
+                              top: 8, left: 20.0, right: 20.0),
+                          child: Container(
+                            decoration: new BoxDecoration(
+                              shape: BoxShape.rectangle,
+                              border: new Border.all(
+                                color: Colors.black,
+                                width: 1.0,
+                              ),
+                            ),
+                            child: new TextField(
+                              controller: myController,
+                              textAlign: TextAlign.center,
+                              decoration: new InputDecoration(
+                                filled: true,
+                                fillColor: Colors.white,
+                                hintText: 'Enter Promo Code',
+                                border: InputBorder.none,
+                              ),
+                            ),
+                          ))),
+                  Expanded(
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: ButtonTheme(
+                            height: 35.0,
+                            minWidth: 110.0,
+                            child: RaisedButton(
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0)),
+                              splashColor: Colors.white.withAlpha(40),
+                              child: Text(
+                                'Ok',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    color: Colors.green,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 13.0),
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  Navigator.pop(context);
+//                                      Route route = MaterialPageRoute(
+//                                          builder: (context) => LoginScreen());
+//                                      Navigator.pushReplacement(context, route);
+                                });
+                              },
+                            )),
+                      ),
+                      Padding(
+                          padding: const EdgeInsets.only(
+                              left: 20.0, right: 10.0, top: 10.0, bottom: 10.0),
+                          child: ButtonTheme(
+                              height: 35.0,
+                              minWidth: 110.0,
+                              child: RaisedButton(
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5.0)),
+                                splashColor: Colors.white.withAlpha(40),
+                                child: Text(
+                                  'Cancel',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      color: Colors.green,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13.0),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    Navigator.pop(context);
+                                    /* Route route = MaterialPageRoute(
+                                          builder: (context) => LoginScreen());
+                                      Navigator.pushReplacement(context, route);
+                                   */
+                                  });
+                                },
+                              ))),
+                    ],
+                  ))
+                ],
+              )),
+        ),
+      ),
+    );
+  }
+}
+
+class DynamicDialog extends StatefulWidget {
+//  DynamicDialog({this.title});
+
+//  final String title;
+
+  @override
+  _DynamicDialogState createState() => _DynamicDialogState();
+}
+
+class _DynamicDialogState extends State<DynamicDialog> {
+  String _title;
+  var liked = false;
+  String image1 = "assets/fav_filled.png";
+  String image2 = "assets/ic_fav.png";
+  String currentimage = "assets/ic_fav.png";
+  var textFieldController = TextEditingController();
+
+  _verticalDivider() => BoxDecoration(
+        border: Border(
+          right: BorderSide(
+            color: Colors.grey,
+            width: 1,
+          ),
+        ),
+      );
+
+  @override
+  void initState() {
+//    _title = widget.title;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+        child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      Card(
+          child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+          child: Container(
+            height: 70,
+            width: 320,
+            color: Colors.colorgreen,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Center(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.alphabetic,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "110",
+                        style: TextStyle(color: Colors.white, fontSize: 26),
+                      ),
+                      Text(
+                        "credits",
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                    ],
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    "available balance",
+                    style: TextStyle(color: Colors.white, fontSize: 15),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+          child: Container(
+            width: 300,
+            child: TextFormField(
+              keyboardType: TextInputType.number,
+              controller: textFieldController,
+              textInputAction: TextInputAction.next,
+              decoration: InputDecoration(labelText: 'Enter Amount'),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+          child: GestureDetector(
+            onTap: () {
+              saveToPrefs(textFieldController.text.toString());
+              Navigator.pop(context);
+              // textFieldController.toString();
+            },
+            child: Container(
+              height: 40,
+              width: 150,
+              decoration: new BoxDecoration(
+                  borderRadius:
+                      new BorderRadius.all(new Radius.circular(100.0)),
+                  color: Colors.colorgreen),
+              child: Center(
+                child: new Text("Apply",
+                    style: new TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                    )),
+              ),
+            ),
+          ),
+        ),
+      ]))
+    ]));
+  }
+
+  void saveToPrefs(String string) async {
+    if (string.isEmpty) {
+    } else {
+      setState(() async {
+        print("GGGGGGGGGGGGG yyyyyy$string");
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+//    int counter = (prefs.getInt('counter') ?? 0) + 1;
+//    print('Pressed $counter times.');
+        await prefs.setString('walletBal', string);
+      });
+    }
+  }
+}
