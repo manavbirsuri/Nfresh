@@ -37,130 +37,146 @@ class _MyCustomFormState extends State<CartPage> {
     selectedValues.add("3");
     selectedValues.add("4");
     selectedValues.add("5");
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            'Cart',
-            style: TextStyle(fontWeight: FontWeight.bold),
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        Positioned(
+          child: Image.asset(
+            'assets/sigbg.jpg',
+            fit: BoxFit.cover,
           ),
-          centerTitle: true,
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Flexible(
-              child: SingleChildScrollView(
-                child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: ListView.builder(
-                          itemBuilder: (context, position) {
-                            return getListItem(position);
-                          },
-                          itemCount: 3,
-                          physics: NeverScrollableScrollPhysics(),
-                          shrinkWrap: true,
-                          scrollDirection: Axis.vertical,
-                          primary: false,
-                        ),
+        Scaffold(
+            backgroundColor: Colors.colorgreen.withOpacity(0.5),
+            appBar: AppBar(
+              backgroundColor: Colors.colorgreen.withOpacity(0.0),
+              title: Text(
+                'Cart',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              centerTitle: true,
+            ),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Container(
+                      child: Column(
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: ListView.builder(
+                              itemBuilder: (context, position) {
+                                return getListItem(position);
+                              },
+                              itemCount: 3,
+                              physics: NeverScrollableScrollPhysics(),
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              primary: false,
+                            ),
+                          ),
+                          getCartDetailView(context),
+                        ],
                       ),
-                      getCartDetailView(context),
-                    ],
+                      color: Colors.white,
+                    ),
                   ),
                 ),
-              ),
-            ),
 
-            // Cart Bottom bar
-            Column(children: <Widget>[
-              Container(
-                height: 55,
-                color: Colors.colorlightgreyback,
-                padding: EdgeInsets.all(4),
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      child: GestureDetector(
-                        child: Container(
-                          child: Column(
-                            children: <Widget>[
-                              Flexible(
-                                child: Column(
-                                  children: <Widget>[
-                                    Text(
-                                      '₹250',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 26),
-                                    ),
-                                    Text(
-                                      'Total amount',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.colorPink,
+                // Cart Bottom bar
+                Column(children: <Widget>[
+                  Container(
+                    height: 65,
+                    color: Colors.colorlightgreyback,
+                    padding: EdgeInsets.all(4),
+                    child: Row(
+                      children: <Widget>[
+                        Flexible(
+                          child: GestureDetector(
+                            child: Container(
+                              child: Column(
+                                children: <Widget>[
+                                  // Flexible(
+                                  Column(
+                                    children: <Widget>[
+                                      Text(
+                                        '₹250',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 24),
                                       ),
-                                    )
-                                  ],
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                ),
-                                flex: 1,
+                                      Text(
+                                        'Total amount',
+                                        style: TextStyle(
+                                          //  fontSize: 14,
+                                          color: Colors.colorPink,
+                                        ),
+                                      )
+                                    ],
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                  ),
+                                  //flex: 1,
+                                  // ),
+                                ],
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisAlignment: MainAxisAlignment.center,
                               ),
-                            ],
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                          ),
-                        ),
-                        onTap: () {
+                            ),
+                            onTap: () {
 //                      Scaffold.of(context).showSnackBar(SnackBar(
 //                        content: Text('View details Coming soon'),
 //                        duration: Duration(seconds: 1),
 //                      ));
-                        },
-                      ),
-                      flex: 1,
-                    ),
-                    Flexible(
-                      child: GestureDetector(
-                        child: Container(
-                          color: Colors.colorgreen,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Flexible(
-                                child: Row(
-                                  children: <Widget>[
-                                    Text(
-                                      'Place Order',
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.white),
-                                    ),
-                                  ],
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                ),
-                                flex: 1,
-                              ),
-                            ],
+                            },
                           ),
+                          flex: 1,
                         ),
-                        onTap: () {
+                        Flexible(
+                          child: GestureDetector(
+                            child: Container(
+                              color: Colors.colorgreen,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Flexible(
+                                    child: Row(
+                                      children: <Widget>[
+                                        Text(
+                                          'Place Order',
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white),
+                                        ),
+                                      ],
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                    ),
+                                    flex: 1,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            onTap: () {
 //                      Navigator.push(
 //                          context,
 //                          MaterialPageRoute(
 //                            builder: (context) => PlaceOrder(),
 //                          ));
-                        },
-                      ),
-                      flex: 1,
+                            },
+                          ),
+                          flex: 1,
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            ]),
-          ],
-        ));
+                  ),
+                ]),
+              ],
+            ))
+      ],
+    );
   }
 
   Widget getListItem(position) {

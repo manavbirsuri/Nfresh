@@ -16,100 +16,119 @@ class PromoCodeState extends State<PromoCodePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Apply Coupon'),
-          centerTitle: true,
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        Positioned(
+          child: Image.asset(
+            'assets/sigbg.jpg',
+            fit: BoxFit.cover,
+          ),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Flexible(
-              child: Container(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                        padding: EdgeInsets.all(16),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        Scaffold(
+            backgroundColor: Colors.colorgreen.withOpacity(0.5),
+            appBar: AppBar(
+              backgroundColor: Colors.colorgreen.withOpacity(0.0),
+              title: Text('Apply Coupon'),
+              centerTitle: true,
+            ),
+            body: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Flexible(
+                  child: Container(
+                    color: Colors.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                            padding: EdgeInsets.all(16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
-                                Flexible(
-                                  child: TextField(
-                                    decoration: new InputDecoration.collapsed(
-                                        hintText: 'Enter promo code'),
-                                  ),
-                                  flex: 4,
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: <Widget>[
+                                    Flexible(
+                                      child: TextField(
+                                        decoration:
+                                            new InputDecoration.collapsed(
+                                                hintText: 'Enter promo code'),
+                                      ),
+                                      flex: 4,
+                                    ),
+                                    Flexible(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          saveToPrefs();
+                                          Navigator.pop(context);
+                                          setState(() {
+                                            showDialog(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return Material(
+                                                    type: MaterialType
+                                                        .transparency,
+                                                    child: Container(
+                                                      child: DynamicDialog(),
+                                                      padding: EdgeInsets.only(
+                                                          top: 40, bottom: 40),
+                                                    ),
+                                                  );
+                                                });
+                                          });
+                                        },
+                                        child: Text(
+                                          'Apply',
+                                          style: TextStyle(
+                                              color: Colors.colorgreen,
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ),
+                                      flex: 1,
+                                    ),
+                                  ],
                                 ),
-                                Flexible(
-                                  child: GestureDetector(
-                                    onTap: () {
-                                      saveToPrefs();
-                                      Navigator.pop(context);
-                                      setState(() {
-                                        showDialog(
-                                            context: context,
-                                            builder: (BuildContext context) {
-                                              return Material(
-                                                type: MaterialType.transparency,
-                                                child: Container(
-                                                  child: DynamicDialog(),
-                                                  padding: EdgeInsets.only(
-                                                      top: 40, bottom: 40),
-                                                ),
-                                              );
-                                            });
-                                      });
-                                    },
+                                Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 24, 0, 0),
                                     child: Text(
-                                      'Apply',
+                                      "AVAILABLE COUPONS",
                                       style: TextStyle(
                                           color: Colors.colorgreen,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                  flex: 1,
-                                ),
+                                          fontSize: 16),
+                                      textAlign: TextAlign.start,
+                                    )),
+                                Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    child: Divider(
+                                      height: 1,
+                                      color: Colors.grey,
+                                    ))
                               ],
-                            ),
-                            Padding(
-                                padding: EdgeInsets.fromLTRB(0, 24, 0, 0),
-                                child: Text(
-                                  "AVAILABLE COUPONS",
-                                  style: TextStyle(
-                                      color: Colors.colorgreen, fontSize: 16),
-                                  textAlign: TextAlign.start,
-                                )),
-                            Padding(
-                                padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                child: Divider(
-                                  height: 1,
-                                  color: Colors.grey,
-                                ))
-                          ],
-                        )),
-                    Expanded(
-                      child: ListView.builder(
-                        itemBuilder: (context, position) {
-                          return getListItem(position);
-                        },
-                        itemCount: 3,
-                        shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
-                      ),
+                            )),
+                        Expanded(
+                          child: ListView.builder(
+                            itemBuilder: (context, position) {
+                              return getListItem(position);
+                            },
+                            itemCount: 3,
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-          ],
-        ));
+              ],
+            ))
+      ],
+    );
   }
 
   Widget getListItem(int position) {

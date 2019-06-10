@@ -22,354 +22,386 @@ class ProState extends State<ProductDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Product Detail'),
-          centerTitle: true,
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        Positioned(
+          child: Image.asset(
+            'assets/sigbg.jpg',
+            fit: BoxFit.cover,
+          ),
         ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Flexible(
-              child: SingleChildScrollView(
-                child: Container(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: <Widget>[
-                        Stack(
-                          children: <Widget>[
-                            AspectRatio(
-                              aspectRatio: 2 / 1,
-                              child: Image.asset(
-                                'assets/pea.png',
-                                fit: BoxFit.contain,
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 0, left: 0),
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    if (liked) {
-                                      liked = false;
-                                      favImage = 'assets/fav.png';
-                                    } else {
-                                      liked = true;
-                                      favImage = 'assets/fav_filled.png';
-                                    }
-                                  });
-                                },
-                                child: Align(
-                                  alignment: Alignment.topLeft,
-                                  child: Image.asset(
-                                    favImage,
-                                    height: 30,
-                                    width: 30,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            Text(
-                              'Green Peas',
-                              style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.colorgreen,
-                                  fontWeight: FontWeight.bold),
-                              textAlign: TextAlign.start,
-                            ),
-                            Padding(
-                              padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                              child: Text(
-                                'हरी मटर',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.colorgrey),
-                                textAlign: TextAlign.start,
-                              ),
-                            ),
-                            Padding(
-                                padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                        children: <Widget>[
-                                          Text(
-                                            '₹60.00  ',
-                                            style: TextStyle(
-                                                fontSize: 18,
-                                                color: Colors.colorlightgrey,
-                                                fontWeight: FontWeight.bold),
-                                            textAlign: TextAlign.start,
-                                          ),
-                                          Text(
-                                            '₹70.00',
-                                            style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.colororange,
-                                                decoration:
-                                                    TextDecoration.lineThrough),
-                                            textAlign: TextAlign.start,
-                                          ),
-                                        ]),
-                                    Text(
-                                      '30%off',
-                                      style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.colororange),
-                                      textAlign: TextAlign.center,
+        Scaffold(
+          backgroundColor: Colors.colorgreen.withOpacity(0.5),
+          appBar: AppBar(
+            backgroundColor: Colors.colorgreen.withOpacity(0.0),
+            title: Text('Product Detail'),
+            centerTitle: true,
+          ),
+          body: Container(
+              color: Colors.white,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Container(
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Stack(
+                                children: <Widget>[
+                                  AspectRatio(
+                                    aspectRatio: 2 / 1,
+                                    child: Image.asset(
+                                      'assets/pea.png',
+                                      fit: BoxFit.contain,
                                     ),
-                                  ],
-                                )),
-                            Padding(
-                                padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Container(
-                                      height: 35,
-                                      width: 90,
-                                      decoration: myBoxDecoration3(),
-                                      child: Center(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(8),
-                                          child:
-                                              DropdownButtonFormField<String>(
-                                            decoration:
-                                                InputDecoration.collapsed(
-                                                    hintText: ''),
-                                            value: selectedValues,
-                                            items: <String>[
-                                              "1",
-                                              "2",
-                                              "3",
-                                              "4",
-                                              "5"
-                                            ].map((String value) {
-                                              return new DropdownMenuItem<
-                                                  String>(
-                                                value: value,
-                                                child: new Text(
-                                                  value,
-                                                  style: TextStyle(
-                                                      color: Colors.grey),
-                                                ),
-                                              );
-                                            }).toList(),
-                                            onChanged: (newValue) {
-                                              setState(() {
-                                                selectedValues = newValue;
-                                              });
-                                            },
-                                          ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 0, left: 0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          if (liked) {
+                                            liked = false;
+                                            favImage = 'assets/fav.png';
+                                          } else {
+                                            liked = true;
+                                            favImage = 'assets/fav_filled.png';
+                                          }
+                                        });
+                                      },
+                                      child: Align(
+                                        alignment: Alignment.topLeft,
+                                        child: Image.asset(
+                                          favImage,
+                                          height: 30,
+                                          width: 30,
                                         ),
                                       ),
                                     ),
-                                    Container(
-                                        height: 40,
-                                        width: 90,
-                                        decoration: myBoxDecoration2(),
-                                        child: Center(
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.max,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: <Widget>[
-                                              Padding(
-                                                padding:
-                                                    EdgeInsets.only(bottom: 16),
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      if (incrimentedValue >
-                                                          0) {
-                                                        incrimentedValue--;
-                                                      }
-                                                    });
-                                                  },
-                                                  child: Icon(
-                                                    Icons.minimize,
-                                                    color: Colors.colorgreen,
-                                                    size: 22,
-                                                  ),
-                                                ),
-                                              ),
-                                              Text(
-                                                incrimentedValue.toString(),
-                                                style: TextStyle(
-                                                    color: Colors.colorgreen,
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 18),
-                                              ),
-                                              Padding(
-                                                padding: EdgeInsets.all(0),
-                                                child: GestureDetector(
-                                                  onTap: () {
-                                                    setState(() {
-                                                      incrimentedValue++;
-                                                      print("dddddddd " +
-                                                          incrimentedValue
-                                                              .toString());
-                                                    });
-                                                  },
-                                                  child: Icon(
-                                                    Icons.add,
-                                                    color: Colors.colorgreen,
-                                                    size: 22,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        )),
-                                  ],
-                                )),
-                            Padding(
-                                padding: EdgeInsets.only(top: 16),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Text(
-                                      "DESCRIPTION",
-                                      style:
-                                          TextStyle(color: Colors.colorgreen),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 8),
-                                      child: Text(
-                                        "DESCRIPTIONsdfjasdflasdfjalsdfjasldfjalsdfjaskldfjasdklfjalsdfjasldfjalsdfjadslfsdfjlasfjflasdjffasdnfdfsd,fh",
-                                        style:
-                                            TextStyle(color: Colors.colorgrey),
-                                      ),
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(top: 16),
-                                      child: Text(
-                                        "RELATED PRODUCTS",
-                                        style:
-                                            TextStyle(color: Colors.colorgreen),
-                                      ),
-                                    ),
-                                  ],
-                                )),
-                            Container(
-                                height: 310, child: showProductsCategories()),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-
-            // Cart Bottom bar
-            Column(children: <Widget>[
-              Container(
-                color: Colors.colorlightgreyback,
-                height: 55,
-                padding: EdgeInsets.all(4),
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      child: GestureDetector(
-                        child: Container(
-                          //color: Colors.amber,
-                          child: Column(
-                            children: <Widget>[
-                              Flexible(
-                                child: Column(
-                                  children: <Widget>[
-                                    Text(
-                                      '₹250',
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    'Green Peas',
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.colorgreen,
+                                        fontWeight: FontWeight.bold),
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    child: Text(
+                                      'हरी मटर',
                                       style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 26,
+                                          fontSize: 16,
                                           color: Colors.colorgrey),
+                                      textAlign: TextAlign.start,
                                     ),
-                                    Text(
-                                      'Total amount',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.colorPink,
-                                      ),
-                                    )
-                                  ],
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                ),
-                                flex: 1,
+                                  ),
+                                  Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  '₹60.00  ',
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      color:
+                                                          Colors.colorlightgrey,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                                Text(
+                                                  '₹70.00',
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      color: Colors.colororange,
+                                                      decoration: TextDecoration
+                                                          .lineThrough),
+                                                  textAlign: TextAlign.start,
+                                                ),
+                                              ]),
+                                          Text(
+                                            '30%off',
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colororange),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ],
+                                      )),
+                                  Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 8, 0, 8),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          Container(
+                                            height: 35,
+                                            width: 90,
+                                            decoration: myBoxDecoration3(),
+                                            child: Center(
+                                              child: Padding(
+                                                padding: EdgeInsets.all(8),
+                                                child: DropdownButtonFormField<
+                                                    String>(
+                                                  decoration:
+                                                      InputDecoration.collapsed(
+                                                          hintText: ''),
+                                                  value: selectedValues,
+                                                  items: <String>[
+                                                    "1",
+                                                    "2",
+                                                    "3",
+                                                    "4",
+                                                    "5"
+                                                  ].map((String value) {
+                                                    return new DropdownMenuItem<
+                                                        String>(
+                                                      value: value,
+                                                      child: new Text(
+                                                        value,
+                                                        style: TextStyle(
+                                                            color: Colors.grey),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      selectedValues = newValue;
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                              height: 40,
+                                              width: 90,
+                                              decoration: myBoxDecoration2(),
+                                              child: Center(
+                                                child: Row(
+                                                  mainAxisSize:
+                                                      MainAxisSize.max,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: <Widget>[
+                                                    Padding(
+                                                      padding: EdgeInsets.only(
+                                                          bottom: 16),
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            if (incrimentedValue >
+                                                                0) {
+                                                              incrimentedValue--;
+                                                            }
+                                                          });
+                                                        },
+                                                        child: Icon(
+                                                          Icons.minimize,
+                                                          color:
+                                                              Colors.colorgreen,
+                                                          size: 22,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      incrimentedValue
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          color:
+                                                              Colors.colorgreen,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          fontSize: 18),
+                                                    ),
+                                                    Padding(
+                                                      padding:
+                                                          EdgeInsets.all(0),
+                                                      child: GestureDetector(
+                                                        onTap: () {
+                                                          setState(() {
+                                                            incrimentedValue++;
+                                                            print("dddddddd " +
+                                                                incrimentedValue
+                                                                    .toString());
+                                                          });
+                                                        },
+                                                        child: Icon(
+                                                          Icons.add,
+                                                          color:
+                                                              Colors.colorgreen,
+                                                          size: 22,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )),
+                                        ],
+                                      )),
+                                  Padding(
+                                      padding: EdgeInsets.only(top: 16),
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: <Widget>[
+                                          Text(
+                                            "DESCRIPTION",
+                                            style: TextStyle(
+                                                color: Colors.colorgreen),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 8),
+                                            child: Text(
+                                              "DESCRIPTIONsdfjasdflasdfjalsdfjasldfjalsdfjaskldfjasdklfjalsdfjasldfjalsdfjadslfsdfjlasfjflasdjffasdnfdfsd,fh",
+                                              style: TextStyle(
+                                                  color: Colors.colorgrey),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 16),
+                                            child: Text(
+                                              "RELATED PRODUCTS",
+                                              style: TextStyle(
+                                                  color: Colors.colorgreen),
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                                  Container(
+                                      height: 310,
+                                      child: showProductsCategories()),
+                                ],
                               ),
                             ],
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.center,
                           ),
                         ),
-                        onTap: () {
+                      ),
+                    ),
+                  ),
+
+                  // Cart Bottom bar
+                  Column(children: <Widget>[
+                    Container(
+                      color: Colors.colorlightgreyback,
+                      height: 65,
+                      padding: EdgeInsets.all(4),
+                      child: Row(
+                        children: <Widget>[
+                          Flexible(
+                            child: GestureDetector(
+                              child: Container(
+                                //color: Colors.amber,
+                                child: Column(
+                                  children: <Widget>[
+                                    Column(
+                                      children: <Widget>[
+                                        Text(
+                                          '₹250',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 26,
+                                              color: Colors.colorgrey),
+                                        ),
+                                        Text(
+                                          'Total amount',
+                                          style: TextStyle(
+                                            // fontSize: 14,
+                                            color: Colors.colorPink,
+                                          ),
+                                        )
+                                      ],
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                    ),
+                                  ],
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                ),
+                              ),
+                              onTap: () {
 //                      Scaffold.of(context).showSnackBar(SnackBar(
 //                        content: Text('View details Coming soon'),
 //                        duration: Duration(seconds: 1),
 //                      ));
-                        },
-                      ),
-                      flex: 1,
-                    ),
-                    Flexible(
-                      child: GestureDetector(
-                        child: Container(
-                          color: Colors.colorgreen,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Flexible(
-                                child: Row(
+                              },
+                            ),
+                            flex: 1,
+                          ),
+                          Flexible(
+                            child: GestureDetector(
+                              child: Container(
+                                color: Colors.colorgreen,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
-                                    Text(
-                                      'Checkout',
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.white),
+                                    Flexible(
+                                      child: Row(
+                                        children: <Widget>[
+                                          Text(
+                                            'Checkout',
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.white),
+                                          ),
+                                        ],
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                      ),
+                                      flex: 1,
                                     ),
                                   ],
-                                  mainAxisAlignment: MainAxisAlignment.center,
                                 ),
-                                flex: 1,
                               ),
-                            ],
-                          ),
-                        ),
-                        onTap: () {
+                              onTap: () {
 //                      Navigator.push(
 //                          context,
 //                          MaterialPageRoute(
 //                            builder: (context) => PlaceOrder(),
 //                          ));
-                        },
+                              },
+                            ),
+                            flex: 1,
+                          ),
+                        ],
                       ),
-                      flex: 1,
                     ),
-                  ],
-                ),
-              ),
-            ]),
-          ],
-        ));
+                  ]),
+                ],
+              )),
+        )
+      ],
+    );
   }
 
   BoxDecoration myBoxDecoration2() {
@@ -523,7 +555,7 @@ class ProState extends State<ProductDetailPage> {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(right: 32, left: 32, top: 16),
+                        padding: EdgeInsets.only(right: 16, left: 16, top: 8),
                         child: Container(
                           height: 30,
                           decoration: myBoxDecoration2(),

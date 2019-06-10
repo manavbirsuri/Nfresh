@@ -78,11 +78,16 @@ class stateProfilePage extends State<stateProfile> {
                       ),
                     ),
                     Center(
-                      child: Text(
-                        'available balance',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
+                      child: Padding(
+                        padding: EdgeInsets.only(
+                          bottom: 0,
+                        ),
+                        child: Text(
+                          'available balance',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                          ),
                         ),
                       ),
                     )
@@ -91,7 +96,7 @@ class stateProfilePage extends State<stateProfile> {
               ),
               Container(
                 color: Colors.white,
-                margin: EdgeInsets.only(top: 160),
+                margin: EdgeInsets.only(top: 170),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
@@ -100,7 +105,7 @@ class stateProfilePage extends State<stateProfile> {
                 ),
               ),
               Container(
-                margin: EdgeInsets.only(top: 90, right: 20, left: 20),
+                margin: EdgeInsets.only(top: 95, right: 20, left: 20),
                 child: Material(
                   elevation: 16.0,
                   borderRadius: BorderRadius.only(

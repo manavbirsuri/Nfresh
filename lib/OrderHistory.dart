@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'OrderPage.dart';
+
 class OrderHistory extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -17,119 +19,158 @@ class OrderState extends StatefulWidget {
 class OrderHistoryState extends State<OrderState> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Order History",
-          style: TextStyle(fontWeight: FontWeight.bold),
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        Positioned(
+          child: Image.asset(
+            'assets/sigbg.jpg',
+            fit: BoxFit.cover,
+          ),
         ),
-        centerTitle: true,
-      ),
-      body: ListView.builder(
-        itemBuilder: (context, position) {
-          return getListItem(position);
-        },
-        itemCount: 8,
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-      ),
+        Scaffold(
+          backgroundColor: Colors.colorgreen.withOpacity(0.5),
+          appBar: AppBar(
+            backgroundColor: Colors.colorgreen.withOpacity(0.0),
+            title: Text(
+              "Order History",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            centerTitle: true,
+            actions: <Widget>[
+              GestureDetector(
+                onTap: () {},
+                child: Container(
+                  padding: EdgeInsets.only(right: 16),
+                  child: Icon(
+                    Icons.filter_list,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+              )
+            ],
+          ),
+          body: Container(
+            color: Colors.colorlightgreyback,
+            child: ListView.builder(
+              itemBuilder: (context, position) {
+                return getListItem(position);
+              },
+              itemCount: 8,
+              shrinkWrap: true,
+              scrollDirection: Axis.vertical,
+            ),
+          ),
+        )
+      ],
     );
   }
 
   Widget getListItem(position) {
-    return Card(
-      elevation: 2,
-      margin: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
-      child: Container(
-        padding: EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: <Widget>[
-            Flexible(
-              child: Row(
-                // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                // mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  Image.asset(
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => new OrderPage(
+                    title: 'Order Id : 123GD$position',
+                  ),
+            ));
+      },
+      child: Card(
+        elevation: 2,
+        margin: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+        child: Container(
+          padding: EdgeInsets.only(left: 8, right: 8, top: 16, bottom: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              Flexible(
+                child: Row(
+                  // mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  // mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    /*Image.asset(
                     'assets/pea.png',
                     width: 80.0,
                     height: 80.0,
                     fit: BoxFit.cover,
-                  ),
-                  Flexible(
-                    child: Container(
-                      padding: EdgeInsets.only(left: 8, right: 8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            'Green Peas',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: Colors.colorgreen),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              top: 8,
-                              bottom: 4,
+                  ),*/
+                    Flexible(
+                      child: Container(
+                        padding: EdgeInsets.only(left: 8, right: 8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text(
+                              'Order Id: 123GD$position',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.colorgreen),
                             ),
-                            child: Text(
-                              'Product detailed description sdfdsfds sjdfahsdj adicahudad cadhadabkda cachajkc  $position',
-                              style: TextStyle(fontSize: 13),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
+                            Padding(
+                              padding: EdgeInsets.only(
+                                top: 8,
+                                bottom: 4,
+                              ),
+                              child: Text(
+                                '10 Jun, 2019',
+                                style: TextStyle(fontSize: 13),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
 //                          Text(
 //                            'Size : 3$position',
 //                            style: TextStyle(fontSize: 13),
 //                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
+                flex: 1,
               ),
-              flex: 1,
-            ),
-            Container(
-              // padding: EdgeInsets.only(right: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      Text("Total  "),
-                      Text(
-                        "₹35$position",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                    ],
-                  ),
+              Container(
+                // padding: EdgeInsets.only(right: 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        Text("Total  "),
+                        Text(
+                          "₹35$position",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                      ],
+                    ),
 //                  Text(
 //                    'Total ₹ 23$position',
 //                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
 //                  ),
-                  Padding(
-                    child: position == 4
-                        ? Text(
-                            'Delivered',
-                            style: TextStyle(
-                                color: Colors.colorPink,
-                                fontWeight: FontWeight.bold),
-                          )
-                        : Text(
-                            'Processing',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                    padding: EdgeInsets.only(top: 8, bottom: 8),
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: <Widget>[
+                    Padding(
+                      child: position == 4
+                          ? Text(
+                              'Delivered',
+                              style: TextStyle(
+                                  color: Colors.colorPink,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          : Text(
+                              'Processing',
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                      padding: EdgeInsets.only(top: 8, bottom: 8),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
 //                      GestureDetector(
 //                        child: Container(
 //                          decoration: BoxDecoration(color: Colors.colorPink),
@@ -139,22 +180,23 @@ class OrderHistoryState extends State<OrderState> {
 //                            left: 8,
 //                            right: 8,
 //                          ),
-                      Text(
+                        /*Text(
                         '23 May,2019',
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 12,
                         ),
-                      ),
+                      ),*/
 //                        ),
 //                        onTap: () {},
 //                      )
-                    ],
-                  ),
-                ],
-              ),
-            )
-          ],
+                      ],
+                    ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

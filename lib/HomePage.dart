@@ -3,7 +3,7 @@ import 'package:page_indicator/page_indicator.dart';
 
 import 'CategoryDetails.dart';
 import 'Constants.dart';
-import 'login.dart';
+import 'ProductDetailPage.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -24,6 +24,7 @@ class HomePageOrder extends StatefulWidget {
 class HOrderPage extends State<HomePageOrder> {
   List<Category> list = List();
   List<ModelProduct> listPro = List();
+
   List _cities = ["500gm", "1kg", "1.5kg", "2kg", "2.5kg"];
   var _pageController = new PageController();
 //  List<String> selectedValues = List();
@@ -49,11 +50,12 @@ class HOrderPage extends State<HomePageOrder> {
     model.subName = "हरी मटर";
     model.appliedPrice = "₹60.00  ";
     model.cutOffPrice = "₹70.00";
-    model.quantity = "1";
+    //   model.quantity = "500g";
     model.upto = "0";
     model.like = false;
     model.off = "30%off";
     productArray.add(model);
+
     model = new ModelProduct();
     model.id = "1";
     model.Image = "assets/pea.png";
@@ -61,11 +63,12 @@ class HOrderPage extends State<HomePageOrder> {
     model.subName = "हरी मटर";
     model.appliedPrice = "₹50.00  ";
     model.cutOffPrice = "₹80.00";
-    model.quantity = "1";
+    // model.quantity = "500g";
     model.upto = "0";
     model.like = false;
     model.off = "30%off";
     productArray.add(model);
+
     model = new ModelProduct();
     model.id = "2";
     model.Image = "assets/pea.png";
@@ -73,11 +76,12 @@ class HOrderPage extends State<HomePageOrder> {
     model.subName = "हरी मटर";
     model.appliedPrice = "₹90.00  ";
     model.cutOffPrice = "₹180.00";
-    model.quantity = "1";
+    // model.quantity = "500g";
     model.upto = "0";
     model.like = false;
     model.off = "30%off";
     productArray.add(model);
+
     model = new ModelProduct();
     model.id = "3";
     model.Image = "assets/pea.png";
@@ -85,7 +89,7 @@ class HOrderPage extends State<HomePageOrder> {
     model.subName = "हरी मटर";
     model.appliedPrice = "₹150.00  ";
     model.cutOffPrice = "₹195.00";
-    model.quantity = "1";
+    // model.quantity = "500g";
     model.upto = "0";
     model.like = false;
     model.off = "30%off";
@@ -363,7 +367,7 @@ class HOrderPage extends State<HomePageOrder> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => login(),
+                                  builder: (context) => ProductDetailPage(),
                                 ));
                           },
                           child: Column(
@@ -434,10 +438,16 @@ class HOrderPage extends State<HomePageOrder> {
                                     padding: EdgeInsets.only(right: 8, left: 8),
                                     child: DropdownButtonFormField<String>(
                                       decoration: InputDecoration.collapsed(
-                                          hintText: ''),
+                                          hintText: 'Qty'),
                                       value: listPro[position].quantity,
-                                      items: <String>["1", "2", "3", "4", "5"]
-                                          .map((String value) {
+                                      //value: null,
+                                      items: <String>[
+                                        "500gm",
+                                        "1kg",
+                                        "1.5kg",
+                                        "2kg",
+                                        "2.5kg"
+                                      ].map((String value) {
                                         return new DropdownMenuItem<String>(
                                           value: value,
                                           child: new Text(

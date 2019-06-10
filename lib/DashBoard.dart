@@ -8,6 +8,7 @@ import 'SearchPage.dart';
 import 'WalletPage.dart';
 import 'WishListPage.dart';
 import 'cart.dart';
+import 'notifications.dart';
 
 void main() => runApp(MyApp());
 
@@ -134,12 +135,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   onPressed: () => _scaffoldKey.currentState.openDrawer()),
           actions: [
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Image.asset(
-                "assets/noti.png",
-                height: 25,
-                width: 25,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationsPage(),
+                    ));
+              },
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Image.asset(
+                  "assets/noti.png",
+                  height: 25,
+                  width: 25,
+                ),
               ),
             ),
             GestureDetector(
@@ -204,10 +214,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   DrawerHeader(
                     decoration: BoxDecoration(
-                      color: Colors.transparent.withOpacity(0.3),
+                      color: Colors.transparent.withOpacity(0.5),
                       image: DecorationImage(
-                          image: AssetImage('assets/bg.jpg'),
-                          fit: BoxFit.cover),
+                          image: AssetImage('assets/bg.jpg'), fit: BoxFit.fill),
                     ),
                     margin: EdgeInsets.all(0),
                     child: Container(
@@ -354,12 +363,14 @@ class _MyHomePageState extends State<MyHomePage> {
                             ),
                           ),
                           onTap: () {
-                            Navigator.pop(context);
+                            /* Navigator.pop(context);
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => new OffersPage(),
-                                ));
+                                ));*/
+                            Navigator.pop(context);
+                            changeTabs(2);
                           },
                         ),
                         Divider(
