@@ -52,26 +52,36 @@ class OfferOrderPage extends State<OfferOrder> {
                             )),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(left: 16, right: 16, top: 16),
+                        padding: EdgeInsets.only(left: 16, right: 16, top: 8),
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
                               Expanded(
                                 child: Padding(
-                                  padding: EdgeInsets.only(right: 0),
-                                  child: Text(
-                                    "Coupon Name: Coupon $position",
-                                    style: TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
+                                    padding: EdgeInsets.only(right: 0),
+                                    child: Row(
+                                      children: <Widget>[
+                                        Text(
+                                          "Coupon Name: ",
+                                          style: TextStyle(
+                                            color: Colors.colorlightgrey,
+                                            // fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          "Coupon $position",
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    )),
                               ),
                             ]),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(left: 16, top: 8),
+                        padding: EdgeInsets.only(left: 16, top: 4),
                         child: Row(children: <Widget>[
                           Text(
                             "Coupon Code : ",
