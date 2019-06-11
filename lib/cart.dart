@@ -483,6 +483,53 @@ class _MyCustomFormState extends State<CartPage> {
             ),
           ),
           Padding(
+            padding: EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return Material(
+                          type: MaterialType.transparency,
+                          child: Container(
+                            child: DynamicDialog(),
+                            padding: EdgeInsets.only(top: 40, bottom: 40),
+                          ),
+                        );
+                      }).then((value) {
+                    setState(() {
+                      getBalance().then((onValue) {
+                        walletBalance = onValue;
+                      });
+                    });
+                  });
+                });
+              },
+              child: Container(
+                color: Colors.white,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      'Wallet Balance',
+                      style:
+                          TextStyle(fontSize: 18, color: Colors.colorlightgrey),
+                    ),
+                    Text(
+                      walletBalance,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.colorgreen,
+                        decoration: TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Padding(
             padding: EdgeInsets.only(
               top: 8,
             ),
@@ -585,7 +632,7 @@ class _MyCustomFormState extends State<CartPage> {
                       ],
                     ),
                   ),
-                  Padding(
+                  /*Padding(
                     padding: EdgeInsets.only(top: 8, bottom: 8),
                     child: GestureDetector(
                       onTap: () {
@@ -632,7 +679,7 @@ class _MyCustomFormState extends State<CartPage> {
                         ),
                       ),
                     ),
-                  ),
+                  ),*/
                   Padding(
                     padding: EdgeInsets.only(top: 0),
                     child: Row(
