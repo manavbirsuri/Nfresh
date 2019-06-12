@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nfresh/HomePage.dart';
 
 import 'ShowCategoryDetailPage.dart';
 import 'cart.dart';
+import 'models/category_model.dart';
 
 class CategoryDetails extends StatelessWidget {
   Category list;

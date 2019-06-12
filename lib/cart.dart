@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'PromoCodePage.dart';
@@ -9,6 +10,8 @@ class CartPage extends StatefulWidget {
 }
 
 class _MyCustomFormState extends State<CartPage> {
+  static const platform = const MethodChannel('flutter.native/helper');
+  String response = "";
   Text totalText;
   String code;
   List<String> selectedValues = List();
@@ -159,12 +162,17 @@ class _MyCustomFormState extends State<CartPage> {
                                 ],
                               ),
                             ),
-                            onTap: () {
-//                      Navigator.push(
-//                          context,
-//                          MaterialPageRoute(
-//                            builder: (context) => PlaceOrder(),
-//                          ));
+                            onTap: () async {
+                              try {
+                                final String result =
+                                    await platform.invokeMethod(
+                                        'Message to share on whatsapp');
+                                response = result;
+                              } on PlatformException catch (e) {
+                                response = "Failed to Invoke: '${e.message}'.";
+                              }
+
+                              print("RES: $response");
                             },
                           ),
                           flex: 1,
