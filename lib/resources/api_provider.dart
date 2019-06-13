@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' show Client;
 import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_cat_products.dart';
+import 'package:nfresh/models/responses/response_cities.dart';
 import 'package:nfresh/models/responses/response_coupons.dart';
 import 'package:nfresh/models/responses/response_getFavorite.dart';
 import 'package:nfresh/models/responses/response_home.dart';
@@ -208,6 +209,21 @@ class ApiProvider {
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load verifyOtp service');
+    }
+  }
+
+  // Webservice call to get user profile
+  Future<ResponseCities> getCities(auth) async {
+    Map map = {
+      'auth_code': auth,
+    };
+    final response = await client.post("$baseUrl/getcityarea ", body: map);
+    print(response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseCities.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load getcityarea service');
     }
   }
 }

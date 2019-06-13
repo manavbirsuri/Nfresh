@@ -1,4 +1,5 @@
 import 'package:nfresh/models/responses/response_cat_products.dart';
+import 'package:nfresh/models/responses/response_cities.dart';
 import 'package:nfresh/models/responses/response_coupons.dart';
 import 'package:nfresh/models/responses/response_getFavorite.dart';
 import 'package:nfresh/models/responses/response_home.dart';
@@ -43,4 +44,6 @@ class Repository {
 
   Future<ResponseOtp> verifyOtp(auth, userId, otp) =>
       apiProvider.verifyOtp(auth, userId, otp);
+
+  Future<ResponseCities> getCities(auth) => apiProvider.getCities(auth);
 }
