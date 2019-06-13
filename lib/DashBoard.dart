@@ -62,6 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
     print("initState was called");
     bloc.fetchHomeData();
     blocProfile.fetchData();
+    blocProfile.profileData;
   }
 
   int _selectedDrawerIndex = 0;

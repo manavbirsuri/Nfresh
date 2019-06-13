@@ -55,7 +55,7 @@ class ApiProvider {
       'product_id': productId,
       'is_favourite': isFav
     };
-    final response = await client.post("$baseUrl/setfavourite ", body: map);
+    final response = await client.post("$baseUrl/setfavourite", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       Map<String, dynamic> data = json.decode(response.body);
@@ -70,7 +70,7 @@ class ApiProvider {
   // Webservice call to get favorite list
   Future<ResponseGetFav> getFavoriteList(auth) async {
     Map map = {'auth_code': auth};
-    final response = await client.post("$baseUrl/getfavourite ", body: map);
+    final response = await client.post("$baseUrl/getfavourite", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       return ResponseGetFav.fromJson(json.decode(response.body));
@@ -83,7 +83,7 @@ class ApiProvider {
   // Webservice call to get category products
   Future<ResponseCatProducts> getCatProducts(auth, catId) async {
     Map map = {'auth_code': auth, 'cat_id': catId};
-    final response = await client.post("$baseUrl/getcatproducts ", body: map);
+    final response = await client.post("$baseUrl/getcatproducts", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       return ResponseCatProducts.fromJson(json.decode(response.body));
@@ -98,7 +98,7 @@ class ApiProvider {
     Map map = {
       'auth_code': auth,
     };
-    final response = await client.post("$baseUrl/getcoupons ", body: map);
+    final response = await client.post("$baseUrl/getcoupons", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       return ResponseCoupons.fromJson(json.decode(response.body));
@@ -113,7 +113,7 @@ class ApiProvider {
     Map map = {
       'auth_code': auth,
     };
-    final response = await client.post("$baseUrl/getwalletoffers ", body: map);
+    final response = await client.post("$baseUrl/getwalletoffers", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       return ResponseWallet.fromJson(json.decode(response.body));
@@ -125,11 +125,9 @@ class ApiProvider {
 
 // Webservice call to get user profile
   Future<ResponseProfile> getProfile(auth) async {
-    Map map = {
-      'auth_code': 'cd84a94274931b40babdd075966aa7d9',
-    };
-    final response = await client.post("$baseUrl/getprofile ", body: map);
-    print(response.body.toString());
+    Map map = {'auth_code': auth};
+    final response = await client.post("$baseUrl/getprofile", body: map);
+    print("PROFILE: " + response.body.toString());
     if (response.statusCode == 200) {
       return ResponseProfile.fromJson(json.decode(response.body));
     } else {
@@ -144,7 +142,7 @@ class ApiProvider {
       'auth_code': auth,
       'search': text,
     };
-    final response = await client.post("$baseUrl/search ", body: map);
+    final response = await client.post("$baseUrl/search", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       return ResponseSearch.fromJson(json.decode(response.body));
@@ -167,7 +165,7 @@ class ApiProvider {
       'area': profile.area,
       'type': profile.type,
     };
-    final response = await client.post("$baseUrl/signup ", body: map);
+    final response = await client.post("$baseUrl/signup", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       return ResponseSignUp.fromJson(json.decode(response.body));
@@ -184,7 +182,7 @@ class ApiProvider {
       'password': password,
       'phone_no': phone,
     };
-    final response = await client.post("$baseUrl/login ", body: map);
+    final response = await client.post("$baseUrl/login", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       return ResponseLogin.fromJson(json.decode(response.body));
@@ -201,7 +199,7 @@ class ApiProvider {
       'otp': otp,
       'user_id': userId,
     };
-    final response = await client.post("$baseUrl/verifyOtp ", body: map);
+    final response = await client.post("$baseUrl/verifyOtp", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       return ResponseOtp.fromJson(json.decode(response.body));
@@ -216,7 +214,7 @@ class ApiProvider {
     Map map = {
       'auth_code': auth,
     };
-    final response = await client.post("$baseUrl/getcityarea ", body: map);
+    final response = await client.post("$baseUrl/getcityarea", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       return ResponseCities.fromJson(json.decode(response.body));
