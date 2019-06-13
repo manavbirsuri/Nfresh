@@ -1,14 +1,14 @@
 import 'package:nfresh/models/section_model.dart';
 
-import 'banner_model.dart';
-import 'category_model.dart';
+import '../banner_model.dart';
+import '../category_model.dart';
 
 class ResponseHome {
   String status;
   String authCode;
   String msg;
-  List<Banner> banners = [];
-  List<Banner> offerBanners = [];
+  List<BannerModel> banners = [];
+  List<BannerModel> offerBanners = [];
   List<Category> categories = [];
   List<Section> sections = [];
 
@@ -17,15 +17,15 @@ class ResponseHome {
     authCode = json['auth_code'];
     msg = json['msg'];
 
-    List<Banner> temp = [];
+    List<BannerModel> temp = [];
     for (int i = 0; i < json['banners'].length; i++) {
-      var banner = Banner(json['banners'][i]);
+      var banner = BannerModel(json['banners'][i]);
       temp.add(banner);
     }
     banners = temp;
-    List<Banner> temp2 = [];
+    List<BannerModel> temp2 = [];
     for (int i = 0; i < json['offerbanners'].length; i++) {
-      var banner = Banner(json['offerbanners'][i]);
+      var banner = BannerModel(json['offerbanners'][i]);
       temp2.add(banner);
     }
     offerBanners = temp2;

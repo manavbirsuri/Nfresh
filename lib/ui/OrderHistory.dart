@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'OrderPage.dart';
+import 'package:nfresh/ui/OrderPage.dart';
 
 class OrderHistory extends StatelessWidget {
   @override

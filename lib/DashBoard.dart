@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/models/responses/response_home.dart';
+import 'package:nfresh/ui/HomePage.dart';
+import 'package:nfresh/ui/OffersPage.dart';
+import 'package:nfresh/ui/OrderHistory.dart';
+import 'package:nfresh/ui/Profile.dart';
+import 'package:nfresh/ui/SearchPage.dart';
+import 'package:nfresh/ui/WalletPage.dart';
+import 'package:nfresh/ui/WishListPage.dart';
+import 'package:nfresh/ui/cart.dart';
+import 'package:nfresh/ui/notifications.dart';
 
-import 'HomePage.dart';
-import 'OffersPage.dart';
-import 'OrderHistory.dart';
-import 'Profile.dart';
-import 'SearchPage.dart';
-import 'WalletPage.dart';
-import 'WishListPage.dart';
 import 'bloc/home_bloc.dart';
-import 'cart.dart';
-import 'models/response_home.dart';
-import 'notifications.dart';
 
 void main() => runApp(MyApp());
 

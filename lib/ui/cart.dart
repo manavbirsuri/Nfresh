@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nfresh/ui/PromoCodePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'PromoCodePage.dart';
 
 class CartPage extends StatefulWidget {
   @override

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/DashBoard.dart';
 import 'package:pin_view/pin_view.dart';
-
-import 'DashBoard.dart';
 
 class PinViewPage extends StatelessWidget {
   @override

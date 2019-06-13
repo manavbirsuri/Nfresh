@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/models/banner_model.dart';
 import 'package:nfresh/models/category_model.dart';
 import 'package:nfresh/models/product_model.dart';
+import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/models/section_model.dart';
+import 'package:nfresh/ui/CategoryDetails.dart';
+import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:page_indicator/page_indicator.dart';
-
-import 'CategoryDetails.dart';
-import 'ProductDetailPage.dart';
-import 'models/response_home.dart';
 
 class HomePage extends StatefulWidget {
   final AsyncSnapshot<ResponseHome> data;
@@ -55,7 +55,10 @@ class HOrderPage extends State<HomePage> {
               Column(
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
-                  Container(height: 150, child: showTopPager()),
+                  AspectRatio(
+                    aspectRatio: 3 / 1,
+                    child: showTopPager(snapshot.data.banners),
+                  ),
                   Column(
                     mainAxisSize: MainAxisSize.max,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -101,42 +104,28 @@ class HOrderPage extends State<HomePage> {
             ])));
   }
 
-  showTopPager() {
+  Widget showTopPager(List<BannerModel> banners) {
     return new PageIndicatorContainer(
-      pageView: new PageView(
+      pageView: new PageView.builder(
         controller: _pageController,
-        children: <Widget>[
-          Container(
-            child: Image.asset(
-              "assets/dummy.jpg",
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            child: Image.network(
+              banners[index].image,
               fit: BoxFit.cover,
             ),
-          ),
-          Container(
-              child: Image.asset(
-            "assets/dummy.jpg",
-            fit: BoxFit.cover,
-          )),
-          Container(
-              child: Image.asset(
-            "assets/dummy.jpg",
-            fit: BoxFit.cover,
-          )),
-          Container(
-              child: Image.asset(
-            "assets/dummy.jpg",
-            fit: BoxFit.cover,
-          )),
-        ],
+          );
+        },
         // controller: controller,
+        itemCount: banners.length,
       ),
       align: IndicatorAlign.bottom,
-      length: 4,
+      length: banners.length,
       indicatorSpace: 8.0,
-      padding: const EdgeInsets.all(10),
+      padding: const EdgeInsets.all(8),
       indicatorColor: Colors.grey,
-      indicatorSelectorColor: Colors.blue,
-      shape: IndicatorShape.circle(size: 12),
+      indicatorSelectorColor: Colors.green,
+      shape: IndicatorShape.circle(size: 8),
     );
   }
 

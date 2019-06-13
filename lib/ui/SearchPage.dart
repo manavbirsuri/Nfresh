@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'Constants.dart';
-import 'ProductDetailPage.dart';
+import 'package:nfresh/ui/Constants.dart';
+import 'package:nfresh/ui/ProductDetailPage.dart';
 
 class SearchPage extends StatelessWidget {
   // This widget is the root of your application.

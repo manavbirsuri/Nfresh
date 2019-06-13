@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-
-import 'PinView.dart';
+import 'package:nfresh/ui/PinView.dart';
 
 class SignUp extends StatelessWidget {
   @override

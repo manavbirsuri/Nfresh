@@ -1,4 +1,4 @@
-import 'package:nfresh/models/response_home.dart';
+import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/resources/repository.dart';
 import 'package:rxdart/rxdart.dart';

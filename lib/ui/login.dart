@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-
-import 'DashBoard.dart';
-import 'SignUp.dart';
+import 'package:nfresh/DashBoard.dart';
+import 'package:nfresh/ui/SignUp.dart';
 
 class login extends StatelessWidget {
   @override

@@ -1,8 +1,8 @@
-class Banner {
+class BannerModel {
   String name;
   String image;
   String link;
-  Banner(json) {
+  BannerModel(json) {
     name = json['name'];
     image = json['image'];
     link = json['link'];
