@@ -19,4 +19,17 @@ class ProfileModel {
     walletCredits = json['wallet_credits'];
     type = json['type'];
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'name': this.name,
+      'email': this.email,
+      'phone_no': this.phoneNo,
+      'address': this.address,
+      'city': this.city,
+      'area': this.area,
+      'wallet_credits': this.walletCredits,
+      'type': this.type,
+    };
+  }
 }

@@ -126,7 +126,7 @@ class ApiProvider {
 // Webservice call to get user profile
   Future<ResponseProfile> getProfile(auth) async {
     Map map = {
-      'auth_code': auth,
+      'auth_code': 'cd84a94274931b40babdd075966aa7d9',
     };
     final response = await client.post("$baseUrl/getprofile ", body: map);
     print(response.body.toString());
@@ -134,8 +134,7 @@ class ApiProvider {
       return ResponseProfile.fromJson(json.decode(response.body));
     } else {
       // If that call was not successful, throw an error.
-      throw Exception(
-          'NFresh: Failed to load getcatprogetprofileducts service');
+      throw Exception('NFresh: Failed to load getprofile service');
     }
   }
 

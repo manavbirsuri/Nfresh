@@ -11,6 +11,7 @@ import 'package:nfresh/ui/cart.dart';
 import 'package:nfresh/ui/notifications.dart';
 
 import 'bloc/home_bloc.dart';
+import 'bloc/profile_bloc.dart';
 
 void main() => runApp(MyApp());
 
@@ -50,6 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   var _curIndex = 0;
   var bloc = HomeBloc();
+  var blocProfile = ProfileBloc();
 
   _MyHomePageState(String title) {
     this.title = title;
@@ -59,6 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
     super.initState();
     print("initState was called");
     bloc.fetchHomeData();
+    blocProfile.fetchData();
   }
 
   int _selectedDrawerIndex = 0;
