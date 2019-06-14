@@ -83,8 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
         return new OffersPage();
       case 3:
         return new SearchPage();
-
-      //return new LoginPage();
       default:
         return new Text("Error");
     }

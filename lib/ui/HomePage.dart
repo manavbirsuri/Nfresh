@@ -56,7 +56,7 @@ class HOrderPage extends State<HomePage> {
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   AspectRatio(
-                    aspectRatio: 3 / 1,
+                    aspectRatio: 2.5 / 1,
                     child: showTopPager(snapshot.data.banners),
                   ),
                   Column(
@@ -143,8 +143,8 @@ class HOrderPage extends State<HomePage> {
                   Navigator.push(
                       context,
                       new MaterialPageRoute(
-                          builder: (context) =>
-                              CategoryDetails(categories[position])));
+                          builder: (context) => CategoryDetails(
+                              selectedCategory: categories[position])));
                 },
                 child: Card(
                   shape: RoundedRectangleBorder(

@@ -1,13 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/subcat_bloc.dart';
 import 'package:nfresh/models/category_model.dart';
+import 'package:nfresh/models/responses/response_subcat.dart';
 import 'package:nfresh/ui/ShowCategoryDetailPage.dart';
 import 'package:nfresh/ui/cart.dart';
 
-class CategoryDetails extends StatelessWidget {
-  Category list;
+class CategoryDetails extends StatefulWidget {
+  final Category selectedCategory;
+  CategoryDetails({Key key, @required this.selectedCategory}) : super(key: key);
+  @override
+  _CategoryDetailsState createState() => _CategoryDetailsState();
+}
 
-  CategoryDetails(Category list) {
-    this.list = list;
+class _CategoryDetailsState extends State<CategoryDetails> {
+  var bloc = SubCatBloc();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    bloc.fetchSubCategories(widget.selectedCategory.id.toString());
   }
 
   @override
@@ -24,7 +35,7 @@ class CategoryDetails extends StatelessWidget {
           backgroundColor: Colors.colorgreen.withOpacity(0.0),
           automaticallyImplyLeading: true,
           title: Text(
-            list.name,
+            widget.selectedCategory.name,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
@@ -93,44 +104,60 @@ class CategoryDetails extends StatelessWidget {
           ],
         ),
         backgroundColor: Colors.colorgreen.withOpacity(0.5),
-        body: Container(
-            height: double.infinity,
-            color: Colors.white,
-            child: ListView.builder(
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
-              itemBuilder: (context, position) {
-                return Padding(
-                  padding: EdgeInsets.only(top: 0),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                              builder: (context) =>
-                                  ShowCategoryDetailPage(list)));
-                    },
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        ListTile(
-                          title: Text("Subcatagory $position"),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 0),
-                          child: Divider(
-                            height: 1,
-                            color: Colors.grey,
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
-                );
-              },
-              itemCount: 5,
-            )),
+        body: StreamBuilder(
+          stream: bloc.subCatData,
+          builder: (context, AsyncSnapshot<ResponseSubCat> snapshot) {
+            if (snapshot.hasData) {
+              return mainContent(snapshot);
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            }
+            return Center(child: CircularProgressIndicator());
+          },
+        ),
       )
     ]);
+  }
+
+  Widget mainContent(AsyncSnapshot<ResponseSubCat> snapshot) {
+    return Container(
+      height: double.infinity,
+      color: Colors.white,
+      child: ListView.builder(
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+        itemBuilder: (context, position) {
+          var subCat = snapshot.data.categories[position];
+          return Padding(
+            padding: EdgeInsets.only(top: 0),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    new MaterialPageRoute(
+                        builder: (context) =>
+                            ShowCategoryDetailPage(subCategory: subCat)));
+              },
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  ListTile(
+                    title: Text(subCat.name),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 0),
+                    child: Divider(
+                      height: 1,
+                      color: Colors.grey,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+        itemCount: 5,
+      ),
+    );
   }
 }

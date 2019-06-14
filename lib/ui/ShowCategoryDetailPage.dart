@@ -4,17 +4,20 @@ import 'package:nfresh/ui/Constants.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:nfresh/ui/cart.dart';
 
-class ShowCategoryDetailPage extends StatelessWidget {
-  Category list;
+class ShowCategoryDetailPage extends StatefulWidget {
+  final Category subCategory;
+  ShowCategoryDetailPage({Key key, @required this.subCategory})
+      : super(key: key);
 
-  ShowCategoryDetailPage(Category list) {
-    this.list = list;
-  }
+  @override
+  _ShowCategoryDetailPageState createState() => _ShowCategoryDetailPageState();
+}
 
+class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: ShowCatDetailPage(list),
+      body: ShowCatDetailPage(widget.subCategory),
     );
   }
 }
