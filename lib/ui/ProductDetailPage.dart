@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/models/packing_model.dart';
+import 'package:nfresh/models/product_model.dart';
 
 class ProductDetailPage extends StatefulWidget {
+  final Product product;
+  const ProductDetailPage({Key key, @required this.product}) : super(key: key);
   @override
   ProState createState() => ProState();
 }
@@ -8,11 +12,7 @@ class ProductDetailPage extends StatefulWidget {
 class ProState extends State<ProductDetailPage> {
   Text totalText;
   String code;
-  var selectedValues = "1";
-  var incrimentedValue = 0;
   var pos = 0;
-  var favImage = 'assets/fav.png';
-  var liked = false;
 
   @override
   void initState() {
@@ -56,8 +56,8 @@ class ProState extends State<ProductDetailPage> {
                                 children: <Widget>[
                                   AspectRatio(
                                     aspectRatio: 2 / 1,
-                                    child: Image.asset(
-                                      'assets/pea.png',
+                                    child: Image.network(
+                                      widget.product.image,
                                       fit: BoxFit.contain,
                                     ),
                                   ),
@@ -66,19 +66,19 @@ class ProState extends State<ProductDetailPage> {
                                     child: GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          if (liked) {
-                                            liked = false;
-                                            favImage = 'assets/fav.png';
+                                          if (widget.product.fav == "1") {
+                                            widget.product.fav = "0";
                                           } else {
-                                            liked = true;
-                                            favImage = 'assets/fav_filled.png';
+                                            widget.product.fav = "1";
                                           }
                                         });
                                       },
                                       child: Align(
                                         alignment: Alignment.topLeft,
                                         child: Image.asset(
-                                          favImage,
+                                          widget.product.fav == "1"
+                                              ? 'assets/fav_filled.png'
+                                              : 'assets/fav.png',
                                           height: 30,
                                           width: 30,
                                         ),
@@ -93,7 +93,7 @@ class ProState extends State<ProductDetailPage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    'Green Peas',
+                                    widget.product.name,
                                     style: TextStyle(
                                         fontSize: 18,
                                         color: Colors.colorgreen,
@@ -103,7 +103,7 @@ class ProState extends State<ProductDetailPage> {
                                   Padding(
                                     padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Text(
-                                      'हरी मटर',
+                                      widget.product.nameHindi,
                                       style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.colorgrey),
@@ -121,7 +121,7 @@ class ProState extends State<ProductDetailPage> {
                                                   MainAxisAlignment.start,
                                               children: <Widget>[
                                                 Text(
-                                                  '₹60.00  ',
+                                                  '₹${widget.product.selectedPacking.price}  ',
                                                   style: TextStyle(
                                                       fontSize: 18,
                                                       color:
@@ -131,7 +131,7 @@ class ProState extends State<ProductDetailPage> {
                                                   textAlign: TextAlign.start,
                                                 ),
                                                 Text(
-                                                  '₹70.00',
+                                                  '₹${widget.product.displayPrice}',
                                                   style: TextStyle(
                                                       fontSize: 16,
                                                       color: Colors.colororange,
@@ -141,7 +141,7 @@ class ProState extends State<ProductDetailPage> {
                                                 ),
                                               ]),
                                           Text(
-                                            '30%off',
+                                            widget.product.off,
                                             style: TextStyle(
                                                 fontSize: 14,
                                                 color: Colors.colororange),
@@ -163,23 +163,19 @@ class ProState extends State<ProductDetailPage> {
                                               child: Padding(
                                                 padding: EdgeInsets.all(8),
                                                 child: DropdownButtonFormField<
-                                                    String>(
+                                                    Packing>(
                                                   decoration:
                                                       InputDecoration.collapsed(
                                                           hintText: ''),
-                                                  value: selectedValues,
-                                                  items: <String>[
-                                                    "1",
-                                                    "2",
-                                                    "3",
-                                                    "4",
-                                                    "5"
-                                                  ].map((String value) {
+                                                  value: widget
+                                                      .product.selectedPacking,
+                                                  items: widget.product.packing
+                                                      .map((Packing value) {
                                                     return new DropdownMenuItem<
-                                                        String>(
+                                                        Packing>(
                                                       value: value,
                                                       child: new Text(
-                                                        value,
+                                                        value.unitQtyShow,
                                                         style: TextStyle(
                                                             color: Colors.grey),
                                                       ),
@@ -187,7 +183,9 @@ class ProState extends State<ProductDetailPage> {
                                                   }).toList(),
                                                   onChanged: (newValue) {
                                                     setState(() {
-                                                      selectedValues = newValue;
+                                                      widget.product
+                                                              .selectedPacking =
+                                                          newValue;
                                                     });
                                                   },
                                                 ),
@@ -196,7 +194,7 @@ class ProState extends State<ProductDetailPage> {
                                           ),
                                           Container(
                                               height: 40,
-                                              width: 90,
+                                              width: 120,
                                               decoration: myBoxDecoration2(),
                                               child: Center(
                                                 child: Row(
@@ -214,10 +212,8 @@ class ProState extends State<ProductDetailPage> {
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           setState(() {
-                                                            if (incrimentedValue >
-                                                                0) {
-                                                              incrimentedValue--;
-                                                            }
+                                                            decrementCount(
+                                                                widget.product);
                                                           });
                                                         },
                                                         child: Icon(
@@ -229,7 +225,7 @@ class ProState extends State<ProductDetailPage> {
                                                       ),
                                                     ),
                                                     Text(
-                                                      incrimentedValue
+                                                      widget.product.count
                                                           .toString(),
                                                       style: TextStyle(
                                                           color:
@@ -244,10 +240,8 @@ class ProState extends State<ProductDetailPage> {
                                                       child: GestureDetector(
                                                         onTap: () {
                                                           setState(() {
-                                                            incrimentedValue++;
-                                                            print("dddddddd " +
-                                                                incrimentedValue
-                                                                    .toString());
+                                                            incrementCount(
+                                                                widget.product);
                                                           });
                                                         },
                                                         child: Icon(
@@ -280,7 +274,7 @@ class ProState extends State<ProductDetailPage> {
                                           Padding(
                                             padding: EdgeInsets.only(top: 8),
                                             child: Text(
-                                              "DESCRIPTIONsdfjasdflasdfjalsdfjasldfjalsdfjaskldfjasdklfjalsdfjasldfjalsdfjadslfsdfjlasfjflasdjffasdnfdfsd,fh",
+                                              widget.product.description,
                                               style: TextStyle(
                                                   color: Colors.colorgrey),
                                             ),
@@ -296,7 +290,7 @@ class ProState extends State<ProductDetailPage> {
                                         ],
                                       )),
                                   Container(
-                                      height: 310,
+                                      height: 315,
                                       child: showProductsCategories()),
                                 ],
                               ),
@@ -529,7 +523,7 @@ class ProState extends State<ProductDetailPage> {
                                     child: DropdownButtonFormField<String>(
                                       decoration: InputDecoration.collapsed(
                                           hintText: ''),
-                                      value: selectedValues,
+                                      value: "1",
                                       items: <String>["1", "2", "3", "4", "5"]
                                           .map((String value) {
                                         return new DropdownMenuItem<String>(
@@ -543,7 +537,7 @@ class ProState extends State<ProductDetailPage> {
                                       }).toList(),
                                       onChanged: (newValue) {
                                         setState(() {
-                                          selectedValues = newValue;
+                                          //selectedValues = newValue;
                                         });
                                       },
                                     ),
@@ -611,5 +605,17 @@ class ProState extends State<ProductDetailPage> {
           },
           itemCount: 5,
         ));
+  }
+
+  void incrementCount(Product product) {
+    if (product.count < product.inventory) {
+      product.count = product.count + 1;
+    }
+  }
+
+  void decrementCount(Product product) {
+    if (product.count > 0) {
+      product.count = product.count - 1;
+    }
   }
 }

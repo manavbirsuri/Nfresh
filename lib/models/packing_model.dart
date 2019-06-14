@@ -8,4 +8,12 @@ class Packing {
     price = json['price'];
     unitQtyShow = json['unitqtyshow'];
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'unitqty': this.unitQty,
+      'price': this.price,
+      'unitqtyshow': this.unitQtyShow,
+    };
+  }
 }

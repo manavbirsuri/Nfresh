@@ -170,7 +170,9 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                           context,
                                           new MaterialPageRoute(
                                               builder: (context) =>
-                                                  ProductDetailPage()));
+                                                  ProductDetailPage(
+                                                    product: product,
+                                                  )));
                                     },
                                     child: Center(
                                       child: Image.asset(
@@ -223,7 +225,9 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                           context,
                                           new MaterialPageRoute(
                                               builder: (context) =>
-                                                  ProductDetailPage()));
+                                                  ProductDetailPage(
+                                                    product: product,
+                                                  )));
                                     },
                                     child: Column(
                                       children: <Widget>[
@@ -510,7 +514,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                     ),
                     GestureDetector(
                       onTap: () {
-                       goToProductDetail();
+                        goToProductDetail();
                       },
                       child: Column(
                         children: <Widget>[
@@ -800,7 +804,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
         Column(children: <Widget>[
           Container(
             color: Colors.colorlightgreyback,
-            height: 55,
+            height: 65,
             padding: EdgeInsets.all(4),
             child: Row(
               children: <Widget>[

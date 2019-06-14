@@ -6,6 +6,7 @@ import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/models/section_model.dart';
+import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/ui/CategoryDetails.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:page_indicator/page_indicator.dart';
@@ -21,6 +22,7 @@ class HomePage extends StatefulWidget {
 class HOrderPage extends State<HomePage> {
   // List<Category> list = List();
   // List<ModelProduct> listPro = List();
+  var _database = DatabaseHelper.instance;
   var blocFav = SetFavBloc();
   List _cities = ["500gm", "1kg", "1.5kg", "2kg", "2.5kg"];
   var _pageController = new PageController();
@@ -272,7 +274,9 @@ class HOrderPage extends State<HomePage> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => ProductDetailPage(),
+                                  builder: (context) => ProductDetailPage(
+                                        product: product,
+                                      ),
                                 ));
                           },
                           child: Column(
@@ -549,12 +553,15 @@ class HOrderPage extends State<HomePage> {
     if (product.count < product.inventory) {
       product.count = product.count + 1;
     }
+    _database.insert(product);
   }
 
   void decrementCount(Product product) {
     if (product.count > 0) {
       product.count = product.count - 1;
     }
+
+    // remove from database
   }
 
   List<String> getQtyList(Product product) {

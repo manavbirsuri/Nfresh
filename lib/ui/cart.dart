@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:nfresh/bloc/cart_bloc.dart';
+import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/ui/PromoCodePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -18,7 +20,7 @@ class _MyCustomFormState extends State<CartPage> {
   String check = "";
   String walletBalance = "₹110";
   String appliedValue = "Apply promo code";
-
+  var bloc = CartBloc();
   @override
   void initState() {
     super.initState();
@@ -29,6 +31,8 @@ class _MyCustomFormState extends State<CartPage> {
         });
       });
     });
+
+    bloc.fetchData();
   }
 
   @override
@@ -68,15 +72,18 @@ class _MyCustomFormState extends State<CartPage> {
                         children: <Widget>[
                           Padding(
                             padding: EdgeInsets.only(top: 8),
-                            child: ListView.builder(
-                              itemBuilder: (context, position) {
-                                return getListItem(position);
+                            child: StreamBuilder(
+                              stream: bloc.catProductsList,
+                              builder: (context,
+                                  AsyncSnapshot<List<Product>> snapshot) {
+                                if (snapshot.hasData) {
+                                  return productContent(snapshot);
+                                } else if (snapshot.hasError) {
+                                  return Text(snapshot.error.toString());
+                                }
+                                return Center(
+                                    child: CircularProgressIndicator());
                               },
-                              itemCount: 3,
-                              physics: NeverScrollableScrollPhysics(),
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              primary: false,
                             ),
                           ),
                           getCartDetailView(context),
@@ -186,7 +193,7 @@ class _MyCustomFormState extends State<CartPage> {
     );
   }
 
-  Widget getListItem(position) {
+  Widget getListItem(position, Product product) {
     return IntrinsicHeight(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -205,8 +212,8 @@ class _MyCustomFormState extends State<CartPage> {
                       child: Padding(
                         padding: EdgeInsets.all(8),
                         child: Align(
-                          child: Image.asset(
-                            'assets/pea.png',
+                          child: Image.network(
+                            product.image,
                             fit: BoxFit.fill,
                           ),
                         ),
@@ -223,7 +230,7 @@ class _MyCustomFormState extends State<CartPage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Green Peas',
+                              product.name,
                               style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.colorgreen,
@@ -233,7 +240,7 @@ class _MyCustomFormState extends State<CartPage> {
                             Padding(
                               padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                               child: Text(
-                                'हरी मटर',
+                                product.nameHindi,
                                 style: TextStyle(
                                     fontSize: 16, color: Colors.colorlightgrey),
                                 textAlign: TextAlign.start,
@@ -245,7 +252,7 @@ class _MyCustomFormState extends State<CartPage> {
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: <Widget>[
                                     Text(
-                                      '₹60.00  ',
+                                      '₹${product.selectedPacking.price}  ',
                                       style: TextStyle(
                                           fontSize: 18,
                                           color: Colors.colorlightgrey,
@@ -253,7 +260,7 @@ class _MyCustomFormState extends State<CartPage> {
                                       textAlign: TextAlign.start,
                                     ),
                                     Text(
-                                      '₹70.00',
+                                      '₹${product.displayPrice}',
                                       style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.colororange,
@@ -827,6 +834,19 @@ class _MyCustomFormState extends State<CartPage> {
       walletBalance = "-₹" + vv;
       return vv;
     });
+  }
+
+  Widget productContent(AsyncSnapshot<List<Product>> snapshot) {
+    return ListView.builder(
+      itemBuilder: (context, position) {
+        return getListItem(position, snapshot.data[position]);
+      },
+      itemCount: snapshot.data.length,
+      physics: NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      scrollDirection: Axis.vertical,
+      primary: false,
+    );
   }
 }
 

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:nfresh/models/packing_model.dart';
 
 class Product {
@@ -10,13 +12,12 @@ class Product {
   String image;
   int displayPrice;
   int inventory;
-  int count = 0;
-  String quantity;
   String fav;
   List<Packing> packing = [];
 
-  String off = "(20% off)";
-
+  // Extra local fields
+  int count = 0;
+  String off = "20% off";
   Packing selectedPacking;
 
   Product(json) {
@@ -37,5 +38,22 @@ class Product {
     }
     packing = temp;
     selectedPacking = packing[0];
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': this.id,
+      'name': this.name,
+      'name_hindi': this.nameHindi,
+      'sku': this.sku,
+      'description': this.description,
+      'unit_id': this.unitId,
+      'image': this.image,
+      'display_price_1': this.displayPrice,
+      'inventory': this.inventory,
+      'fav': this.fav,
+      'packing': jsonEncode(packing),
+      'selected_packing': selectedPacking.toJson(),
+      'count': this.count
+    };
   }
 }
