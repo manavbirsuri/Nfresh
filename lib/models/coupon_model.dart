@@ -8,7 +8,7 @@ class Coupon {
 
   Coupon(json) {
     name = json['name'];
-    image = json[''];
+    image = json['image'];
     couponCode = json['coupon_code'];
     endDate = json['end_date'];
     type = json['type'];

@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/search_bloc.dart';
+import 'package:nfresh/models/packing_model.dart';
+import 'package:nfresh/models/product_model.dart';
+import 'package:nfresh/models/responses/response_search.dart';
 import 'package:nfresh/ui/Constants.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 
@@ -78,13 +82,14 @@ List<ModelProduct> getProductlist() {
 
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController editingController = TextEditingController();
-  var items = List<ModelProduct>();
+//  var items = List<ModelProduct>();
   var viewList = false;
   var viewGrid = true;
   var gridImage = 'assets/selected_grid.png';
   var listImage = 'assets/unselected_list.png';
   List<ModelProduct> productArray = List();
 
+  var bloc = SearchBloc();
   // var pos = 0;
 
   @override
@@ -104,13 +109,13 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       });
       setState(() {
-        items.clear();
-        items.addAll(dummyListData);
+        // items.clear();
+        //  items.addAll(dummyListData);
       });
       return;
     } else {
       setState(() {
-        items.clear();
+        // items.clear();
 //        items.addAll(productArray);
       });
     }
@@ -126,7 +131,10 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 onChanged: (value) {
-                  filterSearchResults(value);
+                  //  filterSearchResults(value);
+                  Future.delayed(const Duration(milliseconds: 1000), () {
+                    bloc.fetchSearchData(value);
+                  });
                 },
                 controller: editingController,
                 decoration: InputDecoration(
@@ -137,101 +145,31 @@ class _MyHomePageState extends State<MyHomePage> {
                         borderRadius: BorderRadius.all(Radius.circular(0.0)))),
               ),
             ),
-            Expanded(
-                child: items.length > 0
-                    ? Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.only(top: 8, bottom: 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      viewGrid = true;
-                                      viewList = false;
-                                      gridImage = "assets/selected_grid.png";
-                                      listImage = "assets/unselected_list.png";
-                                    });
-                                  },
-                                  child: Image.asset(
-                                    gridImage,
-                                    height: 20,
-                                    width: 20,
-                                  ),
-                                ),
-                                Container(
-                                  width: 1,
-                                  height: 30,
-                                  color: Colors.black,
-                                ),
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      viewGrid = false;
-                                      viewList = true;
-                                      gridImage = "assets/unselected_grid.png";
-                                      listImage = "assets/selected_list.png";
-                                    });
-                                  },
-                                  child: Image.asset(listImage,
-                                      height: 20, width: 20),
-                                ),
-                                Container(
-                                  width: 1,
-                                  height: 30,
-                                  color: Colors.black,
-                                ),
-                                GestureDetector(
-                                    onTap: () {},
-                                    child: Image.asset('assets/sort.png',
-                                        height: 20, width: 20)),
-                              ],
-                            ),
-                          ),
-                          viewList
-                              ? Expanded(
-                                  child: showListView(),
-                                )
-                              : Container(),
-                          viewGrid ? showGridView() : Container(),
-                        ],
-                      )
-                    : Container(
-                        child: Center(
-                          child: Text(
-                            "No Data",
-                            style: TextStyle(
-                                color: Colors.colorgreen,
-                                fontSize: 26,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      )
-
-//              ListView.builder(
-//                shrinkWrap: true,
-//                itemCount: items.length,
-//                itemBuilder: (context, index) {
-//                  return ListTile(
-//                    title: Text('${items[index]}'),
-//                  );
-//                },
-                //),
-                ),
+            StreamBuilder(
+              stream: bloc.searchedData,
+              builder: (context, AsyncSnapshot<ResponseSearch> snapshot) {
+                if (snapshot.hasData) {
+                  return mainContent(snapshot);
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+                return Center(
+                  child: Text("Search to display products"),
+                );
+              },
+            )
           ],
         ),
       ),
     );
   }
 
-  showListView() {
+  showListView(List<Product> products) {
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
       itemBuilder: (context, position) {
+        var product = products[position];
         return Padding(
           padding: EdgeInsets.only(top: 16),
           child: GestureDetector(
@@ -241,15 +179,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   new MaterialPageRoute(
                       builder: (context) => ProductDetailPage()));
             },
-            child: getListItem(position),
+            child: getListItem(position, product),
           ),
         );
       },
-      itemCount: items.length,
+      itemCount: products.length,
     );
   }
 
-  Widget getListItem(position) {
+  Widget getListItem(position, Product product) {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
@@ -271,9 +209,11 @@ class _MyHomePageState extends State<MyHomePage> {
                               child: Stack(
                                 children: <Widget>[
                                   Center(
-                                    child: Image.asset(
-                                      'assets/pea.png',
+                                    child: Image.network(
+                                      product.image,
                                       fit: BoxFit.cover,
+                                      height: 80,
+                                      width: 80,
                                     ),
                                   ),
                                   Align(
@@ -297,7 +237,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    'Green Peas',
+                                    product.name,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 18,
@@ -309,7 +249,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                       bottom: 0,
                                     ),
                                     child: Text(
-                                      'हरी मटर',
+                                      product.nameHindi,
                                       style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.colorlightgrey),
@@ -324,7 +264,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
-                                            '₹60.00  ',
+                                            '₹ ${product.selectedPacking.price}  ',
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.colorlightgrey,
@@ -332,7 +272,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                             textAlign: TextAlign.start,
                                           ),
                                           Text(
-                                            '₹70.00',
+                                            '₹${product.displayPrice}',
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.colororange,
@@ -358,23 +298,18 @@ class _MyHomePageState extends State<MyHomePage> {
                                               padding: EdgeInsets.only(
                                                   right: 8, left: 8),
                                               child: DropdownButtonFormField<
-                                                  String>(
+                                                  Packing>(
                                                 decoration:
                                                     InputDecoration.collapsed(
                                                         hintText: ''),
-                                                value: items[position].quantity,
-                                                items: <String>[
-                                                  "1",
-                                                  "2",
-                                                  "3",
-                                                  "4",
-                                                  "5"
-                                                ].map((String value) {
+                                                value: product.selectedPacking,
+                                                items: product.packing
+                                                    .map((Packing value) {
                                                   return new DropdownMenuItem<
-                                                      String>(
+                                                      Packing>(
                                                     value: value,
                                                     child: new Text(
-                                                      value,
+                                                      value.unitQtyShow,
                                                       style: TextStyle(
                                                           color: Colors.grey),
                                                     ),
@@ -382,7 +317,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                                 }).toList(),
                                                 onChanged: (newValue) {
                                                   setState(() {
-                                                    items[position].quantity =
+                                                    product.selectedPacking =
                                                         newValue;
                                                   });
                                                 },
@@ -490,7 +425,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ]);
   }
 
-  showGridView() {
+  showGridView(List<Product> products) {
     var size = MediaQuery.of(context).size;
     double itemHeight = (size.height - kToolbarHeight - 24) / 2;
     itemHeight = itemHeight;
@@ -501,11 +436,12 @@ class _MyHomePageState extends State<MyHomePage> {
         child: GridView.count(
       // Create a grid with 2 columns. If you change the scrollDirection to
       // horizontal, this would produce 2 rows.
-      childAspectRatio: (itemWidth / itemHeight),
+      childAspectRatio: 1 / 1.5,
       crossAxisCount: 2,
       shrinkWrap: true,
       // Generate 100 Widgets that display their index in the List
-      children: List.generate(items.length, (index) {
+      children: List.generate(products.length, (index) {
+        var product = products[index];
         return GestureDetector(
             onTap: () {
               Navigator.push(
@@ -541,12 +477,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                       ),
                     ),
-                    Image.asset(
-                      "assets/pea.png",
-                      fit: BoxFit.fitHeight,
+                    Image.network(
+                      product.image,
+                      fit: BoxFit.cover,
+                      height: 90,
                     ),
                     Text(
-                      'Green Peas',
+                      product.name,
                       style: TextStyle(
                           fontSize: 18,
                           color: Colors.colorgreen,
@@ -559,7 +496,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         bottom: 0,
                       ),
                       child: Text(
-                        'हरी मटर',
+                        product.nameHindi,
                         style: TextStyle(
                             fontSize: 16, color: Colors.colorlightgrey),
                         maxLines: 2,
@@ -572,7 +509,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             Text(
-                              '₹60.00  ',
+                              '₹${product.selectedPacking.price}  ',
                               style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.colorlightgrey,
@@ -580,7 +517,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               textAlign: TextAlign.center,
                             ),
                             Text(
-                              '₹70.00',
+                              '₹${product.displayPrice}',
                               style: TextStyle(
                                   fontSize: 16,
                                   color: Colors.colororange,
@@ -602,23 +539,22 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: Center(
                               child: Padding(
                                 padding: EdgeInsets.only(right: 8, left: 8),
-                                child: DropdownButtonFormField<String>(
+                                child: DropdownButtonFormField<Packing>(
                                   decoration:
                                       InputDecoration.collapsed(hintText: ''),
-                                  value: items[index].quantity,
-                                  items: <String>["1", "2", "3", "4", "5"]
-                                      .map((String value) {
-                                    return new DropdownMenuItem<String>(
+                                  value: product.selectedPacking,
+                                  items: product.packing.map((Packing value) {
+                                    return new DropdownMenuItem<Packing>(
                                       value: value,
                                       child: new Text(
-                                        value,
+                                        value.unitQtyShow,
                                         style: TextStyle(color: Colors.grey),
                                       ),
                                     );
                                   }).toList(),
                                   onChanged: (newValue) {
                                     setState(() {
-                                      items[index].quantity = newValue;
+                                      product.selectedPacking = newValue;
                                     });
                                   },
                                 ),
@@ -702,6 +638,82 @@ class _MyHomePageState extends State<MyHomePage> {
     return BoxDecoration(
       border: Border.all(color: Colors.colorlightgrey),
       borderRadius: BorderRadius.all(Radius.circular(8)),
+    );
+  }
+
+  Widget mainContent(AsyncSnapshot<ResponseSearch> snapshot) {
+    return Expanded(
+      child: snapshot.data.products.length > 0
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(top: 8, bottom: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            viewGrid = true;
+                            viewList = false;
+                            gridImage = "assets/selected_grid.png";
+                            listImage = "assets/unselected_list.png";
+                          });
+                        },
+                        child: Image.asset(
+                          gridImage,
+                          height: 20,
+                          width: 20,
+                        ),
+                      ),
+                      Container(
+                        width: 1,
+                        height: 30,
+                        color: Colors.black,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            viewGrid = false;
+                            viewList = true;
+                            gridImage = "assets/unselected_grid.png";
+                            listImage = "assets/selected_list.png";
+                          });
+                        },
+                        child: Image.asset(listImage, height: 20, width: 20),
+                      ),
+                      Container(
+                        width: 1,
+                        height: 30,
+                        color: Colors.black,
+                      ),
+                      GestureDetector(
+                          onTap: () {},
+                          child: Image.asset('assets/sort.png',
+                              height: 20, width: 20)),
+                    ],
+                  ),
+                ),
+                viewList
+                    ? Expanded(
+                        child: showListView(snapshot.data.products),
+                      )
+                    : Container(),
+                viewGrid ? showGridView(snapshot.data.products) : Container(),
+              ],
+            )
+          : Container(
+              child: Center(
+                child: Text(
+                  "No Data",
+                  style: TextStyle(
+                      color: Colors.colorgreen,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
     );
   }
 

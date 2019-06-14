@@ -17,6 +17,8 @@ class Product {
 
   String off = "(20% off)";
 
+  Packing selectedPacking;
+
   Product(json) {
     id = json['id'];
     name = json['name'];
@@ -34,5 +36,6 @@ class Product {
       temp.add(result);
     }
     packing = temp;
+    selectedPacking = packing[0];
   }
 }

@@ -10,7 +10,7 @@ class GetFavBloc {
 
   Observable<ResponseGetFav> get favList => _favFetcher.stream;
 
-  fetchHomeData() async {
+  fetchFavData() async {
     var auth = await _prefs.getAuthCode();
     ResponseGetFav itemModel = await _repository.getFavoriteList(auth);
     _favFetcher.sink.add(itemModel);

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/banner_model.dart';
 import 'package:nfresh/models/category_model.dart';
+import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/models/section_model.dart';
@@ -19,7 +21,7 @@ class HomePage extends StatefulWidget {
 class HOrderPage extends State<HomePage> {
   // List<Category> list = List();
   // List<ModelProduct> listPro = List();
-
+  var blocFav = SetFavBloc();
   List _cities = ["500gm", "1kg", "1.5kg", "2kg", "2.5kg"];
   var _pageController = new PageController();
 //  List<String> selectedValues = List();
@@ -228,12 +230,30 @@ class HOrderPage extends State<HomePage> {
                               children: <Widget>[
                                 GestureDetector(
                                   onTap: () {
+                                    setState(() {
+                                      if (product.fav == "1") {
+                                        product.fav = "0";
+                                      } else {
+                                        product.fav = "1";
+                                      }
+
+                                      blocFav.fetchData(
+                                          product.fav, product.id.toString());
+                                    });
                                   },
-                                  child: Image.asset(
-                                    'assets/fav.png',
-                                    height: 20,
-                                    width: 20,
-                                  ),
+                                  child: product.fav == "1"
+                                      ? Image.asset(
+                                          'assets/fav_filled.png',
+                                          width: 20.0,
+                                          height: 20.0,
+                                          fit: BoxFit.cover,
+                                        )
+                                      : Image.asset(
+                                          'assets/fav.png',
+                                          width: 20.0,
+                                          height: 20.0,
+                                          fit: BoxFit.cover,
+                                        ),
                                 ),
                                 Text(
                                   '30%off',
@@ -287,9 +307,10 @@ class HOrderPage extends State<HomePage> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: <Widget>[
                                       Text(
-                                        products[position]
-                                            .displayPrice
-                                            .toString(),
+                                        "₹" +
+                                            product.selectedPacking.price
+                                                .toString() +
+                                            "  ",
                                         style: TextStyle(
                                           fontSize: 18,
                                           color: Colors.colorlightgrey,
@@ -298,9 +319,10 @@ class HOrderPage extends State<HomePage> {
                                         textAlign: TextAlign.center,
                                       ),
                                       Text(
-                                        products[position]
-                                            .displayPrice
-                                            .toString(),
+                                        "₹" +
+                                            products[position]
+                                                .displayPrice
+                                                .toString(),
                                         style: TextStyle(
                                             fontSize: 16,
                                             color: Colors.colororange,
@@ -326,17 +348,19 @@ class HOrderPage extends State<HomePage> {
                                 child: Center(
                                   child: Padding(
                                     padding: EdgeInsets.only(right: 8, left: 8),
-                                    child: DropdownButtonFormField<String>(
+                                    child: DropdownButtonFormField<Packing>(
                                       decoration: InputDecoration.collapsed(
-                                          hintText: 'Qty'),
-                                      value: products[position].quantity,
+                                          hintText:
+                                              product.packing[0].unitQtyShow),
+                                      value: product.selectedPacking,
                                       //value: null,
-                                      items: getQtyList(products[position])
-                                          .map((String value) {
-                                        return new DropdownMenuItem<String>(
+                                      items: product
+                                          .packing //getQtyList(products[position])
+                                          .map((Packing value) {
+                                        return new DropdownMenuItem<Packing>(
                                           value: value,
                                           child: new Text(
-                                            value,
+                                            value.unitQtyShow,
                                             style:
                                                 TextStyle(color: Colors.grey),
                                           ),
@@ -344,8 +368,9 @@ class HOrderPage extends State<HomePage> {
                                       }).toList(),
                                       onChanged: (newValue) {
                                         setState(() {
-                                          products[position].quantity =
+                                          products[position].selectedPacking =
                                               newValue;
+                                          // product.selectedPrice =
                                         });
                                       },
                                     ),
