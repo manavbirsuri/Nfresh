@@ -207,6 +207,7 @@ class HOrderPage extends State<HomePage> {
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, position) {
+            var product = products[position];
             return Material(
               color: Colors.colorlightgreyback,
               child: Padding(
@@ -225,10 +226,14 @@ class HOrderPage extends State<HomePage> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: <Widget>[
-                                Image.asset(
-                                  'assets/fav.png',
-                                  height: 20,
-                                  width: 20,
+                                GestureDetector(
+                                  onTap: () {
+                                  },
+                                  child: Image.asset(
+                                    'assets/fav.png',
+                                    height: 20,
+                                    width: 20,
+                                  ),
                                 ),
                                 Text(
                                   '30%off',
@@ -326,13 +331,8 @@ class HOrderPage extends State<HomePage> {
                                           hintText: 'Qty'),
                                       value: products[position].quantity,
                                       //value: null,
-                                      items: <String>[
-                                        "500gm",
-                                        "1kg",
-                                        "1.5kg",
-                                        "2kg",
-                                        "2.5kg"
-                                      ].map((String value) {
+                                      items: getQtyList(products[position])
+                                          .map((String value) {
                                         return new DropdownMenuItem<String>(
                                           value: value,
                                           child: new Text(
@@ -374,13 +374,8 @@ class HOrderPage extends State<HomePage> {
                                         GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              if (products[position].inventory >
-                                                  0) {
-                                                products[position].inventory =
-                                                    (products[position]
-                                                            .inventory -
-                                                        1);
-                                              }
+                                              decrementCount(
+                                                  products[position]);
                                             });
                                           },
                                           child: Container(
@@ -402,7 +397,7 @@ class HOrderPage extends State<HomePage> {
                                           child: Center(
                                             child: Text(
                                               products[position]
-                                                  .inventory
+                                                  .count
                                                   .toString(),
                                               style: TextStyle(
                                                   color: Colors.colorgreen,
@@ -415,10 +410,8 @@ class HOrderPage extends State<HomePage> {
                                         GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              products[position].inventory =
-                                                  (products[position]
-                                                          .inventory) +
-                                                      1;
+                                              incrementCount(
+                                                  products[position]);
                                             });
                                           },
                                           child: Container(
@@ -525,6 +518,26 @@ class HOrderPage extends State<HomePage> {
     setState(() {
       _currentCity = selectedCity;
     });
+  }
+
+  void incrementCount(Product product) {
+    if (product.count < product.inventory) {
+      product.count = product.count + 1;
+    }
+  }
+
+  void decrementCount(Product product) {
+    if (product.count > 0) {
+      product.count = product.count - 1;
+    }
+  }
+
+  List<String> getQtyList(Product product) {
+    List<String> qtyList = [];
+    for (int i = 0; i < product.packing.length; i++) {
+      qtyList.add(product.packing[i].unitQtyShow);
+    }
+    return qtyList;
   }
 
 //  getPos(int position) {

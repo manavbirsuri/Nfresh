@@ -10,6 +10,7 @@ class Product {
   String image;
   int displayPrice;
   int inventory;
+  int count = 0;
   String quantity;
   String fav;
   List<Packing> packing = [];

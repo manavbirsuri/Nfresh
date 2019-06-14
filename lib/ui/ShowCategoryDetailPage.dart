@@ -3,7 +3,6 @@ import 'package:nfresh/bloc/cat_products_bloc.dart';
 import 'package:nfresh/models/category_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/responses/response_cat_products.dart';
-import 'package:nfresh/ui/Constants.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:nfresh/ui/cart.dart';
 
@@ -30,72 +29,11 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
   void initState() {
     super.initState();
 
-    bloc.fetchData(widget.subCategory.id);
-  }
-
-  List<ModelProduct> getProductlist() {
-    List<ModelProduct> productArray = List();
-    ModelProduct model = new ModelProduct();
-    model.id = "0";
-    model.Image = "assets/pea.png";
-    model.name = "Green Peas";
-    model.subName = "हरी मटर";
-    model.appliedPrice = "₹60.00  ";
-    model.cutOffPrice = "₹70.00";
-    model.quantity = "1";
-    model.upto = "0";
-    model.like = false;
-    model.off = "30%off";
-    productArray.add(model);
-    model = new ModelProduct();
-    model.id = "1";
-    model.Image = "assets/pea.png";
-    model.name = "Areen Peas";
-    model.subName = "हरी मटर";
-    model.appliedPrice = "₹50.00  ";
-    model.cutOffPrice = "₹80.00";
-    model.quantity = "1";
-    model.upto = "0";
-    model.like = false;
-    model.off = "30%off";
-    productArray.add(model);
-    model = new ModelProduct();
-    model.id = "2";
-    model.Image = "assets/pea.png";
-    model.name = "Breen Peas";
-    model.subName = "हरी मटर";
-    model.appliedPrice = "₹90.00  ";
-    model.cutOffPrice = "₹180.00";
-    model.quantity = "1";
-    model.upto = "0";
-    model.like = false;
-    model.off = "30%off";
-    productArray.add(model);
-    model = new ModelProduct();
-    model.id = "3";
-    model.Image = "assets/pea.png";
-    model.name = "Creen Peas";
-    model.subName = "हरी मटर";
-    model.appliedPrice = "₹150.00  ";
-    model.cutOffPrice = "₹195.00";
-    model.quantity = "1";
-    model.upto = "0";
-    model.like = false;
-    model.off = "30%off";
-    productArray.add(model);
-    return productArray;
+    bloc.fetchData(widget.subCategory.id.toString());
   }
 
   @override
   Widget build(BuildContext context) {
-    selectedValues.clear();
-    selectedValues.add("1");
-    selectedValues.add("2");
-    selectedValues.add("3");
-    selectedValues.add("4");
-    selectedValues.add("5");
-    selectedValues.add("6");
-    selectedValues.add("7");
     return Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: true,
@@ -322,7 +260,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.center,
                                       children: <Widget>[
-                                        Container(
+                                        /* Container(
                                           height: 32,
                                           width: 100,
                                           decoration: myBoxDecoration3(),
@@ -337,11 +275,11 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                                         hintText: ''),
                                                 value: product.quantity,
                                                 items: <String>[
-                                                  "1",
-                                                  "2",
-                                                  "3",
-                                                  "4",
-                                                  "5"
+                                                  "1kg",
+                                                  "2kg",
+                                                  "3kg",
+                                                  "4kg",
+                                                  "5kg"
                                                 ].map((String value) {
                                                   return new DropdownMenuItem<
                                                       String>(
@@ -361,7 +299,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                               ),
                                             ),
                                           ),
-                                        ),
+                                        ),*/
                                       ],
                                     ),
                                   ),
@@ -473,7 +411,8 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
         child: GridView.count(
       // Create a grid with 2 columns. If you change the scrollDirection to
       // horizontal, this would produce 2 rows.
-      childAspectRatio: (itemWidth / itemHeight),
+      //childAspectRatio: (itemWidth / itemHeight),
+      childAspectRatio: 1 / 1.55,
       crossAxisCount: 2,
       shrinkWrap: true,
       // Generate 100 Widgets that display their index in the List
@@ -486,14 +425,9 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
             child: Card(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(0.0),
-                //side: BorderSide(color: Colors.colorlightgrey)
               ),
               child: Container(
-//                width: 160,
-
-                //decoration: myBoxDecoration(),
-                //       <--- BoxDecoration here
-
+                //height: 330,
                 child: Column(
                   children: <Widget>[
                     Padding(
@@ -552,6 +486,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                           Image.asset(
                             product.image,
                             fit: BoxFit.fitHeight,
+                            height: 80,
                           ),
                           Text(
                             product.name,
@@ -608,15 +543,20 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                             height: 35,
                             width: 120,
                             decoration: myBoxDecoration3(),
-                            child: Center(
+                            /* child: Center(
                               child: Padding(
                                 padding: EdgeInsets.only(right: 8, left: 8),
                                 child: DropdownButtonFormField<String>(
                                   decoration:
                                       InputDecoration.collapsed(hintText: ''),
                                   value: product.quantity,
-                                  items: <String>["1", "2", "3", "4", "5"]
-                                      .map((String value) {
+                                  items: <String>[
+                                    "1kg",
+                                    "2kg",
+                                    "3kg",
+                                    "4kg",
+                                    "5kg"
+                                  ].map((String value) {
                                     return new DropdownMenuItem<String>(
                                       value: value,
                                       child: new Text(
@@ -632,7 +572,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                   },
                                 ),
                               ),
-                            ),
+                            ),*/
                           ),
                         ],
                       ),
@@ -655,12 +595,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          if (product.inventory > 0) {
-                                            product.quantity = (int.parse(
-                                                        listPro[index].upto) -
-                                                    1)
-                                                .toString();
-                                          }
+                                          decrementCount(product);
                                         });
                                       },
                                       child: Container(
@@ -681,7 +616,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                     Container(
                                       child: Center(
                                         child: Text(
-                                          listPro[index].upto,
+                                          product.count.toString(),
                                           style: TextStyle(
                                               color: Colors.colorgreen,
                                               fontWeight: FontWeight.bold,
@@ -693,10 +628,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          listPro[index].upto =
-                                              (int.parse(listPro[index].upto) +
-                                                      1)
-                                                  .toString();
+                                          incrementCount(product);
                                         });
                                       },
                                       child: Container(
@@ -729,6 +661,18 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
         );
       }),
     ));
+  }
+
+  void incrementCount(Product product) {
+    if (product.count < product.inventory) {
+      product.count = product.count + 1;
+    }
+  }
+
+  void decrementCount(Product product) {
+    if (product.count > 0) {
+      product.count = product.count - 1;
+    }
   }
 
   BoxDecoration myBoxDecoration() {
