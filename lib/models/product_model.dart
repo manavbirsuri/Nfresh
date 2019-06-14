@@ -13,6 +13,9 @@ class Product {
   String quantity;
   String fav;
   List<Packing> packing = [];
+
+  String off = "(20% off)";
+
   Product(json) {
     id = json['id'];
     name = json['name'];

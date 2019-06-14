@@ -156,7 +156,7 @@ class _CategoryDetailsState extends State<CategoryDetails> {
             ),
           );
         },
-        itemCount: 5,
+        itemCount: snapshot.data.categories.length,
       ),
     );
   }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/cat_products_bloc.dart';
 import 'package:nfresh/models/category_model.dart';
+import 'package:nfresh/models/product_model.dart';
+import 'package:nfresh/models/responses/response_cat_products.dart';
 import 'package:nfresh/ui/Constants.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:nfresh/ui/cart.dart';
@@ -14,47 +17,20 @@ class ShowCategoryDetailPage extends StatefulWidget {
 }
 
 class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: ShowCatDetailPage(widget.subCategory),
-    );
-  }
-}
-
-// ignore: must_be_immutable
-class ShowCatDetailPage extends StatefulWidget {
-  Category list;
-
-  ShowCatDetailPage(Category list) {
-    this.list = list;
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    return ShowDetailPage(list);
-  }
-}
-
-class ShowDetailPage extends State<ShowCatDetailPage> {
-  Category list;
+  var bloc = CatProductsBloc();
   var viewList = false;
   var viewGrid = true;
   var gridImage = 'assets/selected_grid.png';
   var listImage = 'assets/unselected_list.png';
   List<String> selectedValues = List();
-  List<ModelProduct> listPro = List();
+
   var pos = 0;
 
-  ShowDetailPage(Category list) {
-    this.list = list;
-  }
   @override
   void initState() {
     super.initState();
-    setState(() {
-      listPro = getProductlist();
-    });
+
+    bloc.fetchData(widget.subCategory.id);
   }
 
   List<ModelProduct> getProductlist() {
@@ -124,7 +100,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
         appBar: AppBar(
           automaticallyImplyLeading: true,
           title: Text(
-            list.name,
+            widget.subCategory.name,
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
@@ -192,168 +168,25 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
             ),
           ],
         ),
-        body: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Container(
-              color: Colors.colorlightgreyback,
-              child: Padding(
-                padding: EdgeInsets.only(top: 8, bottom: 8),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          viewGrid = true;
-                          viewList = false;
-                          gridImage = "assets/selected_grid.png";
-                          listImage = "assets/unselected_list.png";
-                        });
-                      },
-                      child: Container(
-                        child: Image.asset(
-                          gridImage,
-                          height: 20,
-                          width: 20,
-                        ),
-                      ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 30,
-                      color: Colors.colorgrey,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          viewGrid = false;
-                          viewList = true;
-                          gridImage = "assets/unselected_grid.png";
-                          listImage = "assets/selected_list.png";
-                        });
-                      },
-                      child: Container(
-                        child: Image.asset(listImage, height: 20, width: 20),
-                      ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 30,
-                      color: Colors.colorgrey,
-                    ),
-                    GestureDetector(
-                        onTap: () {},
-                        child: Container(
-                            child: Image.asset('assets/sort.png',
-                                height: 20, width: 20))),
-                  ],
-                ),
-              ),
-            ),
-            viewList
-                ? Expanded(
-                    child: showListView(),
-                  )
-                : Container(),
-            viewGrid ? showGridView() : Container(),
-            Column(children: <Widget>[
-              Container(
-                color: Colors.colorlightgreyback,
-                height: 55,
-                padding: EdgeInsets.all(4),
-                child: Row(
-                  children: <Widget>[
-                    Flexible(
-                      child: GestureDetector(
-                        child: Container(
-                          //color: Colors.amber,
-                          child: Column(
-                            children: <Widget>[
-                              Flexible(
-                                child: Column(
-                                  children: <Widget>[
-                                    Text(
-                                      '₹250',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 26,
-                                        color: Colors.colorgrey,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Total amount',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        color: Colors.colorPink,
-                                      ),
-                                    )
-                                  ],
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                ),
-                                flex: 1,
-                              ),
-                            ],
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                          ),
-                        ),
-                        onTap: () {
-//                      Scaffold.of(context).showSnackBar(SnackBar(
-//                        content: Text('View details Coming soon'),
-//                        duration: Duration(seconds: 1),
-//                      ));
-                        },
-                      ),
-                      flex: 1,
-                    ),
-                    Flexible(
-                      child: GestureDetector(
-                        child: Container(
-                          color: Colors.colorgreen,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              Flexible(
-                                child: Row(
-                                  children: <Widget>[
-                                    Text(
-                                      'Checkout',
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.white),
-                                    ),
-                                  ],
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                ),
-                                flex: 1,
-                              ),
-                            ],
-                          ),
-                        ),
-                        onTap: () {
-//                      Navigator.push(
-//                          context,
-//                          MaterialPageRoute(
-//                            builder: (context) => PlaceOrder(),
-//                          ));
-                        },
-                      ),
-                      flex: 1,
-                    ),
-                  ],
-                ),
-              ),
-            ]),
-          ],
+        body: StreamBuilder(
+          stream: bloc.catProductsList,
+          builder: (context, AsyncSnapshot<ResponseCatProducts> snapshot) {
+            if (snapshot.hasData) {
+              return mainContent(snapshot);
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            }
+            return Center(child: CircularProgressIndicator());
+          },
         ));
   }
 
-  showListView() {
+  showListView(List<Product> products) {
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
       itemBuilder: (context, position) {
+        var product = products[position];
         return Padding(
           padding: EdgeInsets.only(top: 0),
           child: GestureDetector(
@@ -363,15 +196,15 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                   new MaterialPageRoute(
                       builder: (context) => ProductDetailPage()));
             },
-            child: getListItem(position),
+            child: getListItem(position, product),
           ),
         );
       },
-      itemCount: listPro.length,
+      itemCount: products.length,
     );
   }
 
-  Widget getListItem(position) {
+  Widget getListItem(position, Product product) {
     return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
@@ -394,7 +227,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                 children: <Widget>[
                                   Center(
                                     child: Image.asset(
-                                      listPro[position].Image,
+                                      product.image,
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -403,14 +236,14 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                     child: GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          if (listPro[position].like) {
-                                            listPro[position].like = false;
+                                          if (product.fav == "1") {
+                                            product.fav = "0";
                                           } else {
-                                            listPro[position].like = true;
+                                            product.fav = "1";
                                           }
                                         });
                                       },
-                                      child: listPro[position].like
+                                      child: product.fav == "1"
                                           ? Image.asset(
                                               'assets/fav_filled.png',
                                               width: 20.0,
@@ -437,7 +270,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Text(
-                                    listPro[position].name,
+                                    product.name,
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 18,
@@ -449,7 +282,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                       bottom: 0,
                                     ),
                                     child: Text(
-                                      listPro[position].subName,
+                                      product.nameHindi,
                                       style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.colorlightgrey),
@@ -464,7 +297,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                             MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
-                                            listPro[position].appliedPrice,
+                                            product.displayPrice.toString(),
                                             style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.colorlightgrey,
@@ -472,7 +305,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                             textAlign: TextAlign.start,
                                           ),
                                           Text(
-                                            listPro[position].cutOffPrice,
+                                            product.displayPrice.toString(),
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.colororange,
@@ -502,8 +335,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                                 decoration:
                                                     InputDecoration.collapsed(
                                                         hintText: ''),
-                                                value:
-                                                    listPro[position].quantity,
+                                                value: product.quantity,
                                                 items: <String>[
                                                   "1",
                                                   "2",
@@ -523,8 +355,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                                 }).toList(),
                                                 onChanged: (newValue) {
                                                   setState(() {
-                                                    listPro[position].quantity =
-                                                        newValue;
+                                                    product.quantity = newValue;
                                                   });
                                                 },
                                               ),
@@ -631,7 +462,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
         ]);
   }
 
-  showGridView() {
+  showGridView(List<Product> products) {
     var size = MediaQuery.of(context).size;
     double itemHeight = (size.height - kToolbarHeight - 24) / 2;
     itemHeight = itemHeight;
@@ -646,7 +477,8 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
       crossAxisCount: 2,
       shrinkWrap: true,
       // Generate 100 Widgets that display their index in the List
-      children: List.generate(listPro.length, (index) {
+      children: List.generate(products.length, (index) {
+        var product = products[index];
         return Material(
           color: Colors.colorlightgreyback,
           child: Padding(
@@ -674,14 +506,14 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                             GestureDetector(
                               onTap: () {
                                 setState(() {
-                                  if (listPro[index].like) {
-                                    listPro[index].like = false;
+                                  if (product.fav == "1") {
+                                    product.fav = "0";
                                   } else {
-                                    listPro[index].like = true;
+                                    product.fav = "1";
                                   }
                                 });
                               },
-                              child: listPro[index].like
+                              child: product.fav == "1"
                                   ? Image.asset(
                                       'assets/fav_filled.png',
                                       width: 20.0,
@@ -696,7 +528,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                     ),
                             ),
                             Text(
-                              listPro[index].off,
+                              product.off,
                               style: TextStyle(
                                 fontSize: 18,
                                 color: Colors.colororange,
@@ -718,11 +550,11 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                       child: Column(
                         children: <Widget>[
                           Image.asset(
-                            listPro[index].Image,
+                            product.image,
                             fit: BoxFit.fitHeight,
                           ),
                           Text(
-                            listPro[index].name,
+                            product.name,
                             style: TextStyle(
                               fontSize: 18,
                               color: Colors.colorgreen,
@@ -733,7 +565,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                           Padding(
                             padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                             child: Text(
-                              listPro[index].subName,
+                              product.nameHindi,
                               style: TextStyle(
                                   fontSize: 16, color: Colors.colorlightgrey),
                               textAlign: TextAlign.center,
@@ -745,7 +577,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
                                   Text(
-                                    listPro[index].appliedPrice,
+                                    product.displayPrice.toString(),
                                     style: TextStyle(
                                       fontSize: 18,
                                       color: Colors.colorlightgrey,
@@ -754,7 +586,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                     textAlign: TextAlign.center,
                                   ),
                                   Text(
-                                    listPro[index].cutOffPrice,
+                                    product.displayPrice.toString(),
                                     style: TextStyle(
                                         fontSize: 16,
                                         color: Colors.colororange,
@@ -782,7 +614,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                 child: DropdownButtonFormField<String>(
                                   decoration:
                                       InputDecoration.collapsed(hintText: ''),
-                                  value: listPro[index].quantity,
+                                  value: product.quantity,
                                   items: <String>["1", "2", "3", "4", "5"]
                                       .map((String value) {
                                     return new DropdownMenuItem<String>(
@@ -795,7 +627,7 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                   }).toList(),
                                   onChanged: (newValue) {
                                     setState(() {
-                                      listPro[index].quantity = newValue;
+                                      product.quantity = newValue;
                                     });
                                   },
                                 ),
@@ -823,9 +655,8 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
                                     GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          if (int.parse(listPro[index].upto) >
-                                              0) {
-                                            listPro[index].upto = (int.parse(
+                                          if (product.inventory > 0) {
+                                            product.quantity = (int.parse(
                                                         listPro[index].upto) -
                                                     1)
                                                 .toString();
@@ -928,5 +759,163 @@ class ShowDetailPage extends State<ShowCatDetailPage> {
     //if(position==0){
     return selectedValues[pos];
     // }
+  }
+
+  Widget mainContent(AsyncSnapshot<ResponseCatProducts> snapshot) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Container(
+          color: Colors.colorlightgreyback,
+          child: Padding(
+            padding: EdgeInsets.only(top: 8, bottom: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      viewGrid = true;
+                      viewList = false;
+                      gridImage = "assets/selected_grid.png";
+                      listImage = "assets/unselected_list.png";
+                    });
+                  },
+                  child: Container(
+                    child: Image.asset(
+                      gridImage,
+                      height: 20,
+                      width: 20,
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 30,
+                  color: Colors.colorgrey,
+                ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      viewGrid = false;
+                      viewList = true;
+                      gridImage = "assets/unselected_grid.png";
+                      listImage = "assets/selected_list.png";
+                    });
+                  },
+                  child: Container(
+                    child: Image.asset(listImage, height: 20, width: 20),
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 30,
+                  color: Colors.colorgrey,
+                ),
+                GestureDetector(
+                    onTap: () {},
+                    child: Container(
+                        child: Image.asset('assets/sort.png',
+                            height: 20, width: 20))),
+              ],
+            ),
+          ),
+        ),
+        viewList
+            ? Expanded(
+                child: showListView(snapshot.data.products),
+              )
+            : Container(),
+        viewGrid ? showGridView(snapshot.data.products) : Container(),
+        Column(children: <Widget>[
+          Container(
+            color: Colors.colorlightgreyback,
+            height: 55,
+            padding: EdgeInsets.all(4),
+            child: Row(
+              children: <Widget>[
+                Flexible(
+                  child: GestureDetector(
+                    child: Container(
+                      //color: Colors.amber,
+                      child: Column(
+                        children: <Widget>[
+                          Flexible(
+                            child: Column(
+                              children: <Widget>[
+                                Text(
+                                  '₹250',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 26,
+                                    color: Colors.colorgrey,
+                                  ),
+                                ),
+                                Text(
+                                  'Total amount',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: Colors.colorPink,
+                                  ),
+                                )
+                              ],
+                              mainAxisAlignment: MainAxisAlignment.center,
+                            ),
+                            flex: 1,
+                          ),
+                        ],
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                      ),
+                    ),
+                    onTap: () {
+//                      Scaffold.of(context).showSnackBar(SnackBar(
+//                        content: Text('View details Coming soon'),
+//                        duration: Duration(seconds: 1),
+//                      ));
+                    },
+                  ),
+                  flex: 1,
+                ),
+                Flexible(
+                  child: GestureDetector(
+                    child: Container(
+                      color: Colors.colorgreen,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Flexible(
+                            child: Row(
+                              children: <Widget>[
+                                Text(
+                                  'Checkout',
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
+                                ),
+                              ],
+                              mainAxisAlignment: MainAxisAlignment.center,
+                            ),
+                            flex: 1,
+                          ),
+                        ],
+                      ),
+                    ),
+                    onTap: () {
+//                      Navigator.push(
+//                          context,
+//                          MaterialPageRoute(
+//                            builder: (context) => PlaceOrder(),
+//                          ));
+                    },
+                  ),
+                  flex: 1,
+                ),
+              ],
+            ),
+          ),
+        ]),
+      ],
+    );
   }
 }
