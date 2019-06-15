@@ -56,10 +56,17 @@ class DatabaseHelper {
               CREATE TABLE $tableCart (
                 $columnId INTEGER PRIMARY KEY,
                 $columnName TEXT NOT NULL,
+                $columnNameHindi TEXT NOT NULL,
                 $columnImage TEXT NOT NULL,
                 $columnDesc TEXT NOT NULL,
                 $columnSku TEXT NOT NULL,
-                $columnUnitId TEXT NOT NULL,
+                $columnUnitId INTEGER NOT NULL,
+                $columnDisplayPrice INTEGER NOT NULL,
+                $columnInventory INTEGER NOT NULL,
+                $columnFav TEXT NOT NULL,
+                $columnPacking TEXT NOT NULL,
+                $columnSelectedPacking TEXT NOT NULL,
+                $columnCount INTEGER NOT NULL,
               )
               ''');
   }
