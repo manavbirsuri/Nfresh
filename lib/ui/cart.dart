@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/cart_bloc.dart';
+import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
+import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/ui/PromoCodePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,11 +13,11 @@ class CartPage extends StatefulWidget {
 }
 
 class _MyCustomFormState extends State<CartPage> {
+  var _database = DatabaseHelper.instance;
   static const platform = const MethodChannel('flutter.native/helper');
   String response = "";
   Text totalText;
   String code;
-  List<String> selectedValues = List();
   var pos = 0;
   String check = "";
   String walletBalance = "₹110";
@@ -37,12 +39,6 @@ class _MyCustomFormState extends State<CartPage> {
 
   @override
   Widget build(BuildContext context) {
-    selectedValues.clear();
-    selectedValues.add("1");
-    selectedValues.add("2");
-    selectedValues.add("3");
-    selectedValues.add("4");
-    selectedValues.add("5");
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -194,6 +190,7 @@ class _MyCustomFormState extends State<CartPage> {
   }
 
   Widget getListItem(position, Product product) {
+    print("PRODUCT: ${product.packing.toString()}}");
     return IntrinsicHeight(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -214,7 +211,9 @@ class _MyCustomFormState extends State<CartPage> {
                         child: Align(
                           child: Image.network(
                             product.image,
-                            fit: BoxFit.fill,
+                            fit: BoxFit.cover,
+                            width: 80,
+                            height: 80,
                           ),
                         ),
                       ),
@@ -278,27 +277,27 @@ class _MyCustomFormState extends State<CartPage> {
                                 children: <Widget>[
                                   Container(
                                     height: 32,
-                                    width: 100,
+                                    width: 120,
                                     decoration: myBoxDecoration3(),
                                     child: Center(
                                       child: Padding(
                                         padding:
                                             EdgeInsets.only(right: 8, left: 8),
-                                        child: DropdownButtonFormField<String>(
+                                        child: DropdownButtonFormField<Packing>(
                                           decoration: InputDecoration.collapsed(
-                                              hintText: ''),
-                                          value: selectedValues[pos],
-                                          items: <String>[
-                                            "1",
-                                            "2",
-                                            "3",
-                                            "4",
-                                            "5"
-                                          ].map((String value) {
-                                            return new DropdownMenuItem<String>(
+                                              hintText: product
+                                                  .selectedPacking.unitQtyShow),
+                                          value:
+                                              null, //product.selectedPacking,
+                                          //value: null,
+                                          items: product
+                                              .packing //getQtyList(products[position])
+                                              .map((Packing value) {
+                                            return new DropdownMenuItem<
+                                                Packing>(
                                               value: value,
                                               child: new Text(
-                                                value,
+                                                value.unitQtyShow,
                                                 style: TextStyle(
                                                     color: Colors.grey),
                                               ),
@@ -306,18 +305,10 @@ class _MyCustomFormState extends State<CartPage> {
                                           }).toList(),
                                           onChanged: (newValue) {
                                             setState(() {
-                                              pos = 0;
-                                              for (int i = 0;
-                                                  i < selectedValues.length;
-                                                  i++) {
-                                                if (selectedValues[i] ==
-                                                    newValue) {
-                                                  pos = i;
-                                                  break;
-                                                }
-                                              }
-
-                                              selectedValues[pos] = newValue;
+                                              product.selectedPacking =
+                                                  newValue;
+                                              product.count = 0;
+                                              // product.selectedPrice =
                                             });
                                           },
                                         ),
@@ -351,18 +342,18 @@ class _MyCustomFormState extends State<CartPage> {
                                 ),
                               ),
                             ),
-                            Padding(
+                            /* Padding(
                               padding: EdgeInsets.only(right: 0, left: 16),
                               child: Container(
                                   height: 32,
-                                  width: 80,
+                                  width: 120,
                                   decoration: myBoxDecoration2(),
                                   child: Align(
                                     alignment: Alignment.bottomRight,
                                     child: Row(
                                       mainAxisSize: MainAxisSize.max,
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
+                                          MainAxisAlignment.spaceAround,
                                       children: <Widget>[
                                         Flexible(
                                           child: Align(
@@ -380,7 +371,7 @@ class _MyCustomFormState extends State<CartPage> {
                                         ),
                                         Flexible(
                                           child: Text(
-                                            "0",
+                                            product.count.toString(),
                                             style: TextStyle(
                                                 color: Colors.colorgreen,
                                                 fontWeight: FontWeight.bold,
@@ -402,6 +393,83 @@ class _MyCustomFormState extends State<CartPage> {
                                       ],
                                     ),
                                   )),
+                            ),*/
+                            Padding(
+                              padding:
+                                  EdgeInsets.only(right: 32, left: 32, top: 16),
+                              child: Container(
+                                decoration: myBoxDecoration2(),
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                  child: IntrinsicHeight(
+                                    child: Center(
+                                      child: IntrinsicHeight(
+                                        child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  decrementCount(product);
+                                                });
+                                              },
+                                              child: Container(
+                                                color: Colors.transparent,
+                                                child: Center(
+                                                  child: Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            18, 10, 18, 10),
+                                                    child: Image.asset(
+                                                      'assets/minus.png',
+                                                      height: 15,
+                                                      width: 15,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              child: Center(
+                                                child: Text(
+                                                  product.count.toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.colorgreen,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 20),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  incrementCount(product);
+                                                });
+                                              },
+                                              child: Container(
+                                                child: Padding(
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      18, 10, 18, 10),
+                                                  child: Image.asset(
+                                                    'assets/plus.png',
+                                                    height: 15,
+                                                    width: 15,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
@@ -799,18 +867,18 @@ class _MyCustomFormState extends State<CartPage> {
   }
 
   Future checkIfPromoSaved() async {
-    setState(() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
+    // setState(() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
 //    print('Pressed $counter times.');
-      check = await prefs.getString('promoApplies') ?? "";
-      print("GGGGGGGGGGGGG $check");
-      if (check.isEmpty) {
-        appliedValue = "Apply promo code";
-      } else {
-        appliedValue = "Promo code applied";
-      }
-    });
+    check = await prefs.getString('promoApplies') ?? "";
+    print("GGGGGGGGGGGGG $check");
+    if (check.isEmpty) {
+      appliedValue = "Apply promo code";
+    } else {
+      appliedValue = "Promo code applied";
+    }
+    // });
     return check;
   }
 
@@ -847,6 +915,21 @@ class _MyCustomFormState extends State<CartPage> {
       scrollDirection: Axis.vertical,
       primary: false,
     );
+  }
+
+  void incrementCount(Product product) {
+    if (product.count < product.inventory) {
+      product.count = product.count + 1;
+    }
+    _database.update(product);
+  }
+
+  void decrementCount(Product product) {
+    if (product.count > 0) {
+      product.count = product.count - 1;
+    }
+    _database.remove(product);
+    // remove from database
   }
 }
 

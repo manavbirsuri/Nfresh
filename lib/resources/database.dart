@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:nfresh/models/product_model.dart';
@@ -18,7 +19,7 @@ final String columnUnitId = 'unit_id';
 final String columnDisplayPrice = 'display_price_1';
 final String columnInventory = 'inventory';
 final String columnFav = 'fav';
-final String columnPacking = 'packing';
+final String columnPacking = 'packings';
 final String columnSelectedPacking = 'selected_packing';
 final String columnCount = 'count';
 
@@ -54,19 +55,19 @@ class DatabaseHelper {
   Future _onCreate(Database db, int version) async {
     await db.execute('''
               CREATE TABLE $tableCart (
-                $columnId INTEGER PRIMARY KEY,
-                $columnName TEXT NOT NULL,
-                $columnNameHindi TEXT NOT NULL,
-                $columnImage TEXT NOT NULL,
-                $columnDesc TEXT NOT NULL,
-                $columnSku TEXT NOT NULL,
-                $columnUnitId INTEGER NOT NULL,
-                $columnDisplayPrice INTEGER NOT NULL,
-                $columnInventory INTEGER NOT NULL,
-                $columnFav TEXT NOT NULL,
-                $columnPacking TEXT NOT NULL,
-                $columnSelectedPacking TEXT NOT NULL,
-                $columnCount INTEGER NOT NULL,
+                $columnId INTEGER,
+                $columnName TEXT ,
+                $columnNameHindi TEXT,
+                $columnImage TEXT ,
+                $columnDesc TEXT ,
+                $columnSku TEXT ,
+                $columnUnitId INTEGER ,
+                $columnDisplayPrice INTEGER ,
+                $columnInventory INTEGER,
+                $columnFav TEXT,
+                $columnPacking TEXT,
+                $columnSelectedPacking TEXT ,
+                $columnCount INTEGER 
               )
               ''');
   }
@@ -75,33 +76,60 @@ class DatabaseHelper {
 
   Future<int> insert(Product product) async {
     Database db = await database;
-    int id = await db.insert(tableCart, product.toJson());
+    print("INSERT: ${product.toJson()}");
+    int id;
+    try {
+      id = await db.insert(tableCart, product.toJson());
+      print("ID: $id}");
+    } on DatabaseException catch (e) {
+      print("ERROR: $e");
+    }
     return id;
   }
 
-  /* Future<ModelProduct> queryWord(int id) async {
+  Future<int> update(Product product) async {
     Database db = await database;
-    List<Map> maps = await db.query(tableCart,
-        columns: [columnId, columnWord, columnFrequency],
-      //  where: '$columnId = ?',
-       // whereArgs: [id]
-        );
-    if (maps.length > 0) {
-      return ModelProduct.fromMap(maps.first);
+    print("UPDATE: ${product.toJson()}");
+    int id;
+    try {
+      id = await db.update(tableCart, product.toJson(),
+          where: "id=? AND selected_packing=?",
+          whereArgs: [product.id, jsonEncode(product.selectedPacking)]);
+      print("ID: $id}");
+    } on DatabaseException catch (e) {
+      print("ERROR UPDATE: $e");
     }
-    return null;
-  }*/
+
+    if (id == 0) {
+      id = await insert(product);
+    }
+    return id;
+  }
+
   Future<List<Product>> queryAllProducts() async {
     Database db = await database;
     List<Product> data = [];
     List<Map> maps = await db.query(tableCart);
+    print("CartCOUNT: ${maps.length}");
     if (maps.length > 0) {
-      data.add(Product(maps.first));
+      for (int i = 0; i < maps.length; i++) {
+        data.add(Product.fromJson(maps[i]));
+      }
     }
     return data;
   }
 
-// TODO: queryAllWords()
-// TODO: delete(int id)
-// TODO: update(Word word)
+  Future<int> getCartCount() async {
+    Database db = await database;
+    List<Map> maps = await db.query(tableCart);
+    print("CartCOUNT: ${maps.length}");
+    return maps.length;
+  }
+
+  Future remove(Product product) async {
+    final db = await database;
+    await db.delete(tableCart,
+        where: "id=? AND selected_packing=?",
+        whereArgs: [product.id, jsonEncode(product.selectedPacking)]);
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nfresh/models/responses/response_home.dart';
+import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/ui/HomePage.dart';
 import 'package:nfresh/ui/OffersPage.dart';
 import 'package:nfresh/ui/OrderHistory.dart';
@@ -12,6 +13,7 @@ import 'package:nfresh/ui/notifications.dart';
 
 import 'bloc/home_bloc.dart';
 import 'bloc/profile_bloc.dart';
+import 'count_listener.dart';
 
 void main() => runApp(MyApp());
 
@@ -46,23 +48,42 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState(title);
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> implements CountListener {
   String title;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   var _curIndex = 0;
   var bloc = HomeBloc();
   var blocProfile = ProfileBloc();
+  var _database = DatabaseHelper.instance;
 
+  int _count = 0;
   _MyHomePageState(String title) {
     this.title = title;
   }
 
-  void initState() {
+  @override
+  Future onCartUpdate() async {
+    var count = await _database.getCartCount();
+    print("Cart update $_count");
+    setState(() {
+      _count = count;
+    });
+  }
+
+  initState() {
     super.initState();
     print("initState was called");
     bloc.fetchHomeData();
     blocProfile.fetchData();
     blocProfile.profileData;
+    getCartCount();
+  }
+
+  Future getCartCount() async {
+    var count = await _database.getCartCount();
+    setState(() {
+      _count = count;
+    });
   }
 
   int _selectedDrawerIndex = 0;
@@ -76,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _getDrawerItemWidget(int pos, AsyncSnapshot<ResponseHome> snapshot) {
     switch (pos) {
       case 0:
-        return new HomePage(data: snapshot);
+        return new HomePage(data: snapshot, listener: this);
       case 1:
         return new WishListPage();
       case 2:
@@ -195,28 +216,30 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 25,
                     width: 25,
                   ),
-                  new Positioned(
-                    right: 0,
-                    child: new Container(
-                      padding: EdgeInsets.all(1),
-                      decoration: new BoxDecoration(
-                        color: Colors.red,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      constraints: BoxConstraints(
-                        minWidth: 12,
-                        minHeight: 12,
-                      ),
-                      child: new Text(
-                        '3',
-                        style: new TextStyle(
-                          color: Colors.white,
-                          fontSize: 8,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  )
+                  _count > 0
+                      ? Positioned(
+                          right: 0,
+                          child: new Container(
+                            padding: EdgeInsets.all(1),
+                            decoration: new BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            constraints: BoxConstraints(
+                              minWidth: 12,
+                              minHeight: 12,
+                            ),
+                            child: new Text(
+                              _count.toString(),
+                              style: new TextStyle(
+                                color: Colors.white,
+                                fontSize: 8,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        )
+                      : Text('')
                 ],
               ),
 

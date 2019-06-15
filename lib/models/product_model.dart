@@ -51,9 +51,34 @@ class Product {
       'display_price_1': this.displayPrice,
       'inventory': this.inventory,
       'fav': this.fav,
-      'packing': jsonEncode(packing),
-      'selected_packing': selectedPacking.toJson(),
+      'packings': jsonEncode(packing),
+      'selected_packing':
+          jsonEncode(selectedPacking), //selectedPacking.toJson(),
       'count': this.count
     };
+  }
+
+  Product.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
+    name = json['name'];
+    nameHindi = json['name_hindi'];
+    sku = json['sku'];
+    description = json['description'];
+    unitId = json['unit_id'];
+    image = json['image'];
+    displayPrice = json['display_price_1'];
+    inventory = json['inventory'];
+    fav = json['fav'];
+    List<Packing> temp = [];
+    var newJson = jsonDecode(json['packings']);
+    print("NEW JSON: $newJson");
+    for (int i = 0; i < newJson.length; i++) {
+      Packing result = Packing(newJson[i]);
+      temp.add(result);
+    }
+    packing = temp;
+
+    selectedPacking = Packing(jsonDecode(json['selected_packing']));
+    count = json['count'];
   }
 }

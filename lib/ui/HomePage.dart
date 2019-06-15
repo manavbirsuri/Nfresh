@@ -11,9 +11,12 @@ import 'package:nfresh/ui/CategoryDetails.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:page_indicator/page_indicator.dart';
 
+import '../count_listener.dart';
+
 class HomePage extends StatefulWidget {
+  final CountListener listener;
   final AsyncSnapshot<ResponseHome> data;
-  HomePage({Key key, @required this.data}) : super(key: key);
+  HomePage({Key key, @required this.data, this.listener}) : super(key: key);
 
   @override
   State createState() => HOrderPage();
@@ -374,6 +377,7 @@ class HOrderPage extends State<HomePage> {
                                         setState(() {
                                           products[position].selectedPacking =
                                               newValue;
+                                          product.count = 0;
                                           // product.selectedPrice =
                                         });
                                       },
@@ -553,15 +557,18 @@ class HOrderPage extends State<HomePage> {
     if (product.count < product.inventory) {
       product.count = product.count + 1;
     }
-    _database.insert(product);
+    _database.update(product);
+    widget.listener.onCartUpdate();
   }
 
   void decrementCount(Product product) {
     if (product.count > 0) {
       product.count = product.count - 1;
+      _database.update(product);
+    } else {
+      _database.remove(product);
     }
-
-    // remove from database
+    widget.listener.onCartUpdate();
   }
 
   List<String> getQtyList(Product product) {
@@ -571,15 +578,4 @@ class HOrderPage extends State<HomePage> {
     }
     return qtyList;
   }
-
-//  getPos(int position) {
-//    //if(position==0){
-//    return selectedValues[pos];
-//    // }
-//  }
 }
-
-//class Category {
-//  String image;
-//  String name;
-//}
