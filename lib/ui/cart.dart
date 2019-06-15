@@ -331,14 +331,22 @@ class _MyCustomFormState extends State<CartPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(right: 8),
-                              child: Align(
-                                alignment: Alignment.topRight,
-                                child: Image.asset(
-                                  'assets/delete.png',
-                                  height: 20,
-                                  width: 20,
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _database.remove(product);
+                                });
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.only(
+                                    right: 8, left: 16, bottom: 16),
+                                child: Align(
+                                  alignment: Alignment.topRight,
+                                  child: Image.asset(
+                                    'assets/delete.png',
+                                    height: 20,
+                                    width: 20,
+                                  ),
                                 ),
                               ),
                             ),
@@ -396,8 +404,10 @@ class _MyCustomFormState extends State<CartPage> {
                             ),*/
                             Padding(
                               padding:
-                                  EdgeInsets.only(right: 32, left: 32, top: 16),
+                                  EdgeInsets.only(right: 12, left: 12, top: 16),
                               child: Container(
+                                width: 120,
+                                height: 30,
                                 decoration: myBoxDecoration2(),
                                 child: Padding(
                                   padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -422,7 +432,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                   child: Padding(
                                                     padding:
                                                         EdgeInsets.fromLTRB(
-                                                            18, 10, 18, 10),
+                                                            10, 8, 15, 8),
                                                     child: Image.asset(
                                                       'assets/minus.png',
                                                       height: 15,
@@ -454,7 +464,7 @@ class _MyCustomFormState extends State<CartPage> {
                                               child: Container(
                                                 child: Padding(
                                                   padding: EdgeInsets.fromLTRB(
-                                                      18, 10, 18, 10),
+                                                      15, 8, 10, 8),
                                                   child: Image.asset(
                                                     'assets/plus.png',
                                                     height: 15,

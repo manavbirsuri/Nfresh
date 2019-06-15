@@ -81,7 +81,7 @@ class HOrderPage extends State<HomePage> {
                               ),
                             ),
                             Padding(
-                              padding: EdgeInsets.only(top: 6),
+                              padding: EdgeInsets.only(top: 4),
                               child: Align(
                                 alignment: Alignment.center,
                                 child: Text(
