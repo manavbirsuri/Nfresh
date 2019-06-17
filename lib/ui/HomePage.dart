@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
   State createState() => HOrderPage();
 }
 
-class HOrderPage extends State<HomePage> {
+class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
   // List<Category> list = List();
   // List<ModelProduct> listPro = List();
   var _database = DatabaseHelper.instance;
@@ -45,6 +45,18 @@ class HOrderPage extends State<HomePage> {
     _currentCity = _dropDownMenuItems[0].value;
     //  updateProducts();
     updateUI();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("Cycle index: ${state.index}");
   }
 
   Future updateProducts() async {
@@ -231,7 +243,6 @@ class HOrderPage extends State<HomePage> {
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, position) {
             var product = products[position];
-            print("Countvvv : $product.count");
             return Material(
               color: Colors.colorlightgreyback,
               child: product == null
@@ -589,11 +600,15 @@ class HOrderPage extends State<HomePage> {
   void incrementCount(Product product) {
     if (product.count < product.inventory) {
       product.count = product.count + 1;
+      _database.update(product);
+      Future.delayed(const Duration(milliseconds: 500), () {
+        widget.listener.onCartUpdate();
+      });
+    } else {
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text("Available inventory : ${product.inventory}"),
+      ));
     }
-    _database.update(product);
-    Future.delayed(const Duration(milliseconds: 500), () {
-      widget.listener.onCartUpdate();
-    });
   }
 
   void decrementCount(Product product) {

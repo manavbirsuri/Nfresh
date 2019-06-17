@@ -23,6 +23,10 @@ class _MyCustomFormState extends State<CartPage> {
   String walletBalance = "₹110";
   String appliedValue = "Apply promo code";
   var bloc = CartBloc();
+  int totalAmount = 0;
+  int checkoutTotal = 0;
+  num discount = 0;
+  int walletDiscount = 0;
   @override
   void initState() {
     super.initState();
@@ -107,7 +111,7 @@ class _MyCustomFormState extends State<CartPage> {
                                   Column(
                                     children: <Widget>[
                                       Text(
-                                        '₹250',
+                                        '₹$checkoutTotal',
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 24),
@@ -189,8 +193,8 @@ class _MyCustomFormState extends State<CartPage> {
     );
   }
 
-  Widget getListItem(position, Product product) {
-    print("PRODUCT: ${product.packing.toString()}}");
+  Widget getListItem(position, List<Product> products) {
+    var product = products[position];
     return IntrinsicHeight(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -287,8 +291,8 @@ class _MyCustomFormState extends State<CartPage> {
                                           decoration: InputDecoration.collapsed(
                                               hintText: product
                                                   .selectedPacking.unitQtyShow),
-                                          value:
-                                              null, //product.selectedPacking,
+                                          value: null,
+                                          //product.selectedPacking,
                                           //value: null,
                                           items: product
                                               .packing //getQtyList(products[position])
@@ -307,7 +311,7 @@ class _MyCustomFormState extends State<CartPage> {
                                             setState(() {
                                               product.selectedPacking =
                                                   newValue;
-                                              product.count = 0;
+                                              product.count = 1;
                                               // product.selectedPrice =
                                             });
                                           },
@@ -335,9 +339,8 @@ class _MyCustomFormState extends State<CartPage> {
                               onTap: () {
                                 setState(() {
                                   _database.remove(product);
+                                  products.removeAt(position);
                                 });
-
-                                updateUI();
                               },
                               child: Padding(
                                 padding: EdgeInsets.only(
@@ -352,58 +355,6 @@ class _MyCustomFormState extends State<CartPage> {
                                 ),
                               ),
                             ),
-                            /* Padding(
-                              padding: EdgeInsets.only(right: 0, left: 16),
-                              child: Container(
-                                  height: 32,
-                                  width: 120,
-                                  decoration: myBoxDecoration2(),
-                                  child: Align(
-                                    alignment: Alignment.bottomRight,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.max,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      children: <Widget>[
-                                        Flexible(
-                                          child: Align(
-                                            alignment: Alignment.topCenter,
-                                            child: Padding(
-                                              padding: EdgeInsets.all(4),
-                                              child: Icon(
-                                                Icons.minimize,
-                                                color: Colors.colorgreen,
-                                                size: 16,
-                                              ),
-                                            ),
-                                          ),
-                                          flex: 1,
-                                        ),
-                                        Flexible(
-                                          child: Text(
-                                            product.count.toString(),
-                                            style: TextStyle(
-                                                color: Colors.colorgreen,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 18),
-                                          ),
-                                          flex: 1,
-                                        ),
-                                        Flexible(
-                                          child: Padding(
-                                            padding: EdgeInsets.all(4),
-                                            child: Icon(
-                                              Icons.add,
-                                              color: Colors.colorgreen,
-                                              size: 16,
-                                            ),
-                                          ),
-                                          flex: 1,
-                                        )
-                                      ],
-                                    ),
-                                  )),
-                            ),*/
                             Padding(
                               padding:
                                   EdgeInsets.only(right: 12, left: 12, top: 16),
@@ -425,7 +376,9 @@ class _MyCustomFormState extends State<CartPage> {
                                             GestureDetector(
                                               onTap: () {
                                                 setState(() {
-                                                  decrementCount(product);
+                                                  decrementCount(
+                                                      product, products);
+                                                  calculateTotal(products);
                                                 });
                                               },
                                               child: Container(
@@ -461,6 +414,7 @@ class _MyCustomFormState extends State<CartPage> {
                                               onTap: () {
                                                 setState(() {
                                                   incrementCount(product);
+                                                  calculateTotal(products);
                                                 });
                                               },
                                               child: Container(
@@ -529,6 +483,7 @@ class _MyCustomFormState extends State<CartPage> {
                       setState(() {
                         checkIfPromoSaved().then((value) {
                           check = value;
+                          discount = 20;
                         });
                       });
                     });
@@ -594,8 +549,13 @@ class _MyCustomFormState extends State<CartPage> {
                       }).then((value) {
                     setState(() {
                       getBalance().then((onValue) {
-                        walletBalance = onValue;
+                        // walletBalance = onValue;
+                        //  walletDiscount = int.parse(onValue);
                       });
+                    });
+
+                    setState(() {
+                      walletDiscount = int.parse(value);
                     });
                   });
                 });
@@ -678,7 +638,7 @@ class _MyCustomFormState extends State<CartPage> {
                               fontSize: 18, color: Colors.colorlightgrey),
                         ),
                         Text(
-                          '₹230',
+                          '₹$totalAmount',
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ],
@@ -696,7 +656,7 @@ class _MyCustomFormState extends State<CartPage> {
                                     fontSize: 18, color: Colors.colorlightgrey),
                               ),
                               Text(
-                                '-₹20',
+                                '-₹$discount',
                                 style: TextStyle(
                                     fontSize: 16, color: Colors.black),
                               ),
@@ -717,7 +677,7 @@ class _MyCustomFormState extends State<CartPage> {
                               fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          '₹250',
+                          '₹$checkoutTotal',
                           style: TextStyle(
                               fontSize: 16,
                               color: Colors.black,
@@ -884,8 +844,9 @@ class _MyCustomFormState extends State<CartPage> {
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
 //    print('Pressed $counter times.');
     check = await prefs.getString('promoApplies') ?? "";
-    print("GGGGGGGGGGGGG $check");
+
     if (check.isEmpty) {
+      discount = 30;
       appliedValue = "Apply promo code";
     } else {
       appliedValue = "Promo code applied";
@@ -917,9 +878,15 @@ class _MyCustomFormState extends State<CartPage> {
   }
 
   Widget productContent(AsyncSnapshot<List<Product>> snapshot) {
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      setState(() {
+        calculateTotal(snapshot.data);
+      });
+    });
+
     return ListView.builder(
       itemBuilder: (context, position) {
-        return getListItem(position, snapshot.data[position]);
+        return getListItem(position, snapshot.data);
       },
       itemCount: snapshot.data.length,
       physics: NeverScrollableScrollPhysics(),
@@ -932,21 +899,40 @@ class _MyCustomFormState extends State<CartPage> {
   void incrementCount(Product product) {
     if (product.count < product.inventory) {
       product.count = product.count + 1;
+      _database.update(product);
+    } else {
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text("Available inventory : ${product.inventory}"),
+      ));
     }
-    _database.update(product);
   }
 
-  void decrementCount(Product product) {
-    if (product.count > 0) {
+  void decrementCount(Product product, List<Product> products) {
+    if (product.count > 1) {
       product.count = product.count - 1;
+      _database.update(product);
+    } else if (product.count == 1) {
+      product.count = product.count - 1;
+      _database.remove(product);
+      products.remove(product);
     }
-    _database.remove(product);
     // remove from database
   }
 
+  calculateTotal(List<Product> products) async {
+    totalAmount = 0;
+    for (Product product in products) {
+      totalAmount += (product.selectedPacking.price * product.count);
+    }
+
+    checkoutTotal = totalAmount - discount - walletDiscount;
+  }
+
   void updateUI() {
-    // setState(() {});
-    // initState();
+    setState(() {
+      //bloc.fetchData();
+    });
+    didChangeDependencies();
   }
 }
 
