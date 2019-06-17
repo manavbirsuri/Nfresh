@@ -12,7 +12,7 @@ class Product {
   String image;
   int displayPrice;
   int inventory;
-  String fav;
+  String fav = '0';
   List<Packing> packing = [];
 
   // Extra local fields

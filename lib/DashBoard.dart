@@ -79,6 +79,13 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
     getCartCount();
   }
 
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      //do your stuff
+      print("DASHBOARD resume");
+    }
+  }
+
   Future getCartCount() async {
     var count = await _database.getCartCount();
     setState(() {

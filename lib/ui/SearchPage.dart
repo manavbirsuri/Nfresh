@@ -3,7 +3,6 @@ import 'package:nfresh/bloc/search_bloc.dart';
 import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/responses/response_search.dart';
-import 'package:nfresh/ui/Constants.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 
 class SearchPage extends StatelessWidget {
@@ -24,62 +23,6 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-//class ModelProduct {
-//  String id;
-//  String Image;
-//  String name;
-//  String subName;
-//  String appliedPrice;
-//  String cutOffPrice;
-//  String quantity;
-//  String upto;
-//}
-
-List<ModelProduct> getProductlist() {
-  List<ModelProduct> productArray = List();
-  ModelProduct model = new ModelProduct();
-  model.id = "0";
-  model.Image = "assets/pea.png";
-  model.name = "Green Peas";
-  model.subName = "हरी मटर";
-  model.appliedPrice = "₹60.00  ";
-  model.cutOffPrice = "₹70.00";
-  model.quantity = "1";
-  model.upto = "1";
-  productArray.add(model);
-  model = new ModelProduct();
-  model.id = "1";
-  model.Image = "assets/pea.png";
-  model.name = "Areen Peas";
-  model.subName = "हरी मटर";
-  model.appliedPrice = "₹50.00  ";
-  model.cutOffPrice = "₹80.00";
-  model.quantity = "1";
-  model.upto = "1";
-  productArray.add(model);
-  model = new ModelProduct();
-  model.id = "2";
-  model.Image = "assets/pea.png";
-  model.name = "Breen Peas";
-  model.subName = "हरी मटर";
-  model.appliedPrice = "₹90.00  ";
-  model.cutOffPrice = "₹180.00";
-  model.quantity = "1";
-  model.upto = "1";
-  productArray.add(model);
-  model = new ModelProduct();
-  model.id = "3";
-  model.Image = "assets/pea.png";
-  model.name = "Creen Peas";
-  model.subName = "हरी मटर";
-  model.appliedPrice = "₹150.00  ";
-  model.cutOffPrice = "₹195.00";
-  model.quantity = "1";
-  model.upto = "1";
-  productArray.add(model);
-  return productArray;
-}
-
 class _MyHomePageState extends State<MyHomePage> {
   TextEditingController editingController = TextEditingController();
 //  var items = List<ModelProduct>();
@@ -87,39 +30,38 @@ class _MyHomePageState extends State<MyHomePage> {
   var viewGrid = true;
   var gridImage = 'assets/selected_grid.png';
   var listImage = 'assets/unselected_list.png';
-  List<ModelProduct> productArray = List();
+  // List<ModelProduct> productArray = List();
 
   var bloc = SearchBloc();
   // var pos = 0;
 
   @override
   void initState() {
-    productArray = getProductlist();
     super.initState();
   }
 
-  void filterSearchResults(String query) {
-    List<ModelProduct> dummySearchList = List<ModelProduct>();
-    dummySearchList.addAll(productArray);
-    if (query.isNotEmpty) {
-      List<ModelProduct> dummyListData = List<ModelProduct>();
-      dummySearchList.forEach((item) {
-        if (item.name.toLowerCase().contains(query.toLowerCase())) {
-          dummyListData.add(item);
-        }
-      });
-      setState(() {
-        // items.clear();
-        //  items.addAll(dummyListData);
-      });
-      return;
-    } else {
-      setState(() {
-        // items.clear();
-//        items.addAll(productArray);
-      });
-    }
-  }
+//  void filterSearchResults(String query) {
+//    List<ModelProduct> dummySearchList = List<ModelProduct>();
+//    dummySearchList.addAll(productArray);
+//    if (query.isNotEmpty) {
+//      List<ModelProduct> dummyListData = List<ModelProduct>();
+//      dummySearchList.forEach((item) {
+//        if (item.name.toLowerCase().contains(query.toLowerCase())) {
+//          dummyListData.add(item);
+//        }
+//      });
+//      setState(() {
+//        // items.clear();
+//        //  items.addAll(dummyListData);
+//      });
+//      return;
+//    } else {
+//      setState(() {
+//        // items.clear();
+////        items.addAll(productArray);
+//      });
+//    }
+//  }
 
   @override
   Widget build(BuildContext context) {

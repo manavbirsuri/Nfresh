@@ -119,6 +119,19 @@ class DatabaseHelper {
     return data;
   }
 
+  Future<Product> queryConditionalProduct(Product product) async {
+    Database db = await database;
+    var _count = 0;
+    List<Map> maps = await db.query(tableCart,
+        where: "id=? AND selected_packing=?",
+        whereArgs: [product.id, jsonEncode(product.selectedPacking)]);
+    print("Product count : ${maps.length}");
+    if (maps.length > 0) {
+      return Product.fromJson(maps.first);
+    }
+    return product;
+  }
+
   Future<int> getCartCount() async {
     Database db = await database;
     List<Map> maps = await db.query(tableCart);

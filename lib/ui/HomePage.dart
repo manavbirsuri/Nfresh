@@ -43,6 +43,22 @@ class HOrderPage extends State<HomePage> {
     snapshot = widget.data;
     _dropDownMenuItems = getDropDownMenuItems();
     _currentCity = _dropDownMenuItems[0].value;
+    //  updateProducts();
+    updateUI();
+  }
+
+  Future updateProducts() async {
+    var sections = snapshot.data.sections;
+    for (int i = 0; i < sections.length; i++) {
+      var products = sections[i].products;
+      for (int j = 0; j < products.length; j++) {
+        var model = products[j];
+        var product = await _database.queryConditionalProduct(model);
+        setState(() {
+          model = product;
+        });
+      }
+    }
   }
 
   List<DropdownMenuItem<String>> getDropDownMenuItems() {
@@ -99,7 +115,7 @@ class HOrderPage extends State<HomePage> {
                         ),
                       ),
                       Container(
-                          height: 150,
+                          height: 130,
                           child: showCategories(snapshot.data.categories)),
                       Container(
                           child: productsCategories(snapshot.data.sections)),
@@ -215,264 +231,281 @@ class HOrderPage extends State<HomePage> {
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, position) {
             var product = products[position];
+            print("Countvvv : $product.count");
             return Material(
               color: Colors.colorlightgreyback,
-              child: Padding(
-                padding: EdgeInsets.all(4),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(0.0),
-                  ),
-                  child: Container(
-                    child: Column(
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.only(right: 8, left: 8, top: 8),
-                          child: Container(
-                            width: 150,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: <Widget>[
-                                GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      if (product.fav == "1") {
-                                        product.fav = "0";
-                                      } else {
-                                        product.fav = "1";
-                                      }
-
-                                      blocFav.fetchData(
-                                          product.fav, product.id.toString());
-                                    });
-                                  },
-                                  child: product.fav == "1"
-                                      ? Image.asset(
-                                          'assets/fav_filled.png',
-                                          width: 20.0,
-                                          height: 20.0,
-                                          fit: BoxFit.cover,
-                                        )
-                                      : Image.asset(
-                                          'assets/fav.png',
-                                          width: 20.0,
-                                          height: 20.0,
-                                          fit: BoxFit.cover,
-                                        ),
-                                ),
-                                Text(
-                                  '30%off',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.colororange,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                )
-                              ],
-                            ),
-                          ),
+              child: product == null
+                  ? Text('')
+                  : Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0.0),
                         ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ProductDetailPage(
-                                        product: product,
-                                      ),
-                                ));
-                          },
+                        child: Container(
                           child: Column(
                             children: <Widget>[
-                              Image.network(
-                                products[position].image,
-                                fit: BoxFit.cover,
-                                height: 80,
-                              ),
-                              Text(
-                                products[position].name,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.colorgreen,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
                               Padding(
-                                padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                child: Text(
-                                  products[position].nameHindi,
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.colorlightgrey),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                padding:
+                                    EdgeInsets.only(right: 4, left: 0, top: 0),
+                                child: Container(
+                                  width: 168,
+                                  //color: Colors.green,
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
+                                      GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (product.fav == "1") {
+                                                product.fav = "0";
+                                              } else {
+                                                product.fav = "1";
+                                              }
+
+                                              blocFav.fetchData(product.fav,
+                                                  product.id.toString());
+                                            });
+                                          },
+                                          child: Container(
+                                            // color: Colors.mygrey,
+                                            padding: EdgeInsets.all(8),
+                                            child: product != null &&
+                                                    product.fav == "1"
+                                                ? Image.asset(
+                                                    'assets/fav_filled.png',
+                                                    width: 20.0,
+                                                    height: 20.0,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Image.asset(
+                                                    'assets/fav.png',
+                                                    width: 20.0,
+                                                    height: 20.0,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                          )),
                                       Text(
-                                        "₹" +
-                                            product.selectedPacking.price
-                                                .toString() +
-                                            "  ",
+                                        '30%off',
                                         style: TextStyle(
-                                          fontSize: 18,
-                                          color: Colors.colorlightgrey,
-                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Colors.colororange,
                                         ),
                                         textAlign: TextAlign.center,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProductDetailPage(
+                                              product: product,
+                                            ),
+                                      ));
+                                },
+                                child: Column(
+                                  children: <Widget>[
+                                    Image.network(
+                                      product != null ? product.image : "",
+                                      fit: BoxFit.cover,
+                                      height: 80,
+                                    ),
+                                    Text(
+                                      products[position].name,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.colorgreen,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      Text(
-                                        "₹" +
-                                            products[position]
-                                                .displayPrice
-                                                .toString(),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      child: Text(
+                                        products[position].nameHindi,
                                         style: TextStyle(
                                             fontSize: 16,
-                                            color: Colors.colororange,
-                                            decoration:
-                                                TextDecoration.lineThrough),
+                                            color: Colors.colorlightgrey),
                                         textAlign: TextAlign.center,
                                       ),
-                                    ]),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              Container(
-                                height: 35,
-                                width: 120,
-                                decoration: myBoxDecoration3(),
-                                child: Center(
-                                  child: Padding(
-                                    padding: EdgeInsets.only(right: 8, left: 8),
-                                    child: DropdownButtonFormField<Packing>(
-                                      decoration: InputDecoration.collapsed(
-                                          hintText:
-                                              product.packing[0].unitQtyShow),
-                                      value: product.selectedPacking,
-                                      //value: null,
-                                      items: product
-                                          .packing //getQtyList(products[position])
-                                          .map((Packing value) {
-                                        return new DropdownMenuItem<Packing>(
-                                          value: value,
-                                          child: new Text(
-                                            value.unitQtyShow,
-                                            style:
-                                                TextStyle(color: Colors.grey),
-                                          ),
-                                        );
-                                      }).toList(),
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          products[position].selectedPacking =
-                                              newValue;
-                                          product.count = 0;
-                                          // product.selectedPrice =
-                                        });
-                                      },
                                     ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Padding(
-                          padding:
-                              EdgeInsets.only(right: 32, left: 32, top: 16),
-                          child: Container(
-                            decoration: myBoxDecoration2(),
-                            child: Padding(
-                              padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                              child: IntrinsicHeight(
-                                child: Center(
-                                  child: IntrinsicHeight(
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.stretch,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              decrementCount(
-                                                  products[position]);
-                                            });
-                                          },
-                                          child: Container(
-                                            color: Colors.transparent,
-                                            child: Center(
-                                              child: Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    18, 10, 18, 10),
-                                                child: Image.asset(
-                                                  'assets/minus.png',
-                                                  height: 15,
-                                                  width: 15,
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          child: Center(
-                                            child: Text(
-                                              products[position]
-                                                  .count
-                                                  .toString(),
+                                    Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                      child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Text(
+                                              "₹" +
+                                                  product.selectedPacking.price
+                                                      .toString() +
+                                                  "  ",
                                               style: TextStyle(
-                                                  color: Colors.colorgreen,
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20),
+                                                fontSize: 18,
+                                                color: Colors.colorlightgrey,
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                               textAlign: TextAlign.center,
                                             ),
-                                          ),
-                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              incrementCount(
-                                                  products[position]);
-                                            });
-                                          },
-                                          child: Container(
-                                            child: Padding(
-                                              padding: EdgeInsets.fromLTRB(
-                                                  18, 10, 18, 10),
-                                              child: Image.asset(
-                                                'assets/plus.png',
-                                                height: 15,
-                                                width: 15,
-                                              ),
+                                            Text(
+                                              "₹" +
+                                                  products[position]
+                                                      .displayPrice
+                                                      .toString(),
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.colororange,
+                                                  decoration: TextDecoration
+                                                      .lineThrough),
+                                              textAlign: TextAlign.center,
                                             ),
+                                          ]),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Container(
+                                      height: 35,
+                                      width: 120,
+                                      decoration: myBoxDecoration3(),
+                                      child: Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.only(
+                                              right: 8, left: 8),
+                                          child:
+                                              DropdownButtonFormField<Packing>(
+                                            decoration:
+                                                InputDecoration.collapsed(
+                                                    hintText: product.packing[0]
+                                                        .unitQtyShow),
+                                            // value: product.selectedPacking,
+                                            value: null,
+                                            items: product
+                                                .packing //getQtyList(products[position])
+                                                .map((Packing value) {
+                                              return new DropdownMenuItem<
+                                                  Packing>(
+                                                value: value,
+                                                child: new Text(
+                                                  value.unitQtyShow,
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
+                                                ),
+                                              );
+                                            }).toList(),
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                products[position]
+                                                    .selectedPacking = newValue;
+                                                product.count = 0;
+                                                // product.selectedPrice =
+                                              });
+                                            },
                                           ),
                                         ),
-                                      ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(
+                                    right: 32, left: 32, top: 16),
+                                child: Container(
+                                  decoration: myBoxDecoration2(),
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                    child: IntrinsicHeight(
+                                      child: Center(
+                                        child: IntrinsicHeight(
+                                          child: Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    decrementCount(
+                                                        products[position]);
+                                                  });
+                                                },
+                                                child: Container(
+                                                  color: Colors.transparent,
+                                                  child: Center(
+                                                    child: Padding(
+                                                      padding:
+                                                          EdgeInsets.fromLTRB(
+                                                              18, 10, 18, 10),
+                                                      child: Image.asset(
+                                                        'assets/minus.png',
+                                                        height: 15,
+                                                        width: 15,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                child: Center(
+                                                  child: Text(
+                                                    product.count.toString(),
+                                                    style: TextStyle(
+                                                        color:
+                                                            Colors.colorgreen,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 20),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    incrementCount(
+                                                        products[position]);
+                                                  });
+                                                },
+                                                child: Container(
+                                                  child: Padding(
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            18, 10, 18, 10),
+                                                    child: Image.asset(
+                                                      'assets/plus.png',
+                                                      height: 15,
+                                                      width: 15,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
+                            ],
+//                  ),
                           ),
                         ),
-                      ],
-//                  ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
             );
           },
           itemCount: products.length,
@@ -558,17 +591,22 @@ class HOrderPage extends State<HomePage> {
       product.count = product.count + 1;
     }
     _database.update(product);
-    widget.listener.onCartUpdate();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      widget.listener.onCartUpdate();
+    });
   }
 
   void decrementCount(Product product) {
-    if (product.count > 0) {
+    if (product.count > 1) {
       product.count = product.count - 1;
       _database.update(product);
-    } else {
+    } else if (product.count == 1) {
+      product.count = product.count - 1;
       _database.remove(product);
     }
-    widget.listener.onCartUpdate();
+    Future.delayed(const Duration(milliseconds: 500), () {
+      widget.listener.onCartUpdate();
+    });
   }
 
   List<String> getQtyList(Product product) {
@@ -577,5 +615,20 @@ class HOrderPage extends State<HomePage> {
       qtyList.add(product.packing[i].unitQtyShow);
     }
     return qtyList;
+  }
+
+  String getProductCount(product) {
+    _database.queryConditionalProduct(product).then((onValue) {
+      setState(() {
+        product = onValue;
+      });
+    });
+    return "0";
+  }
+
+  void updateUI() {
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      setState(() {});
+    });
   }
 }

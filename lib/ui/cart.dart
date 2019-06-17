@@ -336,6 +336,8 @@ class _MyCustomFormState extends State<CartPage> {
                                 setState(() {
                                   _database.remove(product);
                                 });
+
+                                updateUI();
                               },
                               child: Padding(
                                 padding: EdgeInsets.only(
@@ -940,6 +942,11 @@ class _MyCustomFormState extends State<CartPage> {
     }
     _database.remove(product);
     // remove from database
+  }
+
+  void updateUI() {
+    // setState(() {});
+    // initState();
   }
 }
 
