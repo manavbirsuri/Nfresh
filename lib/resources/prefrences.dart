@@ -34,7 +34,7 @@ class SharedPrefs {
   /// ------------------------------------------------------------
   /// Method that get user Profile
   /// ------------------------------------------------------------
-  Future<ProfileModel> getProfile(String value) async {
+  Future<ProfileModel> getProfile() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String profile = prefs.getString(_profile) ?? "{}";
     return ProfileModel(jsonDecode(profile));
