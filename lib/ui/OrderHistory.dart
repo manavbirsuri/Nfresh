@@ -39,29 +39,31 @@ class OrderHistoryState extends State<OrderState> {
           ),
         ),
         Scaffold(
-            backgroundColor: Colors.colorgreen.withOpacity(0.5),
-            appBar: AppBar(
-              backgroundColor: Colors.colorgreen.withOpacity(0.0),
-              title: Text(
-                "Order History",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              centerTitle: true,
-              actions: <Widget>[
-                GestureDetector(
-                  onTap: () {},
-                  child: Container(
-                    padding: EdgeInsets.only(right: 16),
-                    child: Icon(
-                      Icons.filter_list,
-                      color: Colors.white,
-                      size: 30,
-                    ),
-                  ),
-                )
-              ],
+          backgroundColor: Colors.colorgreen.withOpacity(0.5),
+          appBar: AppBar(
+            backgroundColor: Colors.colorgreen.withOpacity(0.0),
+            title: Text(
+              "Order History",
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            body: StreamBuilder(
+            centerTitle: true,
+            actions: <Widget>[
+              GestureDetector(
+                onTap: () {},
+                child: Container(
+                  padding: EdgeInsets.only(right: 16),
+                  child: Icon(
+                    Icons.filter_list,
+                    color: Colors.white,
+                    size: 30,
+                  ),
+                ),
+              )
+            ],
+          ),
+          body: Container(
+            color: Colors.colorlightgreyback,
+            child: StreamBuilder(
               stream: bloc.ordersList,
               builder: (context, AsyncSnapshot<ResponseOrderHistory> snapshot) {
                 if (snapshot.hasData) {
@@ -73,7 +75,9 @@ class OrderHistoryState extends State<OrderState> {
                 }
                 return Center(child: CircularProgressIndicator());
               },
-            ))
+            ),
+          ),
+        )
       ],
     );
   }
@@ -180,16 +184,18 @@ class OrderHistoryState extends State<OrderState> {
   }
 
   Widget mainContent(AsyncSnapshot<ResponseOrderHistory> snapshot) {
-    return Container(
-      color: Colors.colorlightgreyback,
-      child: ListView.builder(
-        itemBuilder: (context, position) {
-          return getListItem(position, snapshot.data.orders);
-        },
-        itemCount: snapshot.data.orders.length,
-        shrinkWrap: true,
-        scrollDirection: Axis.vertical,
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        ListView.builder(
+          itemBuilder: (context, position) {
+            return getListItem(position, snapshot.data.orders);
+          },
+          itemCount: snapshot.data.orders.length,
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+        )
+      ],
     );
   }
 

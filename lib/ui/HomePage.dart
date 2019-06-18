@@ -398,7 +398,8 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                               DropdownButtonFormField<Packing>(
                                             decoration:
                                                 InputDecoration.collapsed(
-                                                    hintText: product.packing[0]
+                                                    hintText: product
+                                                        .selectedPacking
                                                         .unitQtyShow),
                                             // value: product.selectedPacking,
                                             value: null,
