@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/cities_bloc.dart';
+import 'package:nfresh/bloc/signup_bloc.dart';
+import 'package:nfresh/models/area_model.dart';
+import 'package:nfresh/models/city_model.dart';
 import 'package:nfresh/ui/PinView.dart';
 
 class SignUp extends StatelessWidget {
@@ -23,7 +27,6 @@ class stateProfilePage extends State<stateProfile> {
   final focus2 = FocusNode();
   final focus3 = FocusNode();
   final focus4 = FocusNode();
-  var selectedValues = "Select type";
   var areaValues = "Select your area";
   int _currValue = 0;
   TextEditingController nameController = new TextEditingController();
@@ -35,6 +38,53 @@ class stateProfilePage extends State<stateProfile> {
   var showText = true;
   var checked = false;
   var valueShow = "Show";
+  var bloc = SignUpBloc();
+  var blocCity = CityBloc();
+  List<UserType> userTypes = [];
+  UserType selectedType;
+  List<CityModel> cities = [];
+  List<AreaModel> areas = [];
+  List<AreaModel> cityAreas = [];
+  CityModel selectedCity;
+  AreaModel selectedArea;
+  bool showLoader = false;
+  @override
+  void initState() {
+    super.initState();
+    blocCity.fetchData();
+    blocCity.cities.listen((res) {
+      setState(() {
+        this.cities = res.cities;
+        selectedCity = cities[0];
+        this.areas = res.areas;
+      });
+    });
+    userTypes.add(UserType("1", "Retailer"));
+    userTypes.add(UserType("2", "Customer - month"));
+    userTypes.add(UserType("3", "Customer - 3 months"));
+    selectedType = userTypes[0];
+
+    bloc.signUp.listen((response) {
+      setState(() {
+        showLoader = false;
+      });
+      if (response.status == "true") {
+        // Navigator.of(context).pop();
+        Navigator.pushReplacement(
+          context,
+          new MaterialPageRoute(
+              builder: (context) => PinViewPage(id: response.userId)),
+        );
+      } else {
+        Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.msg),
+          ),
+        );
+      }
+    });
+  }
+
   void onChanged(int value) {
     setState(() {
       _currValue = value;
@@ -293,24 +343,19 @@ class stateProfilePage extends State<stateProfile> {
                                     padding:
                                         const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
-                                      child: DropdownButtonFormField<String>(
+                                      child: DropdownButtonFormField<UserType>(
                                         decoration: InputDecoration.collapsed(
                                             hintText: ''),
-                                        value: selectedValues,
-                                        items: <String>[
-                                          "Select type",
-                                          "1",
-                                          "2",
-                                          "3"
-                                        ].map((String value) {
-                                          return new DropdownMenuItem<String>(
+                                        value: selectedType,
+                                        items: userTypes.map((UserType value) {
+                                          return new DropdownMenuItem<UserType>(
                                             value: value,
-                                            child: new Text(value),
+                                            child: new Text(value.userType),
                                           );
                                         }).toList(),
                                         onChanged: (newValue) {
                                           setState(() {
-                                            selectedValues = newValue;
+                                            selectedType = newValue;
                                           });
                                         },
                                       ),
@@ -337,17 +382,23 @@ class stateProfilePage extends State<stateProfile> {
                                     padding:
                                         const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
-                                      child: TextFormField(
-                                        controller: cityController,
-                                        keyboardType: TextInputType.text,
-                                        textInputAction: TextInputAction.next,
-//                                        onFieldSubmitted: (term) {
-//                                          FocusScope.of(context)
-//                                              .requestFocus(focus2);
-//                                        },
-                                        decoration:
-                                            new InputDecoration.collapsed(
-                                                hintText: 'Enter your city'),
+                                      child: DropdownButtonFormField<CityModel>(
+                                        decoration: InputDecoration.collapsed(
+                                            hintText: ''),
+                                        value: selectedCity,
+                                        items: cities.map((CityModel value) {
+                                          return new DropdownMenuItem<
+                                              CityModel>(
+                                            value: value,
+                                            child: new Text(value.name),
+                                          );
+                                        }).toList(),
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            selectedCity = newValue;
+                                            getCityAreas(newValue);
+                                          });
+                                        },
                                       ),
                                     ),
                                   ),
@@ -372,24 +423,20 @@ class stateProfilePage extends State<stateProfile> {
                                     padding:
                                         const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
-                                      child: DropdownButtonFormField<String>(
+                                      child: DropdownButtonFormField<AreaModel>(
                                         decoration: InputDecoration.collapsed(
                                             hintText: ''),
-                                        value: areaValues,
-                                        items: <String>[
-                                          "Select your area",
-                                          "1",
-                                          "2",
-                                          "3"
-                                        ].map((String value) {
-                                          return new DropdownMenuItem<String>(
+                                        value: selectedArea,
+                                        items: cityAreas.map((AreaModel value) {
+                                          return new DropdownMenuItem<
+                                              AreaModel>(
                                             value: value,
-                                            child: new Text(value),
+                                            child: new Text(value.name),
                                           );
                                         }).toList(),
                                         onChanged: (newValue) {
                                           setState(() {
-                                            areaValues = newValue;
+                                            selectedArea = newValue;
                                           });
                                         },
                                       ),
@@ -473,37 +520,61 @@ class stateProfilePage extends State<stateProfile> {
                                       ],
                                     ),
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        32, 8, 32, 16),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          new MaterialPageRoute(
-                                              builder: (context) =>
-                                                  new PinViewPage()),
-                                        );
-                                      },
-                                      child: Container(
-                                        decoration: new BoxDecoration(
-                                            borderRadius: new BorderRadius.all(
-                                                new Radius.circular(100.0)),
-                                            color: Colors.colorgreen),
-                                        child: SizedBox(
-                                          width: double.infinity,
-                                          height: 60,
-                                          child: Center(
-                                            child: new Text("Create Account",
-                                                style: new TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 20,
-                                                )),
+                                  showLoader
+                                      ? Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              32, 8, 32, 16),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              createAccountWebservice();
+                                            },
+                                            child: Container(
+                                              decoration: new BoxDecoration(
+                                                  borderRadius:
+                                                      new BorderRadius.all(
+                                                          new Radius.circular(
+                                                              100.0)),
+                                                  color: Colors.colorgreen),
+                                              child: SizedBox(
+                                                width: double.infinity,
+                                                height: 60,
+                                                child: Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        )
+                                      : Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              32, 8, 32, 16),
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              createAccountWebservice();
+                                            },
+                                            child: Container(
+                                              decoration: new BoxDecoration(
+                                                  borderRadius:
+                                                      new BorderRadius.all(
+                                                          new Radius.circular(
+                                                              100.0)),
+                                                  color: Colors.colorgreen),
+                                              child: SizedBox(
+                                                width: double.infinity,
+                                                height: 60,
+                                                child: Center(
+                                                  child:
+                                                      new Text("Create Account",
+                                                          style: new TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 20,
+                                                          )),
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                  ),
                                 ],
                               ),
                             ),
@@ -520,5 +591,98 @@ class stateProfilePage extends State<stateProfile> {
         ),
       ],
     );
+  }
+
+  void getCityAreas(CityModel selectedCity) {
+    cityAreas = [];
+    for (int i = 0; i < areas.length; i++) {
+      var modelArea = areas[i];
+      if (modelArea.cityId == selectedCity.id) {
+        cityAreas.add(modelArea);
+      }
+    }
+    if (cityAreas.length > 0) {
+      selectedArea = cityAreas[0];
+    } else {
+      selectedArea = null;
+    }
+  }
+
+  void createAccountWebservice() {
+    String name = nameController.text.toString();
+    String email = emailController.text.toString();
+    String phone = mobileController.text.toString();
+    String password = passwordController.text.toString();
+    String referral = refralController.text.toString();
+    int aggreed = _currValue;
+
+    if (name.length == 0) {
+      showMessage("Enter valid name");
+      return;
+    }
+    if (email.length == 0) {
+      showMessage("Enter valid email address");
+      return;
+    }
+    if (phone.length == 0) {
+      showMessage("Enter valid Phone number");
+      return;
+    }
+    if (phone.length < 10 || phone.length > 10) {
+      showMessage("Phone number should be 10 digit long");
+      return;
+    }
+    if (password.length == 0) {
+      showMessage("Enter valid password");
+      return;
+    }
+    setState(() {
+      showLoader = true;
+    });
+    var profile = ProfileSend(name, email, phone, password, selectedArea.name,
+        selectedType.userTypeId, selectedCity.id, selectedArea.id, referral);
+    bloc.doSignUp(profile);
+  }
+
+  void showMessage(String message) {
+    Scaffold.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+}
+
+class ProfileSend {
+  String name;
+  String email;
+  String phone;
+  String password;
+  String address;
+  String type;
+  int city;
+  int area;
+  String referal = "";
+  ProfileSend(
+      name, email, phone, password, address, type, city, area, referal) {
+    this.name = name;
+    this.email = email;
+    this.phone = phone;
+    this.password = password;
+    this.address = address;
+    this.type = type;
+    this.city = city;
+    this.area = area;
+    this.referal = referal;
+  }
+}
+
+class UserType {
+  String userTypeId;
+  String userType;
+
+  UserType(String id, String type) {
+    userTypeId = id;
+    userType = type;
   }
 }

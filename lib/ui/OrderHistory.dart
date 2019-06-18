@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/orders_bloc.dart';
+import 'package:nfresh/models/order_model.dart';
+import 'package:nfresh/models/responses/response_order.dart';
 import 'package:nfresh/ui/OrderPage.dart';
 
 class OrderHistory extends StatelessWidget {
@@ -16,6 +19,14 @@ class OrderState extends StatefulWidget {
 }
 
 class OrderHistoryState extends State<OrderState> {
+  var bloc = OrdersBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    bloc.fetchOrdersData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -28,52 +39,54 @@ class OrderHistoryState extends State<OrderState> {
           ),
         ),
         Scaffold(
-          backgroundColor: Colors.colorgreen.withOpacity(0.5),
-          appBar: AppBar(
-            backgroundColor: Colors.colorgreen.withOpacity(0.0),
-            title: Text(
-              "Order History",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-            actions: <Widget>[
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  padding: EdgeInsets.only(right: 16),
-                  child: Icon(
-                    Icons.filter_list,
-                    color: Colors.white,
-                    size: 30,
+            backgroundColor: Colors.colorgreen.withOpacity(0.5),
+            appBar: AppBar(
+              backgroundColor: Colors.colorgreen.withOpacity(0.0),
+              title: Text(
+                "Order History",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              centerTitle: true,
+              actions: <Widget>[
+                GestureDetector(
+                  onTap: () {},
+                  child: Container(
+                    padding: EdgeInsets.only(right: 16),
+                    child: Icon(
+                      Icons.filter_list,
+                      color: Colors.white,
+                      size: 30,
+                    ),
                   ),
-                ),
-              )
-            ],
-          ),
-          body: Container(
-            color: Colors.colorlightgreyback,
-            child: ListView.builder(
-              itemBuilder: (context, position) {
-                return getListItem(position);
-              },
-              itemCount: 8,
-              shrinkWrap: true,
-              scrollDirection: Axis.vertical,
+                )
+              ],
             ),
-          ),
-        )
+            body: StreamBuilder(
+              stream: bloc.ordersList,
+              builder: (context, AsyncSnapshot<ResponseOrderHistory> snapshot) {
+                if (snapshot.hasData) {
+                  return snapshot.data.orders.length > 0
+                      ? mainContent(snapshot)
+                      : noDataView();
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+                return Center(child: CircularProgressIndicator());
+              },
+            ))
       ],
     );
   }
 
-  Widget getListItem(position) {
+  Widget getListItem(position, List<Order> orders) {
+    var order = orders[position];
     return GestureDetector(
       onTap: () {
         Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => new OrderPage(
-                    title: 'Order Id : 123GD$position',
+                    title: 'Order Id : ${order.orderId}',
                   ),
             ));
       },
@@ -87,15 +100,7 @@ class OrderHistoryState extends State<OrderState> {
             children: <Widget>[
               Flexible(
                 child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  // mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
-                    /*Image.asset(
-                    'assets/pea.png',
-                    width: 80.0,
-                    height: 80.0,
-                    fit: BoxFit.cover,
-                  ),*/
                     Flexible(
                       child: Container(
                         padding: EdgeInsets.only(left: 8, right: 8),
@@ -103,7 +108,7 @@ class OrderHistoryState extends State<OrderState> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text(
-                              'Order Id: 123GD$position',
+                              'Order Id: ${order.orderId}',
                               style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 18,
@@ -115,7 +120,7 @@ class OrderHistoryState extends State<OrderState> {
                                 bottom: 4,
                               ),
                               child: Text(
-                                '10 Jun, 2019',
+                                order.orderCreatedAt,
                                 style: TextStyle(fontSize: 13),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -143,7 +148,7 @@ class OrderHistoryState extends State<OrderState> {
                       children: <Widget>[
                         Text("Total  "),
                         Text(
-                          "₹35$position",
+                          "₹${order.orderTotal}",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16),
                         ),
@@ -154,42 +159,15 @@ class OrderHistoryState extends State<OrderState> {
 //                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
 //                  ),
                     Padding(
-                      child: position == 4
-                          ? Text(
-                              'Delivered',
-                              style: TextStyle(
-                                  color: Colors.colorPink,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          : Text(
-                              'Processing',
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
+                      child: Text(
+                        order.orderStatus,
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       padding: EdgeInsets.only(top: 8, bottom: 8),
                     ),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
-                      children: <Widget>[
-//                      GestureDetector(
-//                        child: Container(
-//                          decoration: BoxDecoration(color: Colors.colorPink),
-//                          padding: EdgeInsets.only(
-//                            top: 4,
-//                            bottom: 4,
-//                            left: 8,
-//                            right: 8,
-//                          ),
-                        /*Text(
-                        '23 May,2019',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                        ),
-                      ),*/
-//                        ),
-//                        onTap: () {},
-//                      )
-                      ],
+                      children: <Widget>[],
                     ),
                   ],
                 ),
@@ -200,115 +178,29 @@ class OrderHistoryState extends State<OrderState> {
       ),
     );
   }
-}
 
-//}
-//    return ListView.builder(
-//      itemBuilder: (context, position) {
-//        return Column(
-//          children: <Widget>[
-//            ListTile(
-//              title: Column(
-//                crossAxisAlignment: CrossAxisAlignment.start,
-//                children: <Widget>[
-//                  Text(
-//                    'Product Name $position',
-//                    style: TextStyle(color: Colors.black, fontSize: 18),
-//                  ),
-//                  Padding(
-//                    padding: EdgeInsets.only(top: 8, bottom: 8),
-//                    child: Text(
-//                      'Product Description. This description will be of 2 lines maximum on this cell of order history',
-//                      style: TextStyle(fontSize: 13),
-//                      maxLines: 2,
-//                      overflow: TextOverflow.ellipsis,
-//                    ),
-//                  ),
-//                ],
-//              ),
-//              //contentPadding: EdgeInsets.all(0),
-//              trailing: Container(
-//                // color: Colors.amber,
-//                child: Row(
-//                  mainAxisSize: MainAxisSize.min,
-//                  crossAxisAlignment: CrossAxisAlignment.stretch,
-//                  children: <Widget>[
-//                    Column(
-//                      crossAxisAlignment: CrossAxisAlignment.end,
-//                      children: <Widget>[
-//                        Row(
-//                          mainAxisSize: MainAxisSize.min,
-//                          children: <Widget>[
-//                            Text("Total  "),
-//                            Text(
-//                              "₹35$position",
-//                              style: TextStyle(
-//                                  fontWeight: FontWeight.bold, fontSize: 16),
-//                            ),
-//                            Icon(
-//                              Icons.navigate_next,
-//                              color: Colors.colorPink,
-//                              size: 20,
-//                            )
-//                          ],
-//                        ),
-//                        // Flexible(
-//                        Container(
-//                          // padding: EdgeInsets.only(top: 8, bottom: 8),
-//                          child: position == 4
-//                              ? Text(
-//                                  'Delivered',
-//                                  style: TextStyle(
-//                                      color: Colors.colorPink,
-//                                      fontWeight: FontWeight.bold),
-//                                )
-//                              : Text(
-//                                  'Processing',
-//                                  style: TextStyle(fontWeight: FontWeight.bold),
-//                                ),
-//                        ),
-//                        //   flex: 1,
-//                        // ),
-//
-//                        Container(
-//                          child:Text('23 May, 2019')
-//
-////                          position == 4
-////                              ? Text('23 May, 2019')
-////                              : GestureDetector(
-////                                  child: Text(
-////                                    'Track your order',
-////                                    style: TextStyle(
-////                                      color: Colors.colorPink,
-////                                      decoration: TextDecoration.underline,
-////                                    ),
-////                                  ),
-////                                  onTap: () {
-////                                    Scaffold.of(context).showSnackBar(SnackBar(
-////                                      content: Text('Track order Coming soon'),
-////                                      duration: Duration(seconds: 1),
-////                                    ));
-////                                  },
-////                                ),
-//                        ),
-//                      ],
-//                    )
-//                  ],
-//                ),
-//              ),
-//            ),
-//            Padding(
-//              padding: EdgeInsets.only(top: 8, bottom: 8),
-//              child: Divider(
-//                height: 1,
-//                color: Colors.grey,
-//              ),
-//            )
-//          ],
-//        );
-//      },
-//      shrinkWrap: true,
-//      itemCount: 10,
-//    );
-//  }
-//}
+  Widget mainContent(AsyncSnapshot<ResponseOrderHistory> snapshot) {
+    return Container(
+      color: Colors.colorlightgreyback,
+      child: ListView.builder(
+        itemBuilder: (context, position) {
+          return getListItem(position, snapshot.data.orders);
+        },
+        itemCount: snapshot.data.orders.length,
+        shrinkWrap: true,
+        scrollDirection: Axis.vertical,
+      ),
+    );
+  }
+
+  Widget noDataView() {
+    return Container(
+      color: Colors.white,
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[Text("No order placed yet")],
+      ),
+    );
+  }
+}

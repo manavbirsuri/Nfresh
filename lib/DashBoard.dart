@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/resources/database.dart';
+import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/HomePage.dart';
 import 'package:nfresh/ui/OffersPage.dart';
 import 'package:nfresh/ui/OrderHistory.dart';
@@ -9,6 +11,7 @@ import 'package:nfresh/ui/SearchPage.dart';
 import 'package:nfresh/ui/WalletPage.dart';
 import 'package:nfresh/ui/WishListPage.dart';
 import 'package:nfresh/ui/cart.dart';
+import 'package:nfresh/ui/login.dart';
 import 'package:nfresh/ui/notifications.dart';
 
 import 'bloc/home_bloc.dart';
@@ -54,9 +57,12 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
   var _curIndex = 0;
   var bloc = HomeBloc();
   var blocProfile = ProfileBloc();
+  var _prefs = SharedPrefs();
   var _database = DatabaseHelper.instance;
 
   int _count = 0;
+  ProfileModel profile;
+
   _MyHomePageState(String title) {
     this.title = title;
   }
@@ -77,6 +83,10 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
     blocProfile.fetchData();
     blocProfile.profileData;
     getCartCount();
+    Future.delayed(const Duration(milliseconds: 1000), () async {
+      profile = await _prefs.getProfile();
+      print("PROFILE : $profile");
+    });
   }
 
   Future getCartCount() async {
@@ -276,7 +286,8 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => new Profile(),
+                              builder: (context) =>
+                                  profile == null ? LoginPage() : new Profile(),
                             ));
                       },
                       child: Row(
@@ -296,7 +307,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               Text(
-                                "John Doe",
+                                profile == null ? "No name" : profile.name,
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.white,
@@ -304,10 +315,14 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                                 textAlign: TextAlign.start,
                               ),
                               Text(
-                                "johndoe@gmail.com",
+                                profile == null
+                                    ? "Please login"
+                                    : profile.email,
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: Colors.white,
+                                  color: profile == null
+                                      ? Colors.grey
+                                      : Colors.white,
                                 ),
                                 textAlign: TextAlign.start,
                               ),
@@ -319,82 +334,6 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                   ),
                   padding: EdgeInsets.all(0),
                 ),
-                /*    Stack(
-                children: <Widget>[
-                  Container(
-                    child: Image.asset(
-                      'assets/bg.jpg',
-                      fit: BoxFit.fill,
-                      height: 200,
-                    ),
-                  ),
-                  Container(
-                    color: Colors.transparent.withOpacity(0.3),
-                    height: 200,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 48, left: 16),
-                      child: GestureDetector(
-                        onTap: () {
-                          Navigator.pop(context);
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => new Profile(),
-                              ));
-                        },
-                        child: Row(
-                          children: <Widget>[
-                            Flexible(
-                              child: Container(
-                                color: Colors.white,
-                                child: Padding(
-                                  padding: EdgeInsets.all(8),
-                                  child: Image.asset(
-                                    'assets/logo.png',
-                                    height: 80,
-                                    width: 80,
-                                  ),
-                                ),
-                              ),
-                              flex: 1,
-                            ),
-                            Flexible(
-                              child: Padding(
-                                padding: EdgeInsets.only(left: 16),
-                                child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: <Widget>[
-                                    Align(
-                                        alignment: Alignment.centerLeft,
-                                        child: Text(
-                                          "John Doe",
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.white,
-                                          ),
-                                          textAlign: TextAlign.start,
-                                        )),
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        "Johndoe@gmai.com",
-                                        style: TextStyle(
-                                            fontSize: 16, color: Colors.white),
-                                        textAlign: TextAlign.start,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              flex: 2,
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),*/
                 Container(
                   // color: Colors.colorPink,
                   child: Column(
@@ -547,28 +486,49 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                         height: 1,
                         color: Colors.grey,
                       ),
-                      ListTile(
-                        leading: Image.asset(
-                          'assets/logout.png',
-                          width: 30.0,
-                          height: 30.0,
-                        ),
-                        title: Text(
-                          "Logout",
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        onTap: () {
-//                    Navigator.of(context).pop();
-//                    Navigator.push(
-//                      context,
-//                      MaterialPageRoute(
-//                        builder: (context) => TermAndPrivacy(),
-//                      ),
-//                    );
-                        },
-                      ),
+                      profile == null
+                          ? ListTile(
+                              leading: Image.asset(
+                                'assets/logout.png',
+                                width: 30.0,
+                                height: 30.0,
+                              ),
+                              title: Text(
+                                "Login",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginPage(),
+                                  ),
+                                );
+                              },
+                            )
+                          : ListTile(
+                              leading: Image.asset(
+                                'assets/logout.png',
+                                width: 30.0,
+                                height: 30.0,
+                              ),
+                              title: Text(
+                                "Logout",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                              onTap: () {
+                                // logout webservice
+                                _prefs.saveProfile("");
+                                setState(() {
+                                  profile = null;
+                                });
+                              },
+                            )
                     ],
                   ),
                 )

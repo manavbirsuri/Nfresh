@@ -4,6 +4,7 @@ import 'package:nfresh/models/responses/response_coupons.dart';
 import 'package:nfresh/models/responses/response_getFavorite.dart';
 import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/models/responses/response_login.dart';
+import 'package:nfresh/models/responses/response_order.dart';
 import 'package:nfresh/models/responses/response_otp.dart';
 import 'package:nfresh/models/responses/response_profile.dart';
 import 'package:nfresh/models/responses/response_search.dart';
@@ -46,4 +47,6 @@ class Repository {
       apiProvider.verifyOtp(auth, userId, otp);
 
   Future<ResponseCities> getCities(auth) => apiProvider.getCities(auth);
+  Future<ResponseOrderHistory> getOrders(auth) =>
+      apiProvider.getOrdersHistory(auth);
 }

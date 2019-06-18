@@ -1,19 +1,20 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' show Client;
-import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_cat_products.dart';
 import 'package:nfresh/models/responses/response_cities.dart';
 import 'package:nfresh/models/responses/response_coupons.dart';
 import 'package:nfresh/models/responses/response_getFavorite.dart';
 import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/models/responses/response_login.dart';
+import 'package:nfresh/models/responses/response_order.dart';
 import 'package:nfresh/models/responses/response_otp.dart';
 import 'package:nfresh/models/responses/response_profile.dart';
 import 'package:nfresh/models/responses/response_search.dart';
 import 'package:nfresh/models/responses/response_signup.dart';
 import 'package:nfresh/models/responses/response_subcat.dart';
 import 'package:nfresh/models/responses/response_wallet.dart';
+import 'package:nfresh/ui/SignUp.dart';
 
 class ApiProvider {
   Client client = Client();
@@ -153,16 +154,18 @@ class ApiProvider {
   }
 
   // Webservice call to Register user
-  Future<ResponseSignUp> getSignUp(auth, ProfileModel profile) async {
+  Future<ResponseSignUp> getSignUp(auth, ProfileSend profile) async {
+    print(
+        "DATA: ${profile.name}: ${profile.email}: ${profile.phone}: ${profile.password}: ${profile.address}: ${profile.city}: ${profile.area}: ${profile.type}");
     Map map = {
       'authcode': auth,
       'name': profile.name,
       'email': profile.email,
-      'phone_no': profile.phoneNo,
+      'phone_no': profile.phone,
       'password': profile.password,
       'address': profile.address,
-      'city': profile.city,
-      'area': profile.area,
+      'city': profile.city.toString(),
+      'area': profile.area.toString(),
       'type': profile.type,
     };
     final response = await client.post("$baseUrl/signup", body: map);
@@ -221,6 +224,21 @@ class ApiProvider {
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load getcityarea service');
+    }
+  }
+
+  // Webservice call to get user profile
+  Future<ResponseOrderHistory> getOrdersHistory(auth) async {
+    Map map = {
+      'auth_code': auth,
+    };
+    final response = await client.post("$baseUrl/orderhistory", body: map);
+    print(response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseOrderHistory.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load orderhistory service');
     }
   }
 }

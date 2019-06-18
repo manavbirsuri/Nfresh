@@ -1,24 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:nfresh/DashBoard.dart';
+import 'package:nfresh/bloc/otp_bloc.dart';
 import 'package:pin_view/pin_view.dart';
 
-class PinViewPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: PinViewState(),
-    );
-  }
-}
-
-class PinViewState extends StatefulWidget {
+class PinViewPage extends StatefulWidget {
+  final id;
+  const PinViewPage({Key key, this.id}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
-    return Pinstate();
+    return PinState();
   }
 }
 
-class Pinstate extends State<PinViewState> {
+class PinState extends State<PinViewPage> {
+  var bloc = OtpBloc();
+
+  bool showLoader = false;
+
+  @override
+  void initState() {
+    super.initState();
+    bloc.searchedData.listen((response) {
+      if (response.status == "true") {
+        if (response.activate == 0) {
+          Scaffold.of(context).showSnackBar(
+            SnackBar(
+              content: Text(response.msg),
+            ),
+          );
+        } else {
+          Navigator.of(context).pop();
+          Navigator.pushReplacement(
+            context,
+            new MaterialPageRoute(builder: (context) => DashBoard()),
+          );
+        }
+      } else {
+        Scaffold.of(context).showSnackBar(
+          SnackBar(
+            content: Text(response.msg),
+          ),
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,23 +95,7 @@ class Pinstate extends State<PinViewState> {
                       autoFocusFirstField: false,
                       obscureText: true,
                       submit: (String pin) {
-                        if (pin == "1234") {
-                          Navigator.pop(context);
-                          Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => new DashBoard()),
-                          );
-                        } else {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return AlertDialog(
-                                    title: Text("Alert!"),
-                                    content: Text(
-                                        "You have entered wrong Pin: $pin"));
-                              });
-                        }
+                        verifyOtpWebservice(pin, widget.id);
                       } // gets triggered when all the fields are filled
 
                       // gets triggered when all the fields are filled
@@ -172,5 +182,12 @@ class Pinstate extends State<PinViewState> {
         ],
       ),
     );
+  }
+
+  void verifyOtpWebservice(String pin, id) {
+    setState(() {
+      showLoader = true;
+    });
+    bloc.fetchSearchData(id, pin);
   }
 }
