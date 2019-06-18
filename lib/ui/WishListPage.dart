@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/get_fav_bloc.dart';
+import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/responses/response_getFavorite.dart';
 
 class WishListPage extends StatelessWidget {
@@ -89,6 +90,8 @@ class WishPage extends State<Wish> {
                                 child: Image.network(
                                   product.image,
                                   fit: BoxFit.cover,
+                                  width: 80,
+                                  height: 80,
                                 ),
                               ),
                             ),
@@ -155,30 +158,25 @@ class WishPage extends State<Wish> {
                                       children: <Widget>[
                                         Container(
                                           height: 32,
-                                          width: 100,
+                                          width: 120,
                                           decoration: myBoxDecoration3(),
                                           child: Center(
                                             child: Padding(
                                               padding: EdgeInsets.only(
                                                   right: 8, left: 8),
                                               child: DropdownButtonFormField<
-                                                  String>(
+                                                  Packing>(
                                                 decoration:
                                                     InputDecoration.collapsed(
                                                         hintText: ''),
-                                                value: selectedValues[pos],
-                                                items: <String>[
-                                                  "1",
-                                                  "2",
-                                                  "3",
-                                                  "4",
-                                                  "5"
-                                                ].map((String value) {
+                                                value: product.selectedPacking,
+                                                items: product.packing
+                                                    .map((Packing value) {
                                                   return new DropdownMenuItem<
-                                                      String>(
+                                                      Packing>(
                                                     value: value,
                                                     child: new Text(
-                                                      value,
+                                                      value.unitQtyShow,
                                                       style: TextStyle(
                                                           color: Colors.grey),
                                                     ),
@@ -186,23 +184,7 @@ class WishPage extends State<Wish> {
                                                 }).toList(),
                                                 onChanged: (newValue) {
                                                   setState(() {
-                                                    pos = 0;
-                                                    for (int i = 0;
-                                                        i <
-                                                            selectedValues
-                                                                .length;
-                                                        i++) {
-                                                      if (selectedValues[i] ==
-                                                          newValue) {
-                                                        pos = i;
-                                                        break;
-                                                      }
-                                                    }
-                                                    print("GGGGGGGGG " +
-                                                        newValue +
-                                                        " " +
-                                                        pos.toString());
-                                                    selectedValues[pos] =
+                                                    product.selectedPacking =
                                                         newValue;
                                                   });
                                                 },
@@ -239,11 +221,10 @@ class WishPage extends State<Wish> {
                                     ),
                                   ),
                                   Padding(
-                                    padding:
-                                        EdgeInsets.only(right: 0, left: 16),
+                                    padding: EdgeInsets.only(right: 0, left: 8),
                                     child: Container(
                                         height: 32,
-                                        width: 80,
+                                        width: 120,
                                         decoration: myBoxDecoration2(),
                                         child: Align(
                                           alignment: Alignment.bottomRight,
@@ -257,11 +238,10 @@ class WishPage extends State<Wish> {
                                                   alignment:
                                                       Alignment.topCenter,
                                                   child: Padding(
-                                                    padding: EdgeInsets.all(4),
-                                                    child: Icon(
-                                                      Icons.minimize,
+                                                    padding: EdgeInsets.all(8),
+                                                    child: Image.asset(
+                                                      'assets/minus.png',
                                                       color: Colors.colorgreen,
-                                                      size: 16,
                                                     ),
                                                   ),
                                                 ),
@@ -269,7 +249,7 @@ class WishPage extends State<Wish> {
                                               ),
                                               Flexible(
                                                 child: Text(
-                                                  "0",
+                                                  product.count.toString(),
                                                   style: TextStyle(
                                                       color: Colors.colorgreen,
                                                       fontWeight:
@@ -280,11 +260,10 @@ class WishPage extends State<Wish> {
                                               ),
                                               Flexible(
                                                 child: Padding(
-                                                  padding: EdgeInsets.all(4),
-                                                  child: Icon(
-                                                    Icons.add,
+                                                  padding: EdgeInsets.all(8),
+                                                  child: Image.asset(
+                                                    'assets/plus.png',
                                                     color: Colors.colorgreen,
-                                                    size: 16,
                                                   ),
                                                 ),
                                                 flex: 1,

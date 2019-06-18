@@ -432,8 +432,9 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                               ),
                               Padding(
                                 padding: EdgeInsets.only(
-                                    right: 32, left: 32, top: 16),
+                                    right: 16, left: 16, top: 16),
                                 child: Container(
+                                  width: 120,
                                   decoration: myBoxDecoration2(),
                                   child: Padding(
                                     padding: EdgeInsets.fromLTRB(0, 0, 0, 0),

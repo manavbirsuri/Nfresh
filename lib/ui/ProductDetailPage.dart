@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/cart_bloc.dart';
 import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
 
@@ -14,10 +15,25 @@ class ProState extends State<ProductDetailPage> {
   String code;
   var pos = 0;
 
+  int totalAmount = 0;
+  var bloc = CartBloc();
   @override
   void initState() {
     super.initState();
     setState(() {});
+    bloc.fetchData();
+    bloc.catProductsList.listen((response) {
+      setState(() {
+        calculateTotal(response);
+      });
+    });
+  }
+
+  calculateTotal(List<Product> products) async {
+    totalAmount = 0;
+    for (Product product in products) {
+      totalAmount += (product.selectedPacking.price * product.count);
+    }
   }
 
   @override
@@ -157,7 +173,7 @@ class ProState extends State<ProductDetailPage> {
                                         children: <Widget>[
                                           Container(
                                             height: 35,
-                                            width: 90,
+                                            width: 120,
                                             decoration: myBoxDecoration3(),
                                             child: Center(
                                               child: Padding(
@@ -166,9 +182,11 @@ class ProState extends State<ProductDetailPage> {
                                                     Packing>(
                                                   decoration:
                                                       InputDecoration.collapsed(
-                                                          hintText: ''),
-                                                  value: widget
-                                                      .product.selectedPacking,
+                                                          hintText: widget
+                                                              .product
+                                                              .selectedPacking
+                                                              .unitQtyShow),
+                                                  value: null,
                                                   items: widget.product.packing
                                                       .map((Packing value) {
                                                     return new DropdownMenuItem<
@@ -193,7 +211,7 @@ class ProState extends State<ProductDetailPage> {
                                             ),
                                           ),
                                           Container(
-                                              height: 40,
+                                              height: 35,
                                               width: 120,
                                               decoration: myBoxDecoration2(),
                                               child: Center(
@@ -318,7 +336,7 @@ class ProState extends State<ProductDetailPage> {
                                     Column(
                                       children: <Widget>[
                                         Text(
-                                          '₹250',
+                                          '₹$totalAmount',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 26,
