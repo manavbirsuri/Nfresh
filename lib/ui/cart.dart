@@ -82,15 +82,13 @@ class _MyCustomFormState extends State<CartPage> {
                             padding: EdgeInsets.only(top: 8),
                             child: StreamBuilder(
                               stream: bloc.catProductsList,
-                              builder: (context,
-                                  AsyncSnapshot<List<Product>> snapshot) {
+                              builder: (context, AsyncSnapshot<List<Product>> snapshot) {
                                 if (snapshot.hasData) {
                                   return productContent(snapshot);
                                 } else if (snapshot.hasError) {
                                   return Text(snapshot.error.toString());
                                 }
-                                return Center(
-                                    child: CircularProgressIndicator());
+                                return Center(child: CircularProgressIndicator());
                               },
                             ),
                           ),
@@ -120,9 +118,7 @@ class _MyCustomFormState extends State<CartPage> {
                                     children: <Widget>[
                                       Text(
                                         '₹$checkoutTotal',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 24),
+                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                                       ),
                                       Text(
                                         'Total amount',
@@ -163,13 +159,10 @@ class _MyCustomFormState extends State<CartPage> {
                                       children: <Widget>[
                                         Text(
                                           'Place Order',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              color: Colors.white),
+                                          style: TextStyle(fontSize: 18, color: Colors.white),
                                         ),
                                       ],
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                     ),
                                     flex: 1,
                                   ),
@@ -179,8 +172,7 @@ class _MyCustomFormState extends State<CartPage> {
                             onTap: () async {
                               try {
                                 final String result =
-                                    await platform.invokeMethod(
-                                        'Message to share on whatsapp');
+                                    await platform.invokeMethod('Message to share on whatsapp');
                                 response = result;
                               } on PlatformException catch (e) {
                                 response = "Failed to Invoke: '${e.message}'.";
@@ -252,8 +244,7 @@ class _MyCustomFormState extends State<CartPage> {
                               padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                               child: Text(
                                 product.nameHindi,
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.colorlightgrey),
+                                style: TextStyle(fontSize: 16, color: Colors.colorlightgrey),
                                 textAlign: TextAlign.start,
                               ),
                             ),
@@ -275,8 +266,7 @@ class _MyCustomFormState extends State<CartPage> {
                                       style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.colororange,
-                                          decoration:
-                                              TextDecoration.lineThrough),
+                                          decoration: TextDecoration.lineThrough),
                                       textAlign: TextAlign.start,
                                     ),
                                   ]),
@@ -289,36 +279,30 @@ class _MyCustomFormState extends State<CartPage> {
                                 children: <Widget>[
                                   Container(
                                     height: 32,
-                                    width: 120,
+                                    width: 115,
                                     decoration: myBoxDecoration3(),
                                     child: Center(
                                       child: Padding(
-                                        padding:
-                                            EdgeInsets.only(right: 8, left: 8),
+                                        padding: EdgeInsets.only(right: 8, left: 8),
                                         child: DropdownButtonFormField<Packing>(
                                           decoration: InputDecoration.collapsed(
-                                              hintText: product
-                                                  .selectedPacking.unitQtyShow),
+                                              hintText: product.selectedPacking.unitQtyShow),
                                           value: null,
                                           //product.selectedPacking,
                                           //value: null,
-                                          items: product
-                                              .packing //getQtyList(products[position])
+                                          items: product.packing //getQtyList(products[position])
                                               .map((Packing value) {
-                                            return new DropdownMenuItem<
-                                                Packing>(
+                                            return new DropdownMenuItem<Packing>(
                                               value: value,
                                               child: new Text(
                                                 value.unitQtyShow,
-                                                style: TextStyle(
-                                                    color: Colors.grey),
+                                                style: TextStyle(color: Colors.grey),
                                               ),
                                             );
                                           }).toList(),
                                           onChanged: (newValue) {
                                             setState(() {
-                                              product.selectedPacking =
-                                                  newValue;
+                                              product.selectedPacking = newValue;
                                               product.count = 1;
                                               // product.selectedPrice =
                                             });
@@ -351,8 +335,7 @@ class _MyCustomFormState extends State<CartPage> {
                                 });
                               },
                               child: Padding(
-                                padding: EdgeInsets.only(
-                                    right: 8, left: 16, bottom: 16),
+                                padding: EdgeInsets.only(right: 8, left: 16, bottom: 16),
                                 child: Align(
                                   alignment: Alignment.topRight,
                                   child: Image.asset(
@@ -364,10 +347,9 @@ class _MyCustomFormState extends State<CartPage> {
                               ),
                             ),
                             Padding(
-                              padding:
-                                  EdgeInsets.only(right: 12, left: 12, top: 16),
+                              padding: EdgeInsets.only(right: 12, left: 12, top: 16),
                               child: Container(
-                                width: 120,
+                                width: 115,
                                 height: 30,
                                 decoration: myBoxDecoration2(),
                                 child: Padding(
@@ -376,16 +358,13 @@ class _MyCustomFormState extends State<CartPage> {
                                     child: Center(
                                       child: IntrinsicHeight(
                                         child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.stretch,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          mainAxisAlignment: MainAxisAlignment.center,
                                           children: <Widget>[
                                             GestureDetector(
                                               onTap: () {
                                                 setState(() {
-                                                  decrementCount(
-                                                      product, products);
+                                                  decrementCount(product, products);
                                                   calculateTotal(products);
                                                 });
                                               },
@@ -393,9 +372,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                 color: Colors.transparent,
                                                 child: Center(
                                                   child: Padding(
-                                                    padding:
-                                                        EdgeInsets.fromLTRB(
-                                                            10, 8, 15, 8),
+                                                    padding: EdgeInsets.fromLTRB(10, 8, 15, 8),
                                                     child: Image.asset(
                                                       'assets/minus.png',
                                                       height: 15,
@@ -411,8 +388,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                   product.count.toString(),
                                                   style: TextStyle(
                                                       color: Colors.colorgreen,
-                                                      fontWeight:
-                                                          FontWeight.bold,
+                                                      fontWeight: FontWeight.bold,
                                                       fontSize: 20),
                                                   textAlign: TextAlign.center,
                                                 ),
@@ -427,8 +403,7 @@ class _MyCustomFormState extends State<CartPage> {
                                               },
                                               child: Container(
                                                 child: Padding(
-                                                  padding: EdgeInsets.fromLTRB(
-                                                      15, 8, 10, 8),
+                                                  padding: EdgeInsets.fromLTRB(15, 8, 10, 8),
                                                   child: Image.asset(
                                                     'assets/plus.png',
                                                     height: 15,
@@ -485,8 +460,7 @@ class _MyCustomFormState extends State<CartPage> {
                   if (check.isEmpty) {
                     Navigator.push(
                       context,
-                      new MaterialPageRoute(
-                          builder: (context) => new PromoCodePage()),
+                      new MaterialPageRoute(builder: (context) => new PromoCodePage()),
                     ).then((value) {
                       setState(() {
                         checkIfPromoSaved().then((value) {
@@ -581,8 +555,7 @@ class _MyCustomFormState extends State<CartPage> {
                   children: <Widget>[
                     Text(
                       'Wallet Balance',
-                      style:
-                          TextStyle(fontSize: 18, color: Colors.colorlightgrey),
+                      style: TextStyle(fontSize: 18, color: Colors.colorlightgrey),
                     ),
                     Text(
                       walletBalance,
@@ -648,8 +621,7 @@ class _MyCustomFormState extends State<CartPage> {
                       children: <Widget>[
                         Text(
                           'Item Total',
-                          style: TextStyle(
-                              fontSize: 18, color: Colors.colorlightgrey),
+                          style: TextStyle(fontSize: 18, color: Colors.colorlightgrey),
                         ),
                         Text(
                           '₹$totalAmount',
@@ -666,13 +638,11 @@ class _MyCustomFormState extends State<CartPage> {
                             children: <Widget>[
                               Text(
                                 'Coupon Discount',
-                                style: TextStyle(
-                                    fontSize: 18, color: Colors.colorlightgrey),
+                                style: TextStyle(fontSize: 18, color: Colors.colorlightgrey),
                               ),
                               Text(
                                 '-₹$discount',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.black),
+                                style: TextStyle(fontSize: 16, color: Colors.black),
                               ),
                             ],
                           ),
@@ -706,16 +676,12 @@ class _MyCustomFormState extends State<CartPage> {
                         Text(
                           'Total',
                           style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
+                              fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                         Text(
                           '₹$checkoutTotal',
                           style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold),
+                              fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -982,8 +948,7 @@ class LogoutOverlay extends StatefulWidget {
   State<StatefulWidget> createState() => LogoutOverlayState();
 }
 
-class LogoutOverlayState extends State<LogoutOverlay>
-    with SingleTickerProviderStateMixin {
+class LogoutOverlayState extends State<LogoutOverlay> with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation<double> scaleAnimation;
   final myController = TextEditingController();
@@ -992,10 +957,8 @@ class LogoutOverlayState extends State<LogoutOverlay>
   void initState() {
     super.initState();
     setState(() {});
-    controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 450));
-    scaleAnimation =
-        CurvedAnimation(parent: controller, curve: Curves.elasticInOut);
+    controller = AnimationController(vsync: this, duration: Duration(milliseconds: 450));
+    scaleAnimation = CurvedAnimation(parent: controller, curve: Curves.elasticInOut);
 
     controller.addListener(() {
       setState(() {});
@@ -1017,14 +980,12 @@ class LogoutOverlayState extends State<LogoutOverlay>
               height: 180.0,
               decoration: ShapeDecoration(
                   color: Color.fromRGBO(41, 167, 77, 10),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0))),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0))),
               child: Column(
                 children: <Widget>[
                   Expanded(
                       child: Padding(
-                    padding: const EdgeInsets.only(
-                        top: 30.0, left: 20.0, right: 20.0),
+                    padding: const EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0),
                     child: Text(
                       "Please Enter Promo code",
                       style: TextStyle(color: Colors.white, fontSize: 16.0),
@@ -1032,8 +993,7 @@ class LogoutOverlayState extends State<LogoutOverlay>
                   )),
                   Expanded(
                       child: Padding(
-                          padding: const EdgeInsets.only(
-                              top: 8, left: 20.0, right: 20.0),
+                          padding: const EdgeInsets.only(top: 8, left: 20.0, right: 20.0),
                           child: Container(
                             decoration: new BoxDecoration(
                               shape: BoxShape.rectangle,
@@ -1064,8 +1024,8 @@ class LogoutOverlayState extends State<LogoutOverlay>
                             minWidth: 110.0,
                             child: RaisedButton(
                               color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(5.0)),
+                              shape:
+                                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
                               splashColor: Colors.white.withAlpha(40),
                               child: Text(
                                 'Ok',
@@ -1233,8 +1193,7 @@ class _DynamicDialogState extends State<DynamicDialog> {
               height: 40,
               width: 150,
               decoration: new BoxDecoration(
-                  borderRadius:
-                      new BorderRadius.all(new Radius.circular(100.0)),
+                  borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
                   color: Colors.colorgreen),
               child: Center(
                 child: new Text("Apply",
