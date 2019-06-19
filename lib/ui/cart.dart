@@ -3,9 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/cart_bloc.dart';
 import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
+import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/resources/database.dart';
+import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/PromoCodePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -27,6 +30,8 @@ class _MyCustomFormState extends State<CartPage> {
   int checkoutTotal = 0;
   num discount = 0;
   int walletDiscount = 0;
+  ProfileModel waletb;
+  var prefs = SharedPrefs();
   @override
   void initState() {
     super.initState();
@@ -37,7 +42,10 @@ class _MyCustomFormState extends State<CartPage> {
         });
       });
     });
-
+    prefs.getProfile().then((onValue) {
+      waletb = onValue;
+      walletBalance = waletb.walletCredits.toString();
+    });
     bloc.fetchData();
   }
 
@@ -536,21 +544,23 @@ class _MyCustomFormState extends State<CartPage> {
             child: GestureDetector(
               onTap: () {
                 setState(() {
+                  if (int.parse(walletBalance) > 0) {
                   showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return Material(
                           type: MaterialType.transparency,
                           child: Container(
-                            child: DynamicDialog(),
+                            child: DynamicDialog(waletb),
                             padding: EdgeInsets.only(top: 40, bottom: 40),
                           ),
                         );
                       }).then((value) {
                     setState(() {
+                      //  walletDiscount = value;
                       getBalance().then((onValue) {
-                        // walletBalance = onValue;
-                        //  walletDiscount = int.parse(onValue);
+                        print("LLLLLLLLLLLL: " + onValue);
+//                        walletDiscount = onValue as int;
                       });
                     });
 
@@ -558,6 +568,10 @@ class _MyCustomFormState extends State<CartPage> {
                       walletDiscount = int.parse(value);
                     });
                   });
+                  } else {
+                    Toast.show("Insufficiant Balance in Wallet.", context,
+                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                  }
                 });
               },
               child: Container(
@@ -657,6 +671,26 @@ class _MyCustomFormState extends State<CartPage> {
                               ),
                               Text(
                                 '-₹$discount',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black),
+                              ),
+                            ],
+                          ),
+                        )
+                      : Container(),
+                  walletDiscount != 0
+                      ? Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(
+                                'Wallet Discount',
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.colorlightgrey),
+                              ),
+                              Text(
+                                '-₹$walletDiscount',
                                 style: TextStyle(
                                     fontSize: 16, color: Colors.black),
                               ),
@@ -849,6 +883,7 @@ class _MyCustomFormState extends State<CartPage> {
       discount = 30;
       appliedValue = "Apply promo code";
     } else {
+      discount = 20;
       appliedValue = "Promo code applied";
     }
     // });
@@ -872,7 +907,13 @@ class _MyCustomFormState extends State<CartPage> {
 //    print('Pressed $counter times.');
       String vv = await prefs.getString('walletBal') ?? "";
       print("GGGGGGGGGGGGGWWWW $vv ");
-      walletBalance = "-₹" + vv;
+      if (waletb.walletCredits > int.parse(vv)) {
+        walletDiscount = int.parse(vv);
+      } else {
+        vv = "0";
+        Toast.show("Amount is more than Balance in Wallet.", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
       return vv;
     });
   }
@@ -1084,12 +1125,17 @@ class LogoutOverlayState extends State<LogoutOverlay>
 }
 
 class DynamicDialog extends StatefulWidget {
+  ProfileModel waletb;
+  DynamicDialog(ProfileModel waletb) {
+    this.waletb = waletb;
+  }
+
 //  DynamicDialog({this.title});
 
 //  final String title;
 
   @override
-  _DynamicDialogState createState() => _DynamicDialogState();
+  _DynamicDialogState createState() => _DynamicDialogState(waletb);
 }
 
 class _DynamicDialogState extends State<DynamicDialog> {
@@ -1099,7 +1145,11 @@ class _DynamicDialogState extends State<DynamicDialog> {
   String image2 = "assets/ic_fav.png";
   String currentimage = "assets/ic_fav.png";
   var textFieldController = TextEditingController();
+  ProfileModel waletb;
 
+  _DynamicDialogState(ProfileModel waletb) {
+    this.waletb = waletb;
+  }
   _verticalDivider() => BoxDecoration(
         border: Border(
           right: BorderSide(
@@ -1139,7 +1189,7 @@ class _DynamicDialogState extends State<DynamicDialog> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
                       Text(
-                        "110",
+                        waletb.walletCredits.toString(),
                         style: TextStyle(color: Colors.white, fontSize: 26),
                       ),
                       Text(

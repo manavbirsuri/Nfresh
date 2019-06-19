@@ -215,7 +215,9 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                   context,
                   MaterialPageRoute(
                     builder: (context) => CartPage(),
-                  ));
+                  )).then((value) {
+                _count = getCartCount() as int;
+              });
             },
             child: Padding(
               padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
