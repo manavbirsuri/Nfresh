@@ -545,29 +545,29 @@ class _MyCustomFormState extends State<CartPage> {
               onTap: () {
                 setState(() {
                   if (int.parse(walletBalance) > 0) {
-                  showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return Material(
-                          type: MaterialType.transparency,
-                          child: Container(
-                            child: DynamicDialog(waletb),
-                            padding: EdgeInsets.only(top: 40, bottom: 40),
-                          ),
-                        );
-                      }).then((value) {
-                    setState(() {
-                      //  walletDiscount = value;
-                      getBalance().then((onValue) {
-                        print("LLLLLLLLLLLL: " + onValue);
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Material(
+                            type: MaterialType.transparency,
+                            child: Container(
+                              child: DynamicDialog(waletb),
+                              padding: EdgeInsets.only(top: 40, bottom: 40),
+                            ),
+                          );
+                        }).then((value) {
+                      setState(() {
+                        //  walletDiscount = value;
+                        getBalance().then((onValue) {
+                          print("LLLLLLLLLLLL: " + onValue);
 //                        walletDiscount = onValue as int;
+                        });
+                      });
+
+                      setState(() {
+                        walletDiscount = int.parse(value);
                       });
                     });
-
-                    setState(() {
-                      walletDiscount = int.parse(value);
-                    });
-                  });
                   } else {
                     Toast.show("Insufficiant Balance in Wallet.", context,
                         duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
