@@ -9,8 +9,7 @@ import 'package:nfresh/ui/cart.dart';
 
 class ShowCategoryDetailPage extends StatefulWidget {
   final Category subCategory;
-  ShowCategoryDetailPage({Key key, @required this.subCategory})
-      : super(key: key);
+  ShowCategoryDetailPage({Key key, @required this.subCategory}) : super(key: key);
 
   @override
   _ShowCategoryDetailPageState createState() => _ShowCategoryDetailPageState();
@@ -29,95 +28,98 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
   @override
   void initState() {
     super.initState();
-
     bloc.fetchData(widget.subCategory.id.toString());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          title: Text(
-            widget.subCategory.name,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context, false),
-          ),
-          actions: [
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Image.asset(
-                "assets/noti.png",
-                height: 25,
-                width: 25,
-              ),
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        title: Text(
+          widget.subCategory.name,
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.pop(context, false),
+        ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.all(8),
+            child: Image.asset(
+              "assets/noti.png",
+              height: 25,
+              width: 25,
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CartPage(),
-                    ));
-              },
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
-                child: Stack(
-                  children: <Widget>[
-                    new Image.asset(
-                      "assets/cart.png",
-                      height: 25,
-                      width: 25,
-                    ),
-                    new Positioned(
-                      right: 0,
-                      child: new Container(
-                        padding: EdgeInsets.all(1),
-                        decoration: new BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        constraints: BoxConstraints(
-                          minWidth: 12,
-                          minHeight: 12,
-                        ),
-                        child: new Text(
-                          '3',
-                          style: new TextStyle(
-                            color: Colors.white,
-                            fontSize: 8,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CartPage(),
+                  ));
+            },
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
+              child: Stack(
+                children: <Widget>[
+                  new Image.asset(
+                    "assets/cart.png",
+                    height: 25,
+                    width: 25,
+                  ),
+                  new Positioned(
+                    right: 0,
+                    child: new Container(
+                      padding: EdgeInsets.all(1),
+                      decoration: new BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(6),
                       ),
-                    )
-                  ],
-                ),
-
-//              child: Image.asset(
-//                "assets/cart.png",
-//                height: 25,
-//                width: 25,
-//              ),
+                      constraints: BoxConstraints(
+                        minWidth: 12,
+                        minHeight: 12,
+                      ),
+                      child: new Text(
+                        '3',
+                        style: new TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  )
+                ],
               ),
             ),
+          ),
+        ],
+      ),
+      body: Container(
+        color: Colors.colorlightgreyback,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            StreamBuilder(
+              stream: bloc.catProductsList,
+              builder: (context, AsyncSnapshot<ResponseCatProducts> snapshot) {
+                if (snapshot.hasData) {
+                  return mainContent(snapshot);
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+                return Center(child: CircularProgressIndicator());
+              },
+            )
           ],
         ),
-        body: StreamBuilder(
-          stream: bloc.catProductsList,
-          builder: (context, AsyncSnapshot<ResponseCatProducts> snapshot) {
-            if (snapshot.hasData) {
-              return mainContent(snapshot);
-            } else if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-            return Center(child: CircularProgressIndicator());
-          },
-        ));
+      ),
+    );
   }
 
   showListView(List<Product> products) {
@@ -169,8 +171,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                       Navigator.push(
                                           context,
                                           new MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ProductDetailPage(
+                                              builder: (context) => ProductDetailPage(
                                                     product: product,
                                                   )));
                                     },
@@ -222,12 +223,13 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                   GestureDetector(
                                     onTap: () {
                                       Navigator.push(
-                                          context,
-                                          new MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ProductDetailPage(
-                                                    product: product,
-                                                  )));
+                                        context,
+                                        new MaterialPageRoute(
+                                          builder: (context) => ProductDetailPage(
+                                                product: product,
+                                              ),
+                                        ),
+                                      );
                                     },
                                     child: Column(
                                       children: <Widget>[
@@ -246,8 +248,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                           child: Text(
                                             product.nameHindi,
                                             style: TextStyle(
-                                                fontSize: 16,
-                                                color: Colors.colorlightgrey),
+                                                fontSize: 16, color: Colors.colorlightgrey),
                                             maxLines: 2,
                                             overflow: TextOverflow.ellipsis,
                                           ),
@@ -258,8 +259,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                   Padding(
                                     padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                     child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             '₹${product.selectedPacking.price}  ',
@@ -274,8 +274,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.colororange,
-                                                decoration:
-                                                    TextDecoration.lineThrough),
+                                                decoration: TextDecoration.lineThrough),
                                             textAlign: TextAlign.start,
                                           ),
                                         ]),
@@ -284,8 +283,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                     padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: <Widget>[
                                         Container(
                                           height: 32,
@@ -293,30 +291,22 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                           decoration: myBoxDecoration3(),
                                           child: Center(
                                             child: Padding(
-                                              padding: EdgeInsets.only(
-                                                  right: 8, left: 8),
-                                              child: DropdownButtonFormField<
-                                                  Packing>(
-                                                decoration:
-                                                    InputDecoration.collapsed(
-                                                        hintText: ''),
+                                              padding: EdgeInsets.only(right: 8, left: 8),
+                                              child: DropdownButtonFormField<Packing>(
+                                                decoration: InputDecoration.collapsed(hintText: ''),
                                                 value: product.selectedPacking,
-                                                items: product.packing
-                                                    .map((Packing value) {
-                                                  return new DropdownMenuItem<
-                                                      Packing>(
+                                                items: product.packing.map((Packing value) {
+                                                  return new DropdownMenuItem<Packing>(
                                                     value: value,
                                                     child: new Text(
                                                       value.unitQtyShow,
-                                                      style: TextStyle(
-                                                          color: Colors.grey),
+                                                      style: TextStyle(color: Colors.grey),
                                                     ),
                                                   );
                                                 }).toList(),
                                                 onChanged: (newValue) {
                                                   setState(() {
-                                                    product.selectedPacking =
-                                                        newValue;
+                                                    product.selectedPacking = newValue;
                                                   });
                                                 },
                                               ),
@@ -366,10 +356,8 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                 child: IntrinsicHeight(
                                   child: Center(
                                     child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: <Widget>[
                                         Container(
                                           // color: Colors.grey,
@@ -381,8 +369,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                             },
                                             child: Center(
                                               child: Padding(
-                                                padding:
-                                                    EdgeInsets.only(bottom: 16),
+                                                padding: EdgeInsets.only(bottom: 16),
                                                 child: Icon(
                                                   Icons.minimize,
                                                   color: Colors.colorgreen,
@@ -536,34 +523,32 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                             padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                             child: Text(
                               product.nameHindi,
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.colorlightgrey),
+                              style: TextStyle(fontSize: 16, color: Colors.colorlightgrey),
                               textAlign: TextAlign.center,
                             ),
                           ),
                           Padding(
                             padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                            child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Text(
-                                    '₹${product.selectedPacking.price}  ',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      color: Colors.colorlightgrey,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  Text(
-                                    '₹${product.displayPrice}',
-                                    style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.colororange,
-                                        decoration: TextDecoration.lineThrough),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ]),
+                            child:
+                                Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                              Text(
+                                '₹${product.selectedPacking.price}  ',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.colorlightgrey,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              Text(
+                                '₹${product.displayPrice}',
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.colororange,
+                                    decoration: TextDecoration.lineThrough),
+                                textAlign: TextAlign.center,
+                              ),
+                            ]),
                           ),
                         ],
                       ),
@@ -582,8 +567,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                               child: Padding(
                                 padding: EdgeInsets.only(right: 8, left: 8),
                                 child: DropdownButtonFormField<Packing>(
-                                  decoration:
-                                      InputDecoration.collapsed(hintText: ''),
+                                  decoration: InputDecoration.collapsed(hintText: ''),
                                   value: product.selectedPacking,
                                   items: product.packing.map((Packing value) {
                                     return new DropdownMenuItem<Packing>(
@@ -617,10 +601,8 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                             child: Center(
                               child: IntrinsicHeight(
                                 child: Row(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   children: <Widget>[
                                     GestureDetector(
                                       onTap: () {
@@ -632,8 +614,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                         color: Colors.transparent,
                                         child: Center(
                                           child: Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                8, 10, 8, 10),
+                                            padding: EdgeInsets.fromLTRB(8, 10, 8, 10),
                                             child: Image.asset(
                                               'assets/minus.png',
                                               height: 15,
@@ -664,8 +645,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                       child: Container(
                                         color: Colors.transparent,
                                         child: Padding(
-                                          padding:
-                                              EdgeInsets.fromLTRB(8, 10, 8, 10),
+                                          padding: EdgeInsets.fromLTRB(8, 10, 8, 10),
                                           child: Image.asset(
                                             'assets/plus.png',
                                             height: 15,
@@ -740,7 +720,6 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         Container(
-          color: Colors.colorlightgreyback,
           child: Padding(
             padding: EdgeInsets.only(top: 8, bottom: 8),
             child: Row(
@@ -788,9 +767,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                 ),
                 GestureDetector(
                     onTap: () {},
-                    child: Container(
-                        child: Image.asset('assets/sort.png',
-                            height: 20, width: 20))),
+                    child: Container(child: Image.asset('assets/sort.png', height: 20, width: 20))),
               ],
             ),
           ),
@@ -864,8 +841,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                               children: <Widget>[
                                 Text(
                                   'Checkout',
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
+                                  style: TextStyle(fontSize: 18, color: Colors.white),
                                 ),
                               ],
                               mainAxisAlignment: MainAxisAlignment.center,
