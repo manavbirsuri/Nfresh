@@ -10,6 +10,7 @@ import 'package:nfresh/models/responses/response_login.dart';
 import 'package:nfresh/models/responses/response_order.dart';
 import 'package:nfresh/models/responses/response_otp.dart';
 import 'package:nfresh/models/responses/response_profile.dart';
+import 'package:nfresh/models/responses/response_related_products.dart';
 import 'package:nfresh/models/responses/response_search.dart';
 import 'package:nfresh/models/responses/response_signup.dart';
 import 'package:nfresh/models/responses/response_subcat.dart';
@@ -234,6 +235,21 @@ class ApiProvider {
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load orderhistory service');
+    }
+  }
+
+  Future<ResponseRelatedProducts> getRelatedProducts(auth, productId) async {
+    Map map = {
+      'auth_code': auth,
+      'product_id': productId,
+    };
+    final response = await client.post("$baseUrl/getrelatedproducts", body: map);
+    print(response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseRelatedProducts.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load getrelatedproducts service');
     }
   }
 }

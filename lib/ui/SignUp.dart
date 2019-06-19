@@ -99,12 +99,12 @@ class stateProfilePage extends State<stateProfile> {
       children: <Widget>[
         new Scaffold(
           appBar: new AppBar(
-            leading: new IconButton(
-                icon: new Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
-                ),
-                onPressed: () => Navigator.pop(context)),
+//            leading: new IconButton(
+//                icon: new Icon(
+//                  Icons.arrow_back,
+//                  color: Colors.black,
+//                ),
+//                onPressed: () => Navigator.pop(context)),
             elevation: 0.0,
             centerTitle: true,
             backgroundColor: Colors.white,

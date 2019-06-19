@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/cart_bloc.dart';
 import 'package:nfresh/bloc/cat_products_bloc.dart';
+import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/category_model.dart';
 import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/responses/response_cat_products.dart';
+import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:nfresh/ui/cart.dart';
 
@@ -25,96 +28,137 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
 
   var pos = 0;
 
+  var blocFav = SetFavBloc();
+  var _database = DatabaseHelper.instance;
+  int totalAmount = 0;
+  var blocCart = CartBloc();
+
+  int cartCount = 0;
+
   @override
   void initState() {
     super.initState();
+    setState(() {
+      _database.getCartCount().then((value) {
+        cartCount = value;
+      });
+    });
     bloc.fetchData(widget.subCategory.id.toString());
+    blocCart.fetchData();
+    blocCart.catProductsList.listen((response) {
+      setState(() {
+        calculateTotal(response);
+      });
+    });
+  }
+
+  calculateTotal(List<Product> products) async {
+    totalAmount = 0;
+    for (Product product in products) {
+      totalAmount += (product.selectedPacking.price * product.count);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          automaticallyImplyLeading: true,
-          title: Text(
-            widget.subCategory.name,
-            style: TextStyle(fontWeight: FontWeight.bold),
+    return Stack(
+      fit: StackFit.expand,
+      children: <Widget>[
+        Positioned(
+          child: Image.asset(
+            'assets/sigbg.jpg',
+            fit: BoxFit.cover,
           ),
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context, false),
-          ),
-          actions: [
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Image.asset(
-                "assets/noti.png",
-                height: 25,
-                width: 25,
-              ),
+        ),
+        Scaffold(
+          backgroundColor: Colors.colorgreen.withOpacity(0.5),
+          appBar: AppBar(
+            backgroundColor: Colors.colorgreen.withOpacity(0.0),
+            // automaticallyImplyLeading: true,
+            title: Text(
+              widget.subCategory.name,
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CartPage(),
-                    ));
-              },
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
-                child: Stack(
-                  children: <Widget>[
-                    new Image.asset(
-                      "assets/cart.png",
-                      height: 25,
-                      width: 25,
-                    ),
-                    new Positioned(
-                      right: 0,
-                      child: new Container(
-                        padding: EdgeInsets.all(1),
-                        decoration: new BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        constraints: BoxConstraints(
-                          minWidth: 12,
-                          minHeight: 12,
-                        ),
-                        child: new Text(
-                          '3',
-                          style: new TextStyle(
-                            color: Colors.white,
-                            fontSize: 8,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    )
-                  ],
+            centerTitle: true,
+//            leading: IconButton(
+//              icon: Icon(Icons.arrow_back),
+//              onPressed: () => Navigator.pop(context, false),
+//            ),
+            actions: [
+              Padding(
+                padding: EdgeInsets.all(8),
+                child: Image.asset(
+                  "assets/noti.png",
+                  height: 25,
+                  width: 25,
                 ),
               ),
-            ),
-          ],
-        ),
-        body: StreamBuilder(
-          stream: bloc.catProductsList,
-          builder: (context, AsyncSnapshot<ResponseCatProducts> snapshot) {
-            if (snapshot.hasData) {
-              return mainContent(snapshot);
-            } else if (snapshot.hasError) {
-              return Text(snapshot.error.toString());
-            }
-            return Center(child: CircularProgressIndicator());
-          },
-        ));
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CartPage(),
+                      ));
+                },
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
+                  child: Stack(
+                    children: <Widget>[
+                      new Image.asset(
+                        "assets/cart.png",
+                        height: 25,
+                        width: 25,
+                      ),
+                      new Positioned(
+                        right: 0,
+                        child: cartCount > 0
+                            ? Container(
+                                padding: EdgeInsets.all(1),
+                                decoration: new BoxDecoration(
+                                  color: Colors.red,
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                constraints: BoxConstraints(
+                                  minWidth: 12,
+                                  minHeight: 12,
+                                ),
+                                child: new Text(
+                                  cartCount.toString(),
+                                  style: new TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 8,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              )
+                            : Text(""),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+          body: StreamBuilder(
+            stream: bloc.catProductsList,
+            builder: (context, AsyncSnapshot<ResponseCatProducts> snapshot) {
+              if (snapshot.hasData) {
+                return mainContent(snapshot);
+              } else if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              }
+              return Center(child: CircularProgressIndicator());
+            },
+          ),
+        )
+      ],
+    );
   }
 
   showListView(List<Product> products) {
     return Container(
-      //color: Colors.colorlightgreyback,
+      color: Colors.white,
       child: ListView.builder(
         shrinkWrap: true,
         scrollDirection: Axis.vertical,
@@ -188,6 +232,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                           } else {
                                             product.fav = "1";
                                           }
+                                          blocFav.fetchData(product.fav, product.id.toString());
                                         });
                                       },
                                       child: product.fav == "1"
@@ -436,7 +481,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
         // Create a grid with 2 columns. If you change the scrollDirection to
         // horizontal, this would produce 2 rows.
         //childAspectRatio: (itemWidth / itemHeight),
-        childAspectRatio: 1 / 1.55,
+        childAspectRatio: MediaQuery.of(context).size.width <= 360 ? 1 / 1.70 : 1 / 1.55,
         crossAxisCount: 2,
         shrinkWrap: true,
         // Generate 100 Widgets that display their index in the List
@@ -469,6 +514,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                     } else {
                                       product.fav = "1";
                                     }
+                                    blocFav.fetchData(product.fav, product.id.toString());
                                   });
                                 },
                                 child: product.fav == "1"
@@ -499,7 +545,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          goToProductDetail();
+                          goToProductDetail(product);
                         },
                         child: Column(
                           children: <Widget>[
@@ -676,13 +722,28 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
   void incrementCount(Product product) {
     if (product.count < product.inventory) {
       product.count = product.count + 1;
+      _database.update(product);
+      Future.delayed(const Duration(milliseconds: 500), () async {
+        cartCount = await _database.getCartCount();
+      });
+    } else {
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text("Available inventory : ${product.inventory}"),
+      ));
     }
   }
 
   void decrementCount(Product product) {
-    if (product.count > 0) {
+    if (product.count > 1) {
       product.count = product.count - 1;
+      _database.update(product);
+    } else if (product.count == 1) {
+      product.count = product.count - 1;
+      _database.remove(product);
     }
+    Future.delayed(const Duration(milliseconds: 500), () async {
+      cartCount = await _database.getCartCount();
+    });
   }
 
   BoxDecoration myBoxDecoration() {
@@ -722,6 +783,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               Container(
+                color: Colors.white,
                 child: Padding(
                   padding: EdgeInsets.only(top: 8, bottom: 8),
                   child: Row(
@@ -798,7 +860,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                   child: Column(
                                     children: <Widget>[
                                       Text(
-                                        '₹250',
+                                        '₹$totalAmount',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
                                           fontSize: 26,
@@ -873,7 +935,15 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
         : noDataView();
   }
 
-  void goToProductDetail() {}
+  void goToProductDetail(Product product) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ProductDetailPage(
+                product: product,
+              ),
+        ));
+  }
 
   Widget noDataView() {
     return Container(

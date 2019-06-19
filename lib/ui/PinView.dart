@@ -49,12 +49,13 @@ class PinState extends State<PinViewPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: new AppBar(
-        leading: new IconButton(
-            icon: new Icon(
-              Icons.arrow_back,
-              color: Colors.black,
-            ),
-            onPressed: () => Navigator.pop(context)),
+//        leading: new IconButton(
+//          icon: new Icon(
+//            Icons.arrow_back,
+//            color: Colors.black,
+//          ),
+//          onPressed: () => Navigator.pop(context),
+//        ),
         elevation: 0.0,
         centerTitle: true,
         backgroundColor: Colors.white,
@@ -80,10 +81,8 @@ class PinState extends State<PinViewPage> {
                 child: Center(
                   child: Text(
                     "OTP Verification",
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold),
+                    style:
+                        TextStyle(color: Colors.black, fontSize: 26, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -121,9 +120,7 @@ class PinState extends State<PinViewPage> {
                   child: Text(
                     "RESEND",
                     style: TextStyle(
-                        color: Colors.colorgreen,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold),
+                        color: Colors.colorgreen, fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -147,8 +144,7 @@ class PinState extends State<PinViewPage> {
                 },
                 child: Container(
                   decoration: new BoxDecoration(
-                      borderRadius:
-                          new BorderRadius.all(new Radius.circular(100.0)),
+                      borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
                       color: Colors.colorgreen),
                   child: SizedBox(
                     width: double.infinity,

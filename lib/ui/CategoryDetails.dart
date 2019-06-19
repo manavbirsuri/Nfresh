@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/subcat_bloc.dart';
 import 'package:nfresh/models/category_model.dart';
 import 'package:nfresh/models/responses/response_subcat.dart';
+import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/ui/ShowCategoryDetailPage.dart';
 import 'package:nfresh/ui/cart.dart';
 
@@ -14,10 +15,18 @@ class CategoryDetails extends StatefulWidget {
 
 class _CategoryDetailsState extends State<CategoryDetails> {
   var bloc = SubCatBloc();
+
+  var _database = DatabaseHelper.instance;
+
+  int cartCount = 0;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
+    setState(() {
+      _database.getCartCount().then((value) {
+        cartCount = value;
+      });
+    });
     bloc.fetchSubCategories(widget.selectedCategory.id.toString());
   }
 
@@ -39,10 +48,10 @@ class _CategoryDetailsState extends State<CategoryDetails> {
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
           centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context, false),
-          ),
+//          leading: IconButton(
+//            icon: Icon(Icons.arrow_back),
+//            onPressed: () => Navigator.pop(context, false),
+//          ),
           actions: [
             Padding(
               padding: EdgeInsets.all(8),
@@ -82,7 +91,7 @@ class _CategoryDetailsState extends State<CategoryDetails> {
                           minHeight: 12,
                         ),
                         child: new Text(
-                          '3',
+                          cartCount > 0 ? cartCount.toString() : '',
                           style: new TextStyle(
                             color: Colors.white,
                             fontSize: 8,
@@ -135,8 +144,7 @@ class _CategoryDetailsState extends State<CategoryDetails> {
                 Navigator.push(
                     context,
                     new MaterialPageRoute(
-                        builder: (context) =>
-                            ShowCategoryDetailPage(subCategory: subCat)));
+                        builder: (context) => ShowCategoryDetailPage(subCategory: subCat)));
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,

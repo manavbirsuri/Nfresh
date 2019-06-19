@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/cart_bloc.dart';
-import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/resources/database.dart';
@@ -284,30 +283,34 @@ class _MyCustomFormState extends State<CartPage> {
                                     child: Center(
                                       child: Padding(
                                         padding: EdgeInsets.only(right: 8, left: 8),
-                                        child: DropdownButtonFormField<Packing>(
-                                          decoration: InputDecoration.collapsed(
-                                              hintText: product.selectedPacking.unitQtyShow),
-                                          value: null,
-                                          //product.selectedPacking,
-                                          //value: null,
-                                          items: product.packing //getQtyList(products[position])
-                                              .map((Packing value) {
-                                            return new DropdownMenuItem<Packing>(
-                                              value: value,
-                                              child: new Text(
-                                                value.unitQtyShow,
-                                                style: TextStyle(color: Colors.grey),
-                                              ),
-                                            );
-                                          }).toList(),
-                                          onChanged: (newValue) {
-                                            setState(() {
-                                              product.selectedPacking = newValue;
-                                              product.count = 1;
-                                              // product.selectedPrice =
-                                            });
-                                          },
+                                        child: Text(
+                                          product.selectedPacking.unitQtyShow,
+                                          style: TextStyle(color: Colors.grey),
                                         ),
+//                                        child: DropdownButtonFormField<Packing>(
+//                                          decoration: InputDecoration.collapsed(
+//                                              hintText: product.selectedPacking.unitQtyShow),
+//                                          value: null,
+//                                          //product.selectedPacking,
+//                                          //value: null,
+//                                          items: product.packing //getQtyList(products[position])
+//                                              .map((Packing value) {
+//                                            return new DropdownMenuItem<Packing>(
+//                                              value: value,
+//                                              child: new Text(
+//                                                value.unitQtyShow,
+//                                                style: TextStyle(color: Colors.grey),
+//                                              ),
+//                                            );
+//                                          }).toList(),
+//                                          onChanged: (newValue) {
+//                                            setState(() {
+//                                              product.selectedPacking = newValue;
+//                                              product.count = 1;
+//                                              // product.selectedPrice =
+//                                            });
+//                                          },
+//                                        ),
                                       ),
                                     ),
                                   ),
@@ -656,13 +659,11 @@ class _MyCustomFormState extends State<CartPage> {
                             children: <Widget>[
                               Text(
                                 'Wallet Discount',
-                                style: TextStyle(
-                                    fontSize: 18, color: Colors.colorlightgrey),
+                                style: TextStyle(fontSize: 18, color: Colors.colorlightgrey),
                               ),
                               Text(
                                 '-₹$walletDiscount',
-                                style: TextStyle(
-                                    fontSize: 16, color: Colors.black),
+                                style: TextStyle(fontSize: 16, color: Colors.black),
                               ),
                             ],
                           ),
@@ -846,7 +847,7 @@ class _MyCustomFormState extends State<CartPage> {
     check = await prefs.getString('promoApplies') ?? "";
 
     if (check.isEmpty) {
-      discount = 30;
+      discount = 0;
       appliedValue = "Apply promo code";
     } else {
       discount = 20;

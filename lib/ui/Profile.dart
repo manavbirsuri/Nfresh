@@ -35,12 +35,12 @@ class stateProfilePage extends State<stateProfile> {
         ),
         new Scaffold(
           appBar: new AppBar(
-            leading: new IconButton(
+            /* leading: new IconButton(
                 icon: new Icon(
                   Icons.arrow_back,
                   color: Colors.white,
                 ),
-                onPressed: () => Navigator.pop(context)),
+                onPressed: () => Navigator.pop(context)),*/
             actions: [
               Center(
                   child: GestureDetector(
@@ -89,12 +89,10 @@ class stateProfilePage extends State<stateProfile> {
                 child: Material(
                   elevation: 16.0,
                   borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(18),
-                      topLeft: Radius.circular(18)),
+                      topRight: Radius.circular(18), topLeft: Radius.circular(18)),
                   child: ClipRRect(
                     borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(18),
-                        topLeft: Radius.circular(18)),
+                        topRight: Radius.circular(18), topLeft: Radius.circular(18)),
                     child: Container(
                       child: Padding(
                         padding: EdgeInsets.all(16),
@@ -113,11 +111,9 @@ class stateProfilePage extends State<stateProfile> {
                                       child: TextFormField(
                                         textInputAction: TextInputAction.next,
                                         autofocus: true,
-                                        decoration:
-                                            InputDecoration(labelText: 'Name'),
+                                        decoration: InputDecoration(labelText: 'Name'),
                                         onFieldSubmitted: (v) {
-                                          FocusScope.of(context)
-                                              .requestFocus(focus);
+                                          FocusScope.of(context).requestFocus(focus);
                                         },
                                       ),
 
@@ -131,11 +127,9 @@ class stateProfilePage extends State<stateProfile> {
                                       child: TextFormField(
                                         focusNode: focus,
                                         textInputAction: TextInputAction.next,
-                                        decoration:
-                                            InputDecoration(labelText: 'Email'),
+                                        decoration: InputDecoration(labelText: 'Email'),
                                         onFieldSubmitted: (v) {
-                                          FocusScope.of(context)
-                                              .requestFocus(focus1);
+                                          FocusScope.of(context).requestFocus(focus1);
                                         },
                                       ),
                                     ),
@@ -144,11 +138,9 @@ class stateProfilePage extends State<stateProfile> {
                                       child: TextFormField(
                                         focusNode: focus1,
                                         textInputAction: TextInputAction.next,
-                                        decoration: InputDecoration(
-                                            labelText: 'Phone Number'),
+                                        decoration: InputDecoration(labelText: 'Phone Number'),
                                         onFieldSubmitted: (v) {
-                                          FocusScope.of(context)
-                                              .requestFocus(focus2);
+                                          FocusScope.of(context).requestFocus(focus2);
                                         },
                                       ),
                                     ),
@@ -157,11 +149,9 @@ class stateProfilePage extends State<stateProfile> {
                                       child: TextFormField(
                                         focusNode: focus2,
                                         textInputAction: TextInputAction.next,
-                                        decoration: InputDecoration(
-                                            labelText: 'Password'),
+                                        decoration: InputDecoration(labelText: 'Password'),
                                         onFieldSubmitted: (v) {
-                                          FocusScope.of(context)
-                                              .requestFocus(focus3);
+                                          FocusScope.of(context).requestFocus(focus3);
                                         },
                                       ),
                                     ),
@@ -170,11 +160,9 @@ class stateProfilePage extends State<stateProfile> {
                                       child: TextFormField(
                                         focusNode: focus3,
                                         textInputAction: TextInputAction.next,
-                                        decoration:
-                                            InputDecoration(labelText: 'City'),
+                                        decoration: InputDecoration(labelText: 'City'),
                                         onFieldSubmitted: (v) {
-                                          FocusScope.of(context)
-                                              .requestFocus(focus4);
+                                          FocusScope.of(context).requestFocus(focus4);
                                         },
                                       ),
                                     ),
@@ -183,8 +171,7 @@ class stateProfilePage extends State<stateProfile> {
                                       child: TextFormField(
                                         focusNode: focus4,
                                         textInputAction: TextInputAction.done,
-                                        decoration:
-                                            InputDecoration(labelText: 'Area'),
+                                        decoration: InputDecoration(labelText: 'Area'),
                                       ),
                                     ),
                                     Container(
