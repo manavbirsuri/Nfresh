@@ -268,4 +268,19 @@ class ApiProvider {
       throw Exception('NFresh: Failed to load getrelatedproducts service');
     }
   }
+
+  Future<String> getPayTmChecksum(auth, Map<String, dynamic> data) async {
+    Map map = {
+      'auth_code': auth,
+      'data': jsonEncode(data),
+    };
+    final response = await client.post("$baseUrl/getchecksum", body: map);
+    print(response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load getchecksum service');
+    }
+  }
 }

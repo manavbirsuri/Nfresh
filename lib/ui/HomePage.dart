@@ -172,7 +172,11 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
               padding: EdgeInsets.all(4),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(context, new MaterialPageRoute(builder: (context) => CategoryDetails(selectedCategory: categories[position])));
+                  Navigator.push(
+                      context,
+                      new MaterialPageRoute(
+                          builder: (context) =>
+                              CategoryDetails(selectedCategory: categories[position])));
                 },
                 child: Card(
                   shape: RoundedRectangleBorder(
@@ -325,28 +329,34 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                       padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                                       child: Text(
                                         products[position].nameHindi,
-                                        style: TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                                        style:
+                                            TextStyle(fontSize: 16, color: Colors.colorlightgrey),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                      child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                                        Text(
-                                          "₹" + product.selectedPacking.price.toString() + "  ",
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.colorlightgrey,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        Text(
-                                          "₹" + products[position].displayPrice.toString(),
-                                          style: TextStyle(fontSize: 16, color: Colors.colororange, decoration: TextDecoration.lineThrough),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ]),
+                                      child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Text(
+                                              "₹" + product.selectedPacking.price.toString() + "  ",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.colorlightgrey,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            Text(
+                                              "₹" + products[position].displayPrice.toString(),
+                                              style: TextStyle(
+                                                  fontSize: 16,
+                                                  color: Colors.colororange,
+                                                  decoration: TextDecoration.lineThrough),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ]),
                                     ),
                                   ],
                                 ),
@@ -365,7 +375,8 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                         child: Padding(
                                           padding: EdgeInsets.only(right: 8, left: 8),
                                           child: DropdownButtonFormField<Packing>(
-                                            decoration: InputDecoration.collapsed(hintText: product.selectedPacking.unitQtyShow),
+                                            decoration: InputDecoration.collapsed(
+                                                hintText: product.selectedPacking.unitQtyShow),
                                             // value: product.selectedPacking,
                                             value: null,
                                             items: product.packing //getQtyList(products[position])
@@ -430,7 +441,10 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                                 child: Center(
                                                   child: Text(
                                                     product.count.toString(),
-                                                    style: TextStyle(color: Colors.colorgreen, fontWeight: FontWeight.bold, fontSize: 20),
+                                                    style: TextStyle(
+                                                        color: Colors.colorgreen,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 20),
                                                     textAlign: TextAlign.center,
                                                   ),
                                                 ),
@@ -509,7 +523,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                     ],
                   ),
                 ),
-                Container(height: 330, child: showProductsCategories(sections[position].products)),
+                Container(height: 335, child: showProductsCategories(sections[position].products)),
               ],
 //              ),
             );

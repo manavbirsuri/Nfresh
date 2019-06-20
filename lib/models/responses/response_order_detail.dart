@@ -6,6 +6,6 @@ class ResponseOrderDetail {
 
   ResponseOrderDetail.fromJson(Map<String, dynamic> map) {
     status = map['status'];
-    order = map["order"][0];
+    order = OrderDetail(map["order"][0]);
   }
 }

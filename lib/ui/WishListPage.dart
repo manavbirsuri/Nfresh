@@ -38,9 +38,7 @@ class WishPage extends State<Wish> {
         stream: bloc.favList,
         builder: (context, AsyncSnapshot<ResponseGetFav> snapshot) {
           if (snapshot.hasData) {
-            return snapshot.data.products.length > 0
-                ? mainContent(snapshot)
-                : noDataView();
+            return snapshot.data.products.length > 0 ? mainContent(snapshot) : noDataView();
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
@@ -85,7 +83,7 @@ class WishPage extends State<Wish> {
                         Expanded(
                           child: Container(
                             child: Padding(
-                              padding: EdgeInsets.all(8),
+                              padding: EdgeInsets.all(0),
                               child: Align(
                                 child: Image.network(
                                   product.image,
@@ -118,17 +116,14 @@ class WishPage extends State<Wish> {
                                     padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Text(
                                       product.nameHindi,
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.colorlightgrey),
+                                      style: TextStyle(fontSize: 16, color: Colors.colorlightgrey),
                                       textAlign: TextAlign.start,
                                     ),
                                   ),
                                   Padding(
                                     padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                     child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.start,
+                                        mainAxisAlignment: MainAxisAlignment.start,
                                         children: <Widget>[
                                           Text(
                                             '₹ ${product.packing[0].price}  ',
@@ -143,8 +138,7 @@ class WishPage extends State<Wish> {
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.colororange,
-                                                decoration:
-                                                    TextDecoration.lineThrough),
+                                                decoration: TextDecoration.lineThrough),
                                             textAlign: TextAlign.start,
                                           ),
                                         ]),
@@ -153,8 +147,7 @@ class WishPage extends State<Wish> {
                                     padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
                                     child: Column(
                                       mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
                                       children: <Widget>[
                                         Container(
                                           height: 32,
@@ -162,30 +155,22 @@ class WishPage extends State<Wish> {
                                           decoration: myBoxDecoration3(),
                                           child: Center(
                                             child: Padding(
-                                              padding: EdgeInsets.only(
-                                                  right: 8, left: 8),
-                                              child: DropdownButtonFormField<
-                                                  Packing>(
-                                                decoration:
-                                                    InputDecoration.collapsed(
-                                                        hintText: ''),
+                                              padding: EdgeInsets.only(right: 8, left: 8),
+                                              child: DropdownButtonFormField<Packing>(
+                                                decoration: InputDecoration.collapsed(hintText: ''),
                                                 value: product.selectedPacking,
-                                                items: product.packing
-                                                    .map((Packing value) {
-                                                  return new DropdownMenuItem<
-                                                      Packing>(
+                                                items: product.packing.map((Packing value) {
+                                                  return new DropdownMenuItem<Packing>(
                                                     value: value,
                                                     child: new Text(
                                                       value.unitQtyShow,
-                                                      style: TextStyle(
-                                                          color: Colors.grey),
+                                                      style: TextStyle(color: Colors.grey),
                                                     ),
                                                   );
                                                 }).toList(),
                                                 onChanged: (newValue) {
                                                   setState(() {
-                                                    product.selectedPacking =
-                                                        newValue;
+                                                    product.selectedPacking = newValue;
                                                   });
                                                 },
                                               ),
@@ -206,8 +191,7 @@ class WishPage extends State<Wish> {
                             padding: EdgeInsets.only(right: 8),
                             child: Container(
                               child: Column(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
                                   Padding(
                                     padding: EdgeInsets.only(right: 8),
@@ -230,13 +214,11 @@ class WishPage extends State<Wish> {
                                           alignment: Alignment.bottomRight,
                                           child: Row(
                                             mainAxisSize: MainAxisSize.max,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
+                                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                             children: <Widget>[
                                               Flexible(
                                                 child: Align(
-                                                  alignment:
-                                                      Alignment.topCenter,
+                                                  alignment: Alignment.topCenter,
                                                   child: Padding(
                                                     padding: EdgeInsets.all(8),
                                                     child: Image.asset(
@@ -252,8 +234,7 @@ class WishPage extends State<Wish> {
                                                   product.count.toString(),
                                                   style: TextStyle(
                                                       color: Colors.colorgreen,
-                                                      fontWeight:
-                                                          FontWeight.bold,
+                                                      fontWeight: FontWeight.bold,
                                                       fontSize: 18),
                                                 ),
                                                 flex: 1,

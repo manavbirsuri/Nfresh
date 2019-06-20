@@ -288,7 +288,7 @@ class ProState extends State<ProductDetailPage> {
                                         ],
                                       )),
                                   Container(
-                                    height: 330,
+                                    height: 335,
                                     // child: showProductsCategories(),
                                     child: StreamBuilder(
                                       stream: blocRelated.productsList,

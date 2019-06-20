@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/cart_bloc.dart';
+import 'package:nfresh/bloc/checksum_bloc.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/resources/database.dart';
@@ -30,10 +33,31 @@ class _MyCustomFormState extends State<CartPage> {
   num discount = 0;
   int walletDiscount = 0;
   ProfileModel waletb;
+
+  static String orderId = "";
+
+  Map<String, dynamic> mapPayTm = {
+    'MID': "apXePW28170154069075",
+    'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
+    'CUST_ID': "cust123",
+    'MOBILE_NO': "7777777777",
+    'EMAIL': "username@emailprovider.com",
+    'CHANNEL_ID': "WAP",
+    'TXN_AMOUNT': "100.12",
+    'WEBSITE': "WEBSTAGING",
+    'INDUSTRY_TYPE_ID': "Retail",
+    'CALLBACK_URL': "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId"
+  };
+  var blocCheck = ChecksumBloc();
   var prefs = SharedPrefs();
+
+  String checksum = "";
   @override
   void initState() {
     super.initState();
+    setState(() {
+      orderId = 'NF${new DateTime.now().millisecondsSinceEpoch}';
+    });
     setState(() {
       checkIfPromoSaved().then((value) {
         setState(() {
@@ -46,6 +70,13 @@ class _MyCustomFormState extends State<CartPage> {
       walletBalance = waletb.walletCredits.toString();
     });
     bloc.fetchData();
+    blocCheck.fetchData(mapPayTm);
+    blocCheck.checksum.listen((res) {
+      print("CHECKSUM: $res");
+      setState(() {
+        checksum = res;
+      });
+    });
   }
 
   @override
@@ -168,8 +199,8 @@ class _MyCustomFormState extends State<CartPage> {
                               ),
                               onTap: () async {
                                 try {
-                                  final String result =
-                                      await platform.invokeMethod('Message to share on whatsapp');
+                                  final String result = await platform
+                                      .invokeMethod('$checksum::${jsonEncode(mapPayTm)}');
                                   response = result;
                                 } on PlatformException catch (e) {
                                   response = "Failed to Invoke: '${e.message}'.";

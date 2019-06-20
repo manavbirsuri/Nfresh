@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/order_detail_bloc.dart';
+import 'package:nfresh/models/order_product_model.dart';
 import 'package:nfresh/models/responses/response_order_detail.dart';
 
 class OrderPage extends StatefulWidget {
@@ -41,24 +42,18 @@ class StateOrderPage extends State<OrderPage> {
             centerTitle: true,
           ),
           body: Container(
-            color: Colors.colorlightgreyback,
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: <Widget>[
-                StreamBuilder(
-                  stream: bloc.orderDetail,
-                  builder: (context, AsyncSnapshot<ResponseOrderDetail> snapshot) {
-                    if (snapshot.hasData) {
-                      return mainContent(snapshot);
-                    } else if (snapshot.hasError) {
-                      return Text(snapshot.error.toString());
-                    }
-                    return Center(child: CircularProgressIndicator());
-                  },
-                )
-              ],
-            ),
-          ),
+              color: Colors.colorlightgreyback,
+              child: StreamBuilder(
+                stream: bloc.orderDetail,
+                builder: (context, AsyncSnapshot<ResponseOrderDetail> snapshot) {
+                  if (snapshot.hasData) {
+                    return mainContent(snapshot);
+                  } else if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  return Center(child: CircularProgressIndicator());
+                },
+              )),
         ),
       ],
     );
@@ -93,14 +88,14 @@ class StateOrderPage extends State<OrderPage> {
                   Text("Placed on"),
                   Padding(
                     padding: EdgeInsets.only(top: 0),
-                    child: Text('Sat, July 14, 2018'),
+                    child: Text(orderDetail.createdAt),
                   ),
                 ],
               ),
               trailing: Padding(
                 padding: EdgeInsets.only(top: 8),
                 child: Text(
-                  'Rs 500 / 10 Items',
+                  'Rs ${orderDetail.total} / ${orderDetail.products.length} Items',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -108,9 +103,9 @@ class StateOrderPage extends State<OrderPage> {
             Expanded(
                 child: ListView.builder(
               itemBuilder: (context, position) {
-                return getNestedListItem(position);
+                return getNestedListItem(position, orderDetail.products);
               },
-              itemCount: 10,
+              itemCount: orderDetail.products.length,
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
               //  primary: false,
@@ -121,7 +116,8 @@ class StateOrderPage extends State<OrderPage> {
     );
   }
 
-  Widget getNestedListItem(int position) {
+  Widget getNestedListItem(int position, List<OrderProduct> products) {
+    var product = products[position];
     return Container(
       // color: Colors.green,
       child: Column(
@@ -133,43 +129,6 @@ class StateOrderPage extends State<OrderPage> {
               height: 1,
             ),
           ),
-          /*   ListTile(
-            leading: Image.network(
-              'http://pngriver.com/wp-content/uploads/2018/04/Download-Tomato-PNG-Pic.png',
-              width: 120,
-              height: 120,
-              fit: BoxFit.cover,
-            ),
-            title: Container(
-              height: 100,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    'Tomato',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 8),
-                    child: Text('टमाटर'),
-                  ),
-                ],
-              ),
-            ),
-            trailing: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(top: 8, bottom: 8),
-                  child: Text('Qty: 2kg'),
-                ),
-                Text(
-                  'Rs. 50',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),*/
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -178,9 +137,9 @@ class StateOrderPage extends State<OrderPage> {
                   Padding(
                     padding: EdgeInsets.all(8),
                     child: Image.network(
-                      'http://pngriver.com/wp-content/uploads/2018/04/Download-Tomato-PNG-Pic.png',
-                      width: 100,
-                      height: 100,
+                      product.image,
+                      width: 80,
+                      height: 80,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -190,12 +149,19 @@ class StateOrderPage extends State<OrderPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          'Tomato',
+                          product.name,
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Padding(
                           padding: EdgeInsets.only(top: 8),
-                          child: Text('टमाटर'),
+                          child: Text(product.nameHindi),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 0),
+                          child: Text(
+                            'Qty: ${product.qty}',
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                       ],
                     ),
@@ -208,12 +174,12 @@ class StateOrderPage extends State<OrderPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      'Rs. 50',
+                      '₹ ${product.price}',
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 8),
-                      child: Text('Qty: 2kg'),
+                      child: Text(product.tierQty),
                     ),
                   ],
                 ),
@@ -230,12 +196,7 @@ class StateOrderPage extends State<OrderPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        Flexible(
-            child: Column(
-          children: <Widget>[
-            Expanded(child: getMainCardItem(context, snapshot.data)),
-          ],
-        )),
+        Expanded(child: getMainCardItem(context, snapshot.data)),
         Container(
           color: Colors.green,
           child: Column(

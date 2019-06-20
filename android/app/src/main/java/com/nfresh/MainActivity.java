@@ -12,6 +12,9 @@ import com.paytm.pgsdk.PaytmOrder;
 import com.paytm.pgsdk.PaytmPGService;
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.TreeMap;
 
@@ -32,8 +35,9 @@ public class MainActivity extends FlutterActivity {
     new MethodChannel(getFlutterView(), CHANNEL).setMethodCallHandler(
             (call, result) -> {
               String greetings = null;
+
               try {
-                greetings = paytmPayment();
+                greetings = paytmPayment(call.method);
               } catch (Exception e) {
                 e.printStackTrace();
               }
@@ -42,40 +46,9 @@ public class MainActivity extends FlutterActivity {
   }
 
 
-  private String paytmPayment() throws Exception {
+  private String paytmPayment(String checksumData) throws Exception {
     PaytmPGService Service = PaytmPGService.getStagingService();
-
-    HashMap<String, String> paramMap = new HashMap<String,String>();
-    paramMap.put( "MID" , "apXePW28170154069075");
-// Key in your staging and production MID available in your dashboard
-    paramMap.put( "ORDER_ID" , "order1");
-    paramMap.put( "CUST_ID" , "cust123");
-    paramMap.put( "MOBILE_NO" , "7777777777");
-    paramMap.put( "EMAIL" , "username@emailprovider.com");
-    paramMap.put( "CHANNEL_ID" , "WAP");
-    paramMap.put( "TXN_AMOUNT" , "100.12");
-    paramMap.put( "WEBSITE" , "WEBSTAGING");
-// This is the staging value. Production value is available in your dashboard
-    paramMap.put( "INDUSTRY_TYPE_ID" , "Retail");
-// This is the staging value. Production value is available in your dashboard
-    paramMap.put( "CALLBACK_URL", "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=order1");
-    TreeMap<String, String> treeMap = new TreeMap<String,String>();
-    treeMap.put( "MID" , "rxazcv89315285244163");
-// Key in your staging and production MID available in your dashboard
-    treeMap.put( "ORDER_ID" , "order1");
-    treeMap.put( "CUST_ID" , "cust123");
-    treeMap.put( "MOBILE_NO" , "7777777777");
-    treeMap.put( "EMAIL" , "username@emailprovider.com");
-    treeMap.put( "CHANNEL_ID" , "WAP");
-    treeMap.put( "TXN_AMOUNT" , "100.12");
-    treeMap.put( "WEBSITE" , "WEBSTAGING");
-// This is the staging value. Production value is available in your dashboard
-    treeMap.put( "INDUSTRY_TYPE_ID" , "Retail");
-// This is the staging value. Production value is available in your dashboard
-    treeMap.put( "CALLBACK_URL", "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=order1");
-   // String paytmChecksum =  CheckSumServiceHelper.getCheckSumServiceHelper().genrateCheckSum("apXePW28170154069075", treeMap);
-    paramMap.put( "CHECKSUMHASH" , "kjhdf89293434bn3n4");
-    PaytmOrder Order = new PaytmOrder(paramMap);
+    PaytmOrder Order = new PaytmOrder(getMapData(checksumData));
     Service.initialize(Order, null);
     Service.startPaymentTransaction(this, true, true, new PaytmPaymentTransactionCallback() {
       /*Call Backs*/
@@ -98,5 +71,31 @@ public class MainActivity extends FlutterActivity {
       }
     });
     return "PAYTM";
+  }
+
+  HashMap<String, String> getMapData(String checksumData) throws JSONException {
+
+    String[] data = checksumData.split("::");
+    String checksum = data[0];
+    String json = data[1];
+    Log.i("DATA: ", json);
+    JSONObject payData = new JSONObject(json);
+    HashMap<String, String> paramMap = new HashMap<>();
+    paramMap.put( "MID" , payData.getString("MID"));
+// Key in your staging and production MID available in your dashboard
+    paramMap.put( "ORDER_ID" , payData.getString("ORDER_ID"));
+    paramMap.put( "CUST_ID" , payData.getString("CUST_ID"));
+    paramMap.put( "MOBILE_NO" , payData.getString("MOBILE_NO"));
+    paramMap.put( "EMAIL" ,payData.getString("EMAIL"));
+    paramMap.put( "CHANNEL_ID" , payData.getString("CHANNEL_ID"));
+    paramMap.put( "TXN_AMOUNT" ,payData.getString("TXN_AMOUNT"));
+    paramMap.put( "WEBSITE" , payData.getString("WEBSITE"));
+// This is the staging value. Production value is available in your dashboard
+    paramMap.put( "INDUSTRY_TYPE_ID" , payData.getString("INDUSTRY_TYPE_ID"));
+// This is the staging value. Production value is available in your dashboard
+    paramMap.put( "CALLBACK_URL", payData.getString("CALLBACK_URL"));
+    // String paytmChecksum =  CheckSumServiceHelper.getCheckSumServiceHelper().genrateCheckSum("apXePW28170154069075", treeMap);
+    paramMap.put( "CHECKSUMHASH" , checksum);
+    return paramMap;
   }
 }
