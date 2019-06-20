@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/models/profile_model.dart';
+import 'package:nfresh/resources/prefrences.dart';
 
 class Profile extends StatelessWidget {
   @override
@@ -12,16 +14,43 @@ class Profile extends StatelessWidget {
 class stateProfile extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return stateProfilePage();
+    return StateProfilePage();
   }
 }
 
-class stateProfilePage extends State<stateProfile> {
+class StateProfilePage extends State<stateProfile> {
+  TextEditingController nameController = new TextEditingController();
+  TextEditingController emailController = new TextEditingController();
+  TextEditingController phoneController = new TextEditingController();
+  TextEditingController passwordController = new TextEditingController();
+  TextEditingController cityController = new TextEditingController();
+  TextEditingController areaController = new TextEditingController();
+
   final focus = FocusNode();
   final focus1 = FocusNode();
   final focus2 = FocusNode();
   final focus3 = FocusNode();
   final focus4 = FocusNode();
+  var _prefs = SharedPrefs();
+
+  ProfileModel profile;
+
+  @override
+  void initState() {
+    super.initState();
+    _prefs.getProfile().then((value) {
+      setState(() {
+        profile = value;
+        nameController.text = profile.name;
+        emailController.text = profile.email;
+        phoneController.text = profile.phoneNo;
+        passwordController.text = profile.password;
+        //  cityController.text = profile.city;
+        //  areaController.text = profile.name;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return new Stack(
@@ -50,7 +79,7 @@ class stateProfilePage extends State<stateProfile> {
                 child: Padding(
                   padding: EdgeInsets.only(right: 16),
                   child: Text(
-                    "UPDATE",
+                    "Update",
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
@@ -111,21 +140,18 @@ class stateProfilePage extends State<stateProfile> {
                                       child: TextFormField(
                                         textInputAction: TextInputAction.next,
                                         autofocus: true,
+                                        controller: nameController,
                                         decoration: InputDecoration(labelText: 'Name'),
                                         onFieldSubmitted: (v) {
                                           FocusScope.of(context).requestFocus(focus);
                                         },
                                       ),
-
-//                                      Text(
-//                                        'Name',
-//                                        style: TextStyle(fontSize: 12),
-//                                      ),
                                     ),
                                     Container(
                                       margin: EdgeInsets.only(top: 16),
                                       child: TextFormField(
                                         focusNode: focus,
+                                        controller: emailController,
                                         textInputAction: TextInputAction.next,
                                         decoration: InputDecoration(labelText: 'Email'),
                                         onFieldSubmitted: (v) {
@@ -137,6 +163,7 @@ class stateProfilePage extends State<stateProfile> {
                                       margin: EdgeInsets.only(top: 16),
                                       child: TextFormField(
                                         focusNode: focus1,
+                                        controller: phoneController,
                                         textInputAction: TextInputAction.next,
                                         decoration: InputDecoration(labelText: 'Phone Number'),
                                         onFieldSubmitted: (v) {
@@ -148,6 +175,7 @@ class stateProfilePage extends State<stateProfile> {
                                       margin: EdgeInsets.only(top: 16),
                                       child: TextFormField(
                                         focusNode: focus2,
+                                        controller: passwordController,
                                         textInputAction: TextInputAction.next,
                                         decoration: InputDecoration(labelText: 'Password'),
                                         onFieldSubmitted: (v) {

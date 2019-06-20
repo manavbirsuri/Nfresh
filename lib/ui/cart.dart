@@ -69,124 +69,123 @@ class _MyCustomFormState extends State<CartPage> {
               ),
               centerTitle: true,
             ),
-            body: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Flexible(
-                  child: SingleChildScrollView(
-                    child: Container(
-                      child: Column(
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.only(top: 8),
-                            child: StreamBuilder(
-                              stream: bloc.catProductsList,
-                              builder: (context, AsyncSnapshot<List<Product>> snapshot) {
-                                if (snapshot.hasData) {
-                                  return productContent(snapshot);
-                                } else if (snapshot.hasError) {
-                                  return Text(snapshot.error.toString());
-                                }
-                                return Center(child: CircularProgressIndicator());
-                              },
-                            ),
-                          ),
-                          getCartDetailView(context),
-                        ],
+            body: Container(
+              color: Colors.white,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Container(
+                        child: StreamBuilder(
+                          stream: bloc.catProductsList,
+                          builder: (context, AsyncSnapshot<List<Product>> snapshot) {
+                            if (snapshot.hasData) {
+                              return snapshot.data.length > 0
+                                  ? productContent(snapshot)
+                                  : noDataView();
+                            } else if (snapshot.hasError) {
+                              return Text(snapshot.error.toString());
+                            }
+                            return Center(child: CircularProgressIndicator());
+                          },
+                        ),
+                        color: Colors.white,
                       ),
-                      color: Colors.white,
                     ),
                   ),
-                ),
 
-                // Cart Bottom bar
-                Column(children: <Widget>[
-                  Container(
-                    height: 65,
-                    color: Colors.colorlightgreyback,
-                    padding: EdgeInsets.all(4),
-                    child: Row(
-                      children: <Widget>[
-                        Flexible(
-                          child: GestureDetector(
-                            child: Container(
-                              child: Column(
-                                children: <Widget>[
-                                  // Flexible(
-                                  Column(
-                                    children: <Widget>[
-                                      Text(
-                                        '₹$checkoutTotal',
-                                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                                      ),
-                                      Text(
-                                        'Total amount',
-                                        style: TextStyle(
-                                          //  fontSize: 14,
-                                          color: Colors.colorPink,
+                  // Cart Bottom bar
+                  Column(children: <Widget>[
+                    Container(
+                      height: 65,
+                      color: Colors.colorlightgreyback,
+                      padding: EdgeInsets.all(4),
+                      child: Row(
+                        children: <Widget>[
+                          Flexible(
+                            child: GestureDetector(
+                              child: Container(
+                                child: Column(
+                                  children: <Widget>[
+                                    // Flexible(
+                                    Column(
+                                      children: <Widget>[
+                                        Text(
+                                          '₹$checkoutTotal',
+                                          style:
+                                              TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                                         ),
-                                      )
-                                    ],
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                  ),
-                                  //flex: 1,
-                                  // ),
-                                ],
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                        Text(
+                                          'Total amount',
+                                          style: TextStyle(
+                                            //  fontSize: 14,
+                                            color: Colors.colorPink,
+                                          ),
+                                        )
+                                      ],
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                    ),
+                                    //flex: 1,
+                                    // ),
+                                  ],
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                ),
                               ),
-                            ),
-                            onTap: () {
+                              onTap: () {
 //                      Scaffold.of(context).showSnackBar(SnackBar(
 //                        content: Text('View details Coming soon'),
 //                        duration: Duration(seconds: 1),
 //                      ));
-                            },
-                          ),
-                          flex: 1,
-                        ),
-                        Flexible(
-                          child: GestureDetector(
-                            child: Container(
-                              color: Colors.colorgreen,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: <Widget>[
-                                  Flexible(
-                                    child: Row(
-                                      children: <Widget>[
-                                        Text(
-                                          'Place Order',
-                                          style: TextStyle(fontSize: 18, color: Colors.white),
-                                        ),
-                                      ],
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                    ),
-                                    flex: 1,
-                                  ),
-                                ],
-                              ),
+                              },
                             ),
-                            onTap: () async {
-                              try {
-                                final String result =
-                                    await platform.invokeMethod('Message to share on whatsapp');
-                                response = result;
-                              } on PlatformException catch (e) {
-                                response = "Failed to Invoke: '${e.message}'.";
-                              }
-
-                              print("RES: $response");
-                            },
+                            flex: 1,
                           ),
-                          flex: 1,
-                        ),
-                      ],
+                          Flexible(
+                            child: GestureDetector(
+                              child: Container(
+                                color: Colors.colorgreen,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    Flexible(
+                                      child: Row(
+                                        children: <Widget>[
+                                          Text(
+                                            'Place Order',
+                                            style: TextStyle(fontSize: 18, color: Colors.white),
+                                          ),
+                                        ],
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                      ),
+                                      flex: 1,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              onTap: () async {
+                                try {
+                                  final String result =
+                                      await platform.invokeMethod('Message to share on whatsapp');
+                                  response = result;
+                                } on PlatformException catch (e) {
+                                  response = "Failed to Invoke: '${e.message}'.";
+                                }
+
+                                print("RES: $response");
+                              },
+                            ),
+                            flex: 1,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ]),
-              ],
+                  ]),
+                ],
+              ),
             ))
       ],
     );
@@ -891,16 +890,23 @@ class _MyCustomFormState extends State<CartPage> {
         calculateTotal(snapshot.data);
       });
     });
-
-    return ListView.builder(
-      itemBuilder: (context, position) {
-        return getListItem(position, snapshot.data);
-      },
-      itemCount: snapshot.data.length,
-      physics: NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      scrollDirection: Axis.vertical,
-      primary: false,
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: 8),
+          child: ListView.builder(
+            itemBuilder: (context, position) {
+              return getListItem(position, snapshot.data);
+            },
+            itemCount: snapshot.data.length,
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+            primary: false,
+          ),
+        ),
+        getCartDetailView(context),
+      ],
     );
   }
 
@@ -941,6 +947,14 @@ class _MyCustomFormState extends State<CartPage> {
       //bloc.fetchData();
     });
     didChangeDependencies();
+  }
+
+  Widget noDataView() {
+    return Container(
+      child: Column(
+        children: <Widget>[Text("No item in your cart")],
+      ),
+    );
   }
 }
 
