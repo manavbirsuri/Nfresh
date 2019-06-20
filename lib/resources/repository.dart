@@ -5,6 +5,7 @@ import 'package:nfresh/models/responses/response_getFavorite.dart';
 import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/models/responses/response_login.dart';
 import 'package:nfresh/models/responses/response_order.dart';
+import 'package:nfresh/models/responses/response_order_detail.dart';
 import 'package:nfresh/models/responses/response_otp.dart';
 import 'package:nfresh/models/responses/response_profile.dart';
 import 'package:nfresh/models/responses/response_related_products.dart';
@@ -43,6 +44,8 @@ class Repository {
 
   Future<ResponseCities> getCities(auth) => apiProvider.getCities(auth);
   Future<ResponseOrderHistory> getOrders(auth) => apiProvider.getOrdersHistory(auth);
+  Future<ResponseOrderDetail> getOrderDetail(auth, orderId) =>
+      apiProvider.getOrderDetail(auth, orderId);
   Future<ResponseRelatedProducts> getRelatedProducts(auth, proId) =>
       apiProvider.getRelatedProducts(auth, proId);
 }

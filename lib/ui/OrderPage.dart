@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/order_detail_bloc.dart';
+import 'package:nfresh/models/responses/response_order_detail.dart';
 
 class OrderPage extends StatefulWidget {
   final String title;
@@ -10,62 +12,60 @@ class OrderPage extends StatefulWidget {
 }
 
 class StateOrderPage extends State<OrderPage> {
+  var bloc = OrderDetailBloc();
+
   @override
-  Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      SizedBox.expand(
-        child: Image.asset(
-          'assets/sigbg.jpg',
-          fit: BoxFit.fill,
-        ),
-      ),
-      Scaffold(
-        backgroundColor: Colors.colorgreen.withOpacity(0.5),
-        appBar: AppBar(
-          backgroundColor: Colors.colorgreen.withOpacity(0.0),
-          title: Text(
-            widget.title,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          centerTitle: true,
-        ),
-        body: Container(
-          color: Colors.colorlightgreyback,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Flexible(
-                  child: Column(
-                children: <Widget>[
-                  Expanded(child: getMainCardItem(context)),
-                ],
-              )),
-              Container(
-                color: Colors.green,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    FlatButton(
-                      onPressed: () {},
-                      child: Text(
-                        "REORDER",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    )
-                  ],
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    ]);
+  void initState() {
+    super.initState();
+    bloc.fetchOrderDetail(widget.title);
   }
 
-  Widget getMainCardItem(context) {
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        SizedBox.expand(
+          child: Image.asset(
+            'assets/sigbg.jpg',
+            fit: BoxFit.fill,
+          ),
+        ),
+        Scaffold(
+          backgroundColor: Colors.colorgreen.withOpacity(0.5),
+          appBar: AppBar(
+            backgroundColor: Colors.colorgreen.withOpacity(0.0),
+            title: Text(
+              "Order Id : ${widget.title}",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            centerTitle: true,
+          ),
+          body: Container(
+            color: Colors.colorlightgreyback,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                StreamBuilder(
+                  stream: bloc.orderDetail,
+                  builder: (context, AsyncSnapshot<ResponseOrderDetail> snapshot) {
+                    if (snapshot.hasData) {
+                      return mainContent(snapshot);
+                    } else if (snapshot.hasError) {
+                      return Text(snapshot.error.toString());
+                    }
+                    return Center(child: CircularProgressIndicator());
+                  },
+                )
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget getMainCardItem(context, ResponseOrderDetail data) {
+    var orderDetail = data.order;
     return Card(
       elevation: 2,
       margin: EdgeInsets.all(8.0),
@@ -76,14 +76,13 @@ class StateOrderPage extends State<OrderPage> {
           children: <Widget>[
             ListTile(
               title: Text(
-                'Order No: AD233414',
+                'Order No: ${orderDetail.orderId}',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               contentPadding: EdgeInsets.all(0),
               trailing: Text(
-                'DELIVERED',
-                style:
-                    TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                orderDetail.status,
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
               ),
             ),
             ListTile(
@@ -106,14 +105,6 @@ class StateOrderPage extends State<OrderPage> {
                 ),
               ),
             ),
-            /*  Padding(
-              padding: EdgeInsets.only(top: 0),
-              child: Text('Placed on Sat, July 14, 2018'),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 8),
-              child: Text('Rs 1,598 / 2 Items'),
-            ),*/
             Expanded(
                 child: ListView.builder(
               itemBuilder: (context, position) {
@@ -232,6 +223,35 @@ class StateOrderPage extends State<OrderPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget mainContent(AsyncSnapshot<ResponseOrderDetail> snapshot) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: <Widget>[
+        Flexible(
+            child: Column(
+          children: <Widget>[
+            Expanded(child: getMainCardItem(context, snapshot.data)),
+          ],
+        )),
+        Container(
+          color: Colors.green,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              FlatButton(
+                onPressed: () {},
+                child: Text(
+                  "REORDER",
+                  style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                ),
+              )
+            ],
+          ),
+        )
+      ],
     );
   }
 }

@@ -67,9 +67,7 @@ class OrderHistoryState extends State<OrderState> {
               stream: bloc.ordersList,
               builder: (context, AsyncSnapshot<ResponseOrderHistory> snapshot) {
                 if (snapshot.hasData) {
-                  return snapshot.data.orders.length > 0
-                      ? mainContent(snapshot)
-                      : noDataView();
+                  return snapshot.data.orders.length > 0 ? mainContent(snapshot) : noDataView();
                 } else if (snapshot.hasError) {
                   return Text(snapshot.error.toString());
                 }
@@ -90,7 +88,7 @@ class OrderHistoryState extends State<OrderState> {
             context,
             MaterialPageRoute(
               builder: (context) => new OrderPage(
-                    title: 'Order Id : ${order.orderId}',
+                    title: '${order.orderId}',
                   ),
             ));
       },
@@ -153,8 +151,7 @@ class OrderHistoryState extends State<OrderState> {
                         Text("Total  "),
                         Text(
                           "₹${order.orderTotal}",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                       ],
                     ),

@@ -8,6 +8,7 @@ import 'package:nfresh/models/responses/response_getFavorite.dart';
 import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/models/responses/response_login.dart';
 import 'package:nfresh/models/responses/response_order.dart';
+import 'package:nfresh/models/responses/response_order_detail.dart';
 import 'package:nfresh/models/responses/response_otp.dart';
 import 'package:nfresh/models/responses/response_profile.dart';
 import 'package:nfresh/models/responses/response_related_products.dart';
@@ -235,6 +236,21 @@ class ApiProvider {
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load orderhistory service');
+    }
+  }
+
+  Future<ResponseOrderDetail> getOrderDetail(auth, orderId) async {
+    Map map = {
+      'auth_code': auth,
+      'order_id': orderId,
+    };
+    final response = await client.post("$baseUrl/orderdetail", body: map);
+    print(response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseOrderDetail.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load orderdetail service');
     }
   }
 
