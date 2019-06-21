@@ -1,28 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/get_fav_bloc.dart';
 import 'package:nfresh/models/packing_model.dart';
+import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/responses/response_getFavorite.dart';
+import 'package:nfresh/resources/database.dart';
 
-class WishListPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Wish(),
-    );
-  }
-}
+import '../count_listener.dart';
 
-class Wish extends StatefulWidget {
+class WishListPage extends StatefulWidget {
+  final CountListener listener;
+  const WishListPage({Key key, this.listener}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return WishPage();
   }
 }
 
-class WishPage extends State<Wish> {
+class WishPage extends State<WishListPage> {
   List<String> selectedValues = List();
   var pos = 0;
   var bloc = GetFavBloc();
+
+  var _database = DatabaseHelper.instance;
 
   @override
   void initState() {
@@ -51,7 +50,7 @@ class WishPage extends State<Wish> {
   BoxDecoration myBoxDecoration2() {
     return BoxDecoration(
       border: Border.all(color: Colors.colorgreen, width: 1),
-      borderRadius: BorderRadius.all(Radius.circular(100)),
+      borderRadius: BorderRadius.all(Radius.circular(8)),
     );
   }
 
@@ -204,7 +203,7 @@ class WishPage extends State<Wish> {
                                       ),
                                     ),
                                   ),
-                                  Padding(
+                                  /* Padding(
                                     padding: EdgeInsets.only(right: 0, left: 8),
                                     child: Container(
                                         height: 32,
@@ -252,6 +251,82 @@ class WishPage extends State<Wish> {
                                             ],
                                           ),
                                         )),
+                                  ),*/
+                                  Padding(
+                                    padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                                    child: Container(
+                                      width: 120,
+                                      //color: Colors.grey,
+                                      child: Padding(
+                                        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                        child: IntrinsicHeight(
+                                          child: Center(
+                                            child: IntrinsicHeight(
+                                              child: Row(
+                                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: <Widget>[
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        decrementCount(product);
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      padding: EdgeInsets.only(left: 4),
+                                                      // color: Colors.white,
+                                                      child: Container(
+                                                        decoration: myBoxDecoration2(),
+                                                        padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                        child: Image.asset(
+                                                          'assets/minus.png',
+                                                          height: 12,
+                                                          width: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  Container(
+                                                    margin: EdgeInsets.only(
+                                                        left: 8, right: 8, top: 4, bottom: 4),
+                                                    child: Center(
+                                                      child: Text(
+                                                        product.count.toString(),
+                                                        style: TextStyle(
+                                                            color: Colors.colorgreen,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 20),
+                                                        textAlign: TextAlign.center,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  GestureDetector(
+                                                    onTap: () {
+                                                      setState(() {
+                                                        incrementCount(product);
+                                                      });
+                                                    },
+                                                    child: Container(
+                                                      //  color: Colors.white,
+                                                      padding: EdgeInsets.only(right: 0),
+                                                      child: Container(
+                                                        decoration: myBoxDecoration2(),
+                                                        padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                        child: Image.asset(
+                                                          'assets/plus.png',
+                                                          height: 12,
+                                                          width: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -291,5 +366,32 @@ class WishPage extends State<Wish> {
         ],
       ),
     );
+  }
+
+  void incrementCount(Product product) {
+    if (product.count < product.inventory) {
+      product.count = product.count + 1;
+      _database.update(product);
+      Future.delayed(const Duration(milliseconds: 500), () {
+        widget.listener.onCartUpdate();
+      });
+    } else {
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text("Available inventory : ${product.inventory}"),
+      ));
+    }
+  }
+
+  void decrementCount(Product product) {
+    if (product.count > 1) {
+      product.count = product.count - 1;
+      _database.update(product);
+    } else if (product.count == 1) {
+      product.count = product.count - 1;
+      _database.remove(product);
+    }
+    Future.delayed(const Duration(milliseconds: 500), () {
+      widget.listener.onCartUpdate();
+    });
   }
 }

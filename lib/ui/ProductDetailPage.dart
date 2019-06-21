@@ -208,7 +208,7 @@ class ProState extends State<ProductDetailPage> {
                                               ),
                                             ),
                                           ),
-                                          Container(
+                                          /* Container(
                                               height: 35,
                                               width: 120,
                                               decoration: myBoxDecoration2(),
@@ -257,7 +257,89 @@ class ProState extends State<ProductDetailPage> {
                                                     ),
                                                   ],
                                                 ),
-                                              )),
+                                              )),*/
+                                          Padding(
+                                            padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                                            child: Container(
+                                              width: 120,
+                                              //color: Colors.grey,
+                                              child: Padding(
+                                                padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                                child: IntrinsicHeight(
+                                                  child: Center(
+                                                    child: IntrinsicHeight(
+                                                      child: Row(
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment.stretch,
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: <Widget>[
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              setState(() {
+                                                                decrementCount(widget.product);
+                                                              });
+                                                            },
+                                                            child: Container(
+                                                              padding: EdgeInsets.only(left: 15),
+                                                              // color: Colors.white,
+                                                              child: Container(
+                                                                decoration: myBoxDecoration2(),
+                                                                padding: EdgeInsets.fromLTRB(
+                                                                    12, 0, 12, 0),
+                                                                child: Image.asset(
+                                                                  'assets/minus.png',
+                                                                  height: 12,
+                                                                  width: 12,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          Container(
+                                                            margin: EdgeInsets.only(
+                                                                left: 8,
+                                                                right: 8,
+                                                                top: 4,
+                                                                bottom: 4),
+                                                            child: Center(
+                                                              child: Text(
+                                                                widget.product.count.toString(),
+                                                                style: TextStyle(
+                                                                    color: Colors.colorgreen,
+                                                                    fontWeight: FontWeight.bold,
+                                                                    fontSize: 20),
+                                                                textAlign: TextAlign.center,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              setState(() {
+                                                                incrementCount(widget.product);
+                                                              });
+                                                            },
+                                                            child: Container(
+                                                              //  color: Colors.white,
+                                                              padding: EdgeInsets.only(right: 0),
+                                                              child: Container(
+                                                                decoration: myBoxDecoration2(),
+                                                                padding: EdgeInsets.fromLTRB(
+                                                                    12, 0, 12, 0),
+                                                                child: Image.asset(
+                                                                  'assets/plus.png',
+                                                                  height: 12,
+                                                                  width: 12,
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
                                         ],
                                       )),
                                   Padding(
@@ -290,6 +372,7 @@ class ProState extends State<ProductDetailPage> {
                                   Container(
                                     height: 335,
                                     // child: showProductsCategories(),
+                                    color: Colors.colorlightgreyback,
                                     child: StreamBuilder(
                                       stream: blocRelated.productsList,
                                       builder: (context,
@@ -406,7 +489,7 @@ class ProState extends State<ProductDetailPage> {
   BoxDecoration myBoxDecoration2() {
     return BoxDecoration(
       border: Border.all(color: Colors.colorgreen, width: 1),
-      borderRadius: BorderRadius.all(Radius.circular(100)),
+      borderRadius: BorderRadius.all(Radius.circular(8)),
     );
   }
 
@@ -433,7 +516,7 @@ class ProState extends State<ProductDetailPage> {
           itemBuilder: (context, position) {
             var product = products[position];
             return Material(
-              color: Colors.colorlightgreyback,
+              color: Colors.transparent,
               child: product == null
                   ? Text('')
                   : Padding(
@@ -599,6 +682,82 @@ class ProState extends State<ProductDetailPage> {
                                 ),
                               ),
                               Padding(
+                                padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                                child: Container(
+                                  width: 150,
+                                  //color: Colors.grey,
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                    child: IntrinsicHeight(
+                                      child: Center(
+                                        child: IntrinsicHeight(
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    decrementCount(products[position]);
+                                                  });
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.only(left: 20),
+                                                  // color: Colors.white,
+                                                  child: Container(
+                                                    decoration: myBoxDecoration2(),
+                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                    child: Image.asset(
+                                                      'assets/minus.png',
+                                                      height: 12,
+                                                      width: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                margin: EdgeInsets.only(
+                                                    left: 8, right: 8, top: 4, bottom: 4),
+                                                child: Center(
+                                                  child: Text(
+                                                    product.count.toString(),
+                                                    style: TextStyle(
+                                                        color: Colors.colorgreen,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 20),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    incrementCount(products[position]);
+                                                  });
+                                                },
+                                                child: Container(
+                                                  //  color: Colors.white,
+                                                  padding: EdgeInsets.only(right: 20),
+                                                  child: Container(
+                                                    decoration: myBoxDecoration2(),
+                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                    child: Image.asset(
+                                                      'assets/plus.png',
+                                                      height: 12,
+                                                      width: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              /* Padding(
                                 padding: EdgeInsets.only(right: 16, left: 16, top: 16),
                                 child: Container(
                                   width: 120,
@@ -668,7 +827,7 @@ class ProState extends State<ProductDetailPage> {
                                     ),
                                   ),
                                 ),
-                              ),
+                              ),*/
                             ],
 //                  ),
                           ),

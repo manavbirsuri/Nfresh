@@ -9,8 +9,12 @@ import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/PromoCodePage.dart';
+import 'package:nfresh/ui/payment_success.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
+
+import 'WalletPage.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -25,7 +29,7 @@ class _MyCustomFormState extends State<CartPage> {
   String code;
   var pos = 0;
   String check = "";
-  String walletBalance = "₹110";
+  int walletBalance = 0;
   String appliedValue = "Apply promo code";
   var bloc = CartBloc();
   int totalAmount = 0;
@@ -34,8 +38,6 @@ class _MyCustomFormState extends State<CartPage> {
   int walletDiscount = 0;
   ProfileModel waletb;
 
-  static String orderId = "";
-
   Map<String, dynamic> mapPayTm = {
     'MID': "apXePW28170154069075",
     'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
@@ -43,21 +45,21 @@ class _MyCustomFormState extends State<CartPage> {
     'MOBILE_NO': "7777777777",
     'EMAIL': "username@emailprovider.com",
     'CHANNEL_ID': "WAP",
-    'TXN_AMOUNT': "100.12",
+    'TXN_AMOUNT': "100",
     'WEBSITE': "WEBSTAGING",
     'INDUSTRY_TYPE_ID': "Retail",
-    'CALLBACK_URL': "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId"
+    'CALLBACK_URL': ""
   };
   var blocCheck = ChecksumBloc();
   var prefs = SharedPrefs();
 
   String checksum = "";
+
+  String orderId = "";
   @override
   void initState() {
     super.initState();
-    setState(() {
-      orderId = 'NF${new DateTime.now().millisecondsSinceEpoch}';
-    });
+
     setState(() {
       checkIfPromoSaved().then((value) {
         setState(() {
@@ -67,16 +69,9 @@ class _MyCustomFormState extends State<CartPage> {
     });
     prefs.getProfile().then((onValue) {
       waletb = onValue;
-      walletBalance = waletb.walletCredits.toString();
+      walletBalance = waletb.walletCredits;
     });
     bloc.fetchData();
-    blocCheck.fetchData(mapPayTm);
-    blocCheck.checksum.listen((res) {
-      print("CHECKSUM: $res");
-      setState(() {
-        checksum = res;
-      });
-    });
   }
 
   @override
@@ -198,15 +193,18 @@ class _MyCustomFormState extends State<CartPage> {
                                 ),
                               ),
                               onTap: () async {
-                                try {
-                                  final String result = await platform
-                                      .invokeMethod('$checksum::${jsonEncode(mapPayTm)}');
-                                  response = result;
-                                } on PlatformException catch (e) {
-                                  response = "Failed to Invoke: '${e.message}'.";
-                                }
-
-                                print("RES: $response");
+                                getCheckSum(context);
+//                                try {
+//
+//                                  final String result = await platform
+//                                      .invokeMethod('$checksum::${jsonEncode(mapPayTm)}');
+//                                  response = result;
+//                                } on PlatformException catch (e) {
+//                                  response = "Failed to Invoke: '${e.message}'.";
+//                                }
+//
+//                                print("RES: $response");
+//                                handlePayTmResponse(response, context);
                               },
                             ),
                             flex: 1,
@@ -379,7 +377,7 @@ class _MyCustomFormState extends State<CartPage> {
                                 ),
                               ),
                             ),
-                            Padding(
+                            /*Padding(
                               padding: EdgeInsets.only(right: 12, left: 12, top: 16),
                               child: Container(
                                 width: 115,
@@ -441,6 +439,82 @@ class _MyCustomFormState extends State<CartPage> {
                                                     'assets/plus.png',
                                                     height: 15,
                                                     width: 15,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),*/
+                            Padding(
+                              padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                              child: Container(
+                                width: 115,
+                                //color: Colors.grey,
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                  child: IntrinsicHeight(
+                                    child: Center(
+                                      child: IntrinsicHeight(
+                                        child: Row(
+                                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  decrementCount(product, products);
+                                                });
+                                              },
+                                              child: Container(
+                                                padding: EdgeInsets.only(left: 4),
+                                                // color: Colors.white,
+                                                child: Container(
+                                                  decoration: myBoxDecoration2(),
+                                                  padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                  child: Image.asset(
+                                                    'assets/minus.png',
+                                                    height: 12,
+                                                    width: 12,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              margin: EdgeInsets.only(
+                                                  left: 8, right: 8, top: 4, bottom: 4),
+                                              child: Center(
+                                                child: Text(
+                                                  product.count.toString(),
+                                                  style: TextStyle(
+                                                      color: Colors.colorgreen,
+                                                      fontWeight: FontWeight.bold,
+                                                      fontSize: 20),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  incrementCount(products[position]);
+                                                });
+                                              },
+                                              child: Container(
+                                                //  color: Colors.white,
+                                                padding: EdgeInsets.only(right: 0),
+                                                child: Container(
+                                                  decoration: myBoxDecoration2(),
+                                                  padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                  child: Image.asset(
+                                                    'assets/plus.png',
+                                                    height: 12,
+                                                    width: 12,
                                                   ),
                                                 ),
                                               ),
@@ -551,7 +625,7 @@ class _MyCustomFormState extends State<CartPage> {
             child: GestureDetector(
               onTap: () {
                 setState(() {
-                  if (int.parse(walletBalance) > 0) {
+                  if (walletBalance > 0) {
                     showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -576,8 +650,13 @@ class _MyCustomFormState extends State<CartPage> {
                       });
                     });
                   } else {
-                    Toast.show("Insufficiant Balance in Wallet.", context,
-                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+//                    Toast.show("Insufficiant Balance in Wallet.", context,
+//                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => WalletPage(),
+                        ));
                   }
                 });
               },
@@ -591,11 +670,11 @@ class _MyCustomFormState extends State<CartPage> {
                       style: TextStyle(fontSize: 18, color: Colors.colorlightgrey),
                     ),
                     Text(
-                      walletBalance,
+                      walletBalance > 0 ? walletBalance.toString() : "Add",
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.colorgreen,
-                        decoration: TextDecoration.underline,
+                        // decoration: TextDecoration.underline,
                       ),
                     ),
                   ],
@@ -803,6 +882,9 @@ class _MyCustomFormState extends State<CartPage> {
                 Icon(Icons.edit),
               ],
             ),
+            onTap: () {
+              _showAddressDialog(context);
+            },
           ),
 //          Padding(
 //            padding: EdgeInsets.only(
@@ -858,7 +940,7 @@ class _MyCustomFormState extends State<CartPage> {
   BoxDecoration myBoxDecoration2() {
     return BoxDecoration(
       border: Border.all(color: Colors.colorgreen, width: 1),
-      borderRadius: BorderRadius.all(Radius.circular(100)),
+      borderRadius: BorderRadius.all(Radius.circular(8)),
     );
   }
 
@@ -985,6 +1067,151 @@ class _MyCustomFormState extends State<CartPage> {
       child: Column(
         children: <Widget>[Text("No item in your cart")],
       ),
+    );
+  }
+
+  void handlePayTmResponse(String response, BuildContext context) {
+    if (response.contains("KITKAT")) {
+      print(response);
+    } else {
+      // Navigator.of(context).pop();
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PaymentSuccessPage(
+                  response: response,
+                ),
+          ));
+    }
+  }
+
+  getCheckSum(context) {
+//    Future.delayed(const Duration(milliseconds: 3000), () {
+    var dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+    dialog.setMessage("Please wait...");
+    dialog.show();
+    setState(() {
+      orderId = "NF${new DateTime.now().millisecondsSinceEpoch}";
+      mapPayTm['ORDER_ID'] = orderId;
+      mapPayTm['CUST_ID'] = "Balvinder";
+      mapPayTm['MOBILE_NO'] = "1234567890";
+      mapPayTm['EMAIL'] = "abc@abc.abc";
+      mapPayTm['TXN_AMOUNT'] = checkoutTotal.toString();
+      mapPayTm['CALLBACK_URL'] =
+          "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
+    });
+    blocCheck.fetchData(mapPayTm);
+//    });
+    blocCheck.checksum.listen((res) {
+      print("CHECKSUM: $res");
+      dialog.hide();
+      platform.invokeMethod('$res::${jsonEncode(mapPayTm)}').then((result) {
+        handlePayTmResponse(result, context);
+      });
+//      setState(() {
+//        checksum = res;
+//      });
+    });
+  }
+
+  void _showAddressDialog(context) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return Center(
+            child: SingleChildScrollView(
+          child: AlertDialog(
+            content: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 24.0),
+                    child: Text(
+                      "Update Address",
+                      style: TextStyle(
+                          color: Colors.colorgreen, fontWeight: FontWeight.bold, fontSize: 18.0),
+                    ),
+                  ),
+                  Flexible(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Address',
+                            border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.colorgreen)),
+                            hasFloatingPlaceholder: true,
+                          ),
+                          textInputAction: TextInputAction.done,
+                          keyboardType: TextInputType.multiline,
+                          maxLines: 3,
+                        ),
+                        /* Padding(
+                          padding: EdgeInsets.only(top: 12, bottom: 12),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              labelText: 'City',
+                              border: OutlineInputBorder(),
+                              hasFloatingPlaceholder: true,
+                            ),
+                            textInputAction: TextInputAction.next,
+                            maxLines: 1,
+                          ),
+                        ),
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: 'State',
+                            border: OutlineInputBorder(),
+                            hasFloatingPlaceholder: true,
+                          ),
+                          textInputAction: TextInputAction.next,
+                          maxLines: 1,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 12),
+                          child: TextField(
+                            decoration: InputDecoration(
+                              labelText: 'Pin Code',
+                              border: OutlineInputBorder(),
+                              hasFloatingPlaceholder: true,
+                            ),
+                            textInputAction: TextInputAction.done,
+                            keyboardType: TextInputType.number,
+                            maxLines: 1,
+                          ),
+                        ),*/
+                      ],
+                    ),
+                  ),
+                  // Flexible(
+                  Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: RaisedButton(
+                      padding: EdgeInsets.only(left: 40, right: 40),
+                      splashColor: Colors.black12,
+                      color: Colors.colorgreen,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  // ),
+                ],
+              ),
+            ),
+          ),
+        ));
+      },
     );
   }
 }

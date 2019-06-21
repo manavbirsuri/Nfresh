@@ -2,9 +2,11 @@ package com.nfresh;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -16,6 +18,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.Set;
 import java.util.TreeMap;
 
 import io.flutter.app.FlutterActivity;
@@ -37,16 +40,16 @@ public class MainActivity extends FlutterActivity {
               String greetings = null;
 
               try {
-                greetings = paytmPayment(call.method);
+               paytmPayment(call.method, result);
               } catch (Exception e) {
                 e.printStackTrace();
               }
-              result.success(greetings);
+             // result.success(greetings);
             });
   }
 
 
-  private String paytmPayment(String checksumData) throws Exception {
+  private void paytmPayment(String checksumData, MethodChannel.Result result) throws Exception {
     PaytmPGService Service = PaytmPGService.getStagingService();
     PaytmOrder Order = new PaytmOrder(getMapData(checksumData));
     Service.initialize(Order, null);
@@ -55,6 +58,11 @@ public class MainActivity extends FlutterActivity {
       public void someUIErrorOccurred(String inErrorMessage) {}
       public void onTransactionResponse(Bundle inResponse) {
         Log.i("SUCCESS: ", inResponse.toString());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+          result.success(getBundleResult(inResponse));
+        }else {
+          result.success("BELOW KITKAT NOT SUPPORTED");
+        }
       }
       public void networkNotAvailable() {}
       public void clientAuthenticationFailed(String inErrorMessage) {
@@ -70,7 +78,21 @@ public class MainActivity extends FlutterActivity {
 
       }
     });
-    return "PAYTM";
+  }
+
+  @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+  private String getBundleResult(Bundle bundle) {
+    JSONObject json = new JSONObject();
+    Set<String> keys = bundle.keySet();
+    for (String key : keys) {
+      try {
+        // json.put(key, bundle.get(key)); see edit below
+        json.put(key, JSONObject.wrap(bundle.get(key)));
+      } catch(JSONException e) {
+        //Handle exception here
+      }
+    }
+    return json.toString();
   }
 
   HashMap<String, String> getMapData(String checksumData) throws JSONException {

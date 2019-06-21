@@ -29,6 +29,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
   var blocFav = SetFavBloc();
   List _cities = ["500gm", "1kg", "1.5kg", "2kg", "2.5kg"];
   var _pageController = new PageController();
+  var _pageControllerOffers = new PageController();
 //  List<String> selectedValues = List();
   var pos = 0;
   List<DropdownMenuItem<String>> _dropDownMenuItems;
@@ -91,7 +92,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                 mainAxisSize: MainAxisSize.max,
                 children: <Widget>[
                   AspectRatio(
-                    aspectRatio: 2.5 / 1,
+                    aspectRatio: 2 / 1,
                     child: showTopPager(snapshot.data.banners),
                   ),
                   Column(
@@ -99,7 +100,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Padding(
-                        padding: EdgeInsets.only(top: 16),
+                        padding: EdgeInsets.only(top: 12),
                         child: Stack(
                           children: <Widget>[
                             Align(
@@ -126,7 +127,47 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                           ],
                         ),
                       ),
-                      Container(height: 130, child: showCategories(snapshot.data.categories)),
+                      Container(height: 122, child: showCategories(snapshot.data.categories)),
+                      Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: Stack(
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                child: Image.asset('assets/ribbon.png'),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "OFFERS & PROMOTIONS",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 12,
+                        child: Text(""),
+                      ),
+                      AspectRatio(
+                        aspectRatio: 2 / 1,
+                        child: showTopPagerOffer(snapshot.data.offerBanners),
+                      ),
+                      Container(
+                        height: 4,
+                        child: Text(""),
+                      ),
                       Container(child: productsCategories(snapshot.data.sections)),
                     ],
                   ),
@@ -161,9 +202,34 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
     );
   }
 
+  Widget showTopPagerOffer(List<BannerModel> banners) {
+    return new PageIndicatorContainer(
+      pageView: new PageView.builder(
+        controller: _pageControllerOffers,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            child: Image.network(
+              banners[index].image,
+              fit: BoxFit.cover,
+            ),
+          );
+        },
+        // controller: controller,
+        itemCount: banners.length,
+      ),
+      align: IndicatorAlign.bottom,
+      length: banners.length,
+      indicatorSpace: 8.0,
+      padding: const EdgeInsets.all(8),
+      indicatorColor: Colors.grey,
+      indicatorSelectorColor: Colors.green,
+      shape: IndicatorShape.circle(size: 8),
+    );
+  }
+
   showCategories(List<Category> categories) {
     return Padding(
-        padding: EdgeInsets.only(top: 16),
+        padding: EdgeInsets.only(top: 8),
         child: ListView.builder(
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
@@ -231,7 +297,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
 
   showProductsCategories(List<Product> products) {
     return Padding(
-        padding: EdgeInsets.only(top: 16),
+        padding: EdgeInsets.only(top: 8),
         child: ListView.builder(
           shrinkWrap: true,
           scrollDirection: Axis.horizontal,
@@ -272,7 +338,8 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                           },
                                           child: Container(
                                             // color: Colors.mygrey,
-                                            padding: EdgeInsets.all(8),
+                                            padding: EdgeInsets.only(
+                                                bottom: 8, right: 30, top: 8, left: 8),
                                             child: product != null && product.fav == "1"
                                                 ? Image.asset(
                                                     'assets/fav_filled.png',
@@ -288,7 +355,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                                   ),
                                           )),
                                       Text(
-                                        '30%off',
+                                        product.off,
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: Colors.colororange,
@@ -404,10 +471,10 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(right: 16, left: 16, top: 16),
+                                padding: EdgeInsets.only(right: 8, left: 8, top: 16),
                                 child: Container(
-                                  width: 120,
-                                  decoration: myBoxDecoration2(),
+                                  width: 150,
+                                  //color: Colors.grey,
                                   child: Padding(
                                     padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                     child: IntrinsicHeight(
@@ -424,20 +491,22 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                                   });
                                                 },
                                                 child: Container(
-                                                  color: Colors.transparent,
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding: EdgeInsets.fromLTRB(18, 10, 18, 10),
-                                                      child: Image.asset(
-                                                        'assets/minus.png',
-                                                        height: 15,
-                                                        width: 15,
-                                                      ),
+                                                  padding: EdgeInsets.only(left: 20),
+                                                  // color: Colors.white,
+                                                  child: Container(
+                                                    decoration: myBoxDecoration2(),
+                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                    child: Image.asset(
+                                                      'assets/minus.png',
+                                                      height: 12,
+                                                      width: 12,
                                                     ),
                                                   ),
                                                 ),
                                               ),
                                               Container(
+                                                margin: EdgeInsets.only(
+                                                    left: 8, right: 8, top: 4, bottom: 4),
                                                 child: Center(
                                                   child: Text(
                                                     product.count.toString(),
@@ -456,12 +525,15 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                                   });
                                                 },
                                                 child: Container(
-                                                  child: Padding(
-                                                    padding: EdgeInsets.fromLTRB(18, 10, 18, 10),
+                                                  //  color: Colors.white,
+                                                  padding: EdgeInsets.only(right: 20),
+                                                  child: Container(
+                                                    decoration: myBoxDecoration2(),
+                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
                                                     child: Image.asset(
                                                       'assets/plus.png',
-                                                      height: 15,
-                                                      width: 15,
+                                                      height: 12,
+                                                      width: 12,
                                                     ),
                                                   ),
                                                 ),
@@ -498,7 +570,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Padding(
-                  padding: EdgeInsets.only(top: 16),
+                  padding: EdgeInsets.only(top: 8),
                   child: Stack(
                     children: <Widget>[
                       Align(
@@ -541,7 +613,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
   BoxDecoration myBoxDecoration2() {
     return BoxDecoration(
       border: Border.all(color: Colors.colorgreen, width: 1),
-      borderRadius: BorderRadius.all(Radius.circular(100)),
+      borderRadius: BorderRadius.all(Radius.circular(8)),
     );
   }
 

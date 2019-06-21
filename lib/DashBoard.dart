@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/resources/database.dart';
@@ -23,6 +24,10 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DashBoard(),
@@ -109,7 +114,9 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
       case 0:
         return new HomePage(data: snapshot, listener: this);
       case 1:
-        return new WishListPage();
+        return new WishListPage(
+          listener: this,
+        );
       case 2:
         return new OffersPage();
       case 3:
@@ -276,8 +283,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                 DrawerHeader(
                   decoration: BoxDecoration(
                     color: Colors.transparent.withOpacity(0.5),
-                    image: DecorationImage(
-                        image: AssetImage('assets/bg.jpg'), fit: BoxFit.fill),
+                    image: DecorationImage(image: AssetImage('assets/bg.jpg'), fit: BoxFit.fill),
                   ),
                   margin: EdgeInsets.all(0),
                   child: Container(
@@ -288,8 +294,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  profile == null ? LoginPage() : new Profile(),
+                              builder: (context) => profile == null ? LoginPage() : new Profile(),
                             ));
                       },
                       child: Row(
@@ -317,14 +322,10 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                                 textAlign: TextAlign.start,
                               ),
                               Text(
-                                profile == null
-                                    ? "Please login"
-                                    : profile.email,
+                                profile == null ? "Please login" : profile.email,
                                 style: TextStyle(
                                   fontSize: 16,
-                                  color: profile == null
-                                      ? Colors.grey
-                                      : Colors.white,
+                                  color: profile == null ? Colors.grey : Colors.white,
                                 ),
                                 textAlign: TextAlign.start,
                               ),
@@ -382,9 +383,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                         onTap: () {
                           Navigator.of(context).pop();
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => WalletPage()));
+                              context, MaterialPageRoute(builder: (context) => WalletPage()));
                         },
                       ),
                       Divider(
@@ -427,9 +426,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                         onTap: () {
                           Navigator.of(context).pop();
                           Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => OrderHistory()));
+                              context, MaterialPageRoute(builder: (context) => OrderHistory()));
                         },
                       ),
                       Divider(
@@ -540,8 +537,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
     );
   }
 
-  Widget _bottomNormal(int curIndex, AsyncSnapshot<ResponseHome> snapshot) =>
-      Container(
+  Widget _bottomNormal(int curIndex, AsyncSnapshot<ResponseHome> snapshot) => Container(
           child: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -553,8 +549,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
             title: Text(
               "HOME",
               style: TextStyle(
-                  fontSize: 10,
-                  color: _curIndex == 0 ? Colors.colorgreen : Colors.black38),
+                  fontSize: 10, color: _curIndex == 0 ? Colors.colorgreen : Colors.black38),
             ),
             activeIcon: Image.asset(
               "assets/homel.png",
@@ -572,8 +567,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
             title: Text(
               "WISHLIST",
               style: TextStyle(
-                  fontSize: 10,
-                  color: _curIndex == 1 ? Colors.colorgreen : Colors.black38),
+                  fontSize: 10, color: _curIndex == 1 ? Colors.colorgreen : Colors.black38),
             ),
             activeIcon: Image.asset(
               "assets/fav.png",
@@ -592,8 +586,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
             title: Text(
               "OFFERS",
               style: TextStyle(
-                  fontSize: 10,
-                  color: _curIndex == 2 ? Colors.colorgreen : Colors.black38),
+                  fontSize: 10, color: _curIndex == 2 ? Colors.colorgreen : Colors.black38),
             ),
             activeIcon: Image.asset(
               "assets/settings.png",
@@ -612,8 +605,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
             title: Text(
               "SEARCH",
               style: TextStyle(
-                  fontSize: 10,
-                  color: _curIndex == 3 ? Colors.colorgreen : Colors.black38),
+                  fontSize: 10, color: _curIndex == 3 ? Colors.colorgreen : Colors.black38),
             ),
             activeIcon: Image.asset(
               "assets/search.png",

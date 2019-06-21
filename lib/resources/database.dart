@@ -47,8 +47,7 @@ class DatabaseHelper {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
     // Open the database. Can also add an onUpdate callback parameter.
-    return await openDatabase(path,
-        version: _databaseVersion, onCreate: _onCreate);
+    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
   }
 
   // SQL string to create the database
@@ -144,5 +143,10 @@ class DatabaseHelper {
     await db.delete(tableCart,
         where: "id=? AND selected_packing=?",
         whereArgs: [product.id, jsonEncode(product.selectedPacking)]);
+  }
+
+  Future clearCart() async {
+    final db = await database;
+    await db.delete(tableCart);
   }
 }

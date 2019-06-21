@@ -79,7 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onChanged: (value) {
                   //  filterSearchResults(value);
                   Future.delayed(const Duration(milliseconds: 1000), () {
-                    bloc.fetchSearchData(value);
+                    bloc.fetchSearchData(value.trim());
                   });
                 },
                 controller: editingController,
@@ -517,7 +517,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ],
                       ),
                     ),
-                    Padding(
+                    /* Padding(
                       padding: EdgeInsets.only(right: 16, left: 16, top: 16),
                       child: Container(
                         width: 120,
@@ -577,6 +577,81 @@ class _MyHomePageState extends State<MyHomePage> {
                                             'assets/plus.png',
                                             height: 15,
                                             width: 15,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),*/
+                    Padding(
+                      padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                      child: Container(
+                        width: 150,
+                        //color: Colors.grey,
+                        child: Padding(
+                          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          child: IntrinsicHeight(
+                            child: Center(
+                              child: IntrinsicHeight(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          decrementCount(products[index]);
+                                        });
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.only(left: 20),
+                                        // color: Colors.white,
+                                        child: Container(
+                                          decoration: myBoxDecoration2(),
+                                          padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                          child: Image.asset(
+                                            'assets/minus.png',
+                                            height: 12,
+                                            width: 12,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Container(
+                                      margin: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                                      child: Center(
+                                        child: Text(
+                                          product.count.toString(),
+                                          style: TextStyle(
+                                              color: Colors.colorgreen,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          incrementCount(products[index]);
+                                        });
+                                      },
+                                      child: Container(
+                                        //  color: Colors.white,
+                                        padding: EdgeInsets.only(right: 20),
+                                        child: Container(
+                                          decoration: myBoxDecoration2(),
+                                          padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                          child: Image.asset(
+                                            'assets/plus.png',
+                                            height: 12,
+                                            width: 12,
                                           ),
                                         ),
                                       ),
