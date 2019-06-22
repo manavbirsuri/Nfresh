@@ -298,4 +298,26 @@ class ApiProvider {
       throw Exception('NFresh: Failed to load checkprodinventory service');
     }
   }
+
+  Future<String> placeOrder(
+      auth, List<Map<String, dynamic>> data, Map<String, dynamic> cart) async {
+    Map map = {
+      'auth_code': auth,
+      'line_items': jsonEncode(data),
+      'total': cart['total'].toString(),
+      'address': cart['address'],
+      'city': cart['city'].toString(),
+      'area': cart['area'].toString(),
+      'type': cart['type'].toString(),
+      'discount': cart['discount'].toString(),
+    };
+    final response = await client.post("$baseUrl/createorder", body: map);
+    print(response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load createorder service');
+    }
+  }
 }

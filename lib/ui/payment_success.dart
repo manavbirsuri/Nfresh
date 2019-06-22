@@ -1,13 +1,16 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/create_order_bloc.dart';
 import 'package:nfresh/resources/database.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 import '../DashBoard.dart';
 
 class PaymentSuccessPage extends StatefulWidget {
   final response;
-  const PaymentSuccessPage({Key key, this.response}) : super(key: key);
+  final cartExtra;
+  const PaymentSuccessPage({Key key, this.response, this.cartExtra}) : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return PaymentState();
@@ -18,6 +21,10 @@ class PaymentState extends State<PaymentSuccessPage> {
   String message;
   var _database = DatabaseHelper.instance;
   bool isSuccess = false;
+  List<Map<String, dynamic>> lineItems = [];
+  var bloc = CreateOrderBloc();
+  var dialog;
+
   @override
   void initState() {
     super.initState();
@@ -27,7 +34,6 @@ class PaymentState extends State<PaymentSuccessPage> {
     var status = obj['STATUS'];
     if (status == 'TXN_SUCCESS') {
       // payment success
-      _database.clearCart();
       setState(() {
         isSuccess = true;
         message = "Payment is successful";
@@ -39,10 +45,24 @@ class PaymentState extends State<PaymentSuccessPage> {
         message = "Payment processing error.";
       });
     }
+
+    bloc.createOrderResponse.listen((res) {
+      var obj = jsonDecode(res);
+      String status = obj['status'];
+      setState(() {
+        message = obj['msg'];
+      });
+      if (status == "true") {
+        _database.clearCart();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isSuccess) {
+      placeOrder(widget.cartExtra, context);
+    }
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -96,5 +116,22 @@ class PaymentState extends State<PaymentSuccessPage> {
         )
       ],
     );
+  }
+
+  void placeOrder(cartExtra, context) {
+    dialog = ProgressDialog(context, ProgressDialogType.Normal);
+    dialog.setMessage("Placing your order.Please wait...");
+    dialog.show();
+    _database.queryAllProducts().then((products) {
+      products.forEach((product) {
+        Map<String, dynamic> map = {
+          'product_id': product.id,
+          'unitqty': product.selectedPacking.unitQty,
+          'qty': product.count,
+        };
+        lineItems.add(map);
+      });
+      bloc.fetchData(lineItems, cartExtra);
+    });
   }
 }

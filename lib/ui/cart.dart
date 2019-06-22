@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/cart_bloc.dart';
+import 'package:nfresh/bloc/check_inventory_bloc.dart';
 import 'package:nfresh/bloc/checksum_bloc.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/profile_model.dart';
@@ -36,7 +37,9 @@ class _MyCustomFormState extends State<CartPage> {
   int checkoutTotal = 0;
   num discount = 0;
   int walletDiscount = 0;
-  ProfileModel waletb;
+  ProfileModel profile;
+  var blocInventory = CheckInventoryBloc();
+  List<Map<String, dynamic>> lineItems = [];
 
   Map<String, dynamic> mapPayTm = {
     'MID': "apXePW28170154069075",
@@ -56,6 +59,11 @@ class _MyCustomFormState extends State<CartPage> {
   String checksum = "";
 
   String orderId = "";
+
+  List<Product> mProducts = [];
+
+  bool isLoadingCart = true;
+  var address = "Akshya nagar 1st block, 1st Cross, Rammurty nagar, Banglore-560016";
   @override
   void initState() {
     super.initState();
@@ -67,11 +75,19 @@ class _MyCustomFormState extends State<CartPage> {
         });
       });
     });
+
     prefs.getProfile().then((onValue) {
-      waletb = onValue;
-      walletBalance = waletb.walletCredits;
+      profile = onValue;
+      walletBalance = profile.walletCredits;
     });
     bloc.fetchData();
+    bloc.catProductsList.listen((list) {
+      setState(() {
+        isLoadingCart = false;
+        mProducts = list;
+      });
+    });
+    //blocInventory.fetchData(map);
   }
 
   @override
@@ -104,7 +120,10 @@ class _MyCustomFormState extends State<CartPage> {
                   Flexible(
                     child: SingleChildScrollView(
                       child: Container(
-                        child: StreamBuilder(
+                        child: isLoadingCart
+                            ? Center(child: CircularProgressIndicator())
+                            : productContent(mProducts),
+                        /*child: StreamBuilder(
                           stream: bloc.catProductsList,
                           builder: (context, AsyncSnapshot<List<Product>> snapshot) {
                             if (snapshot.hasData) {
@@ -116,7 +135,7 @@ class _MyCustomFormState extends State<CartPage> {
                             }
                             return Center(child: CircularProgressIndicator());
                           },
-                        ),
+                        ),*/
                         color: Colors.white,
                       ),
                     ),
@@ -632,7 +651,7 @@ class _MyCustomFormState extends State<CartPage> {
                           return Material(
                             type: MaterialType.transparency,
                             child: Container(
-                              child: DynamicDialog(waletb),
+                              child: DynamicDialog(profile),
                               padding: EdgeInsets.only(top: 40, bottom: 40),
                             ),
                           );
@@ -898,7 +917,7 @@ class _MyCustomFormState extends State<CartPage> {
 //          ),
           ListTile(
             title: Text(
-              'Akshya nagar 1st block, 1st Cross, Rammurty nagar, Banglore-560016',
+              address,
               style: TextStyle(color: Colors.colorlightgrey),
               // style: TextStyle(color: Colors.black),
             ),
@@ -986,7 +1005,7 @@ class _MyCustomFormState extends State<CartPage> {
 //    print('Pressed $counter times.');
       String vv = await prefs.getString('walletBal') ?? "";
       print("GGGGGGGGGGGGGWWWW $vv ");
-      if (waletb.walletCredits > int.parse(vv)) {
+      if (profile.walletCredits > int.parse(vv)) {
         walletDiscount = int.parse(vv);
       } else {
         vv = "0";
@@ -997,30 +1016,32 @@ class _MyCustomFormState extends State<CartPage> {
     });
   }
 
-  Widget productContent(AsyncSnapshot<List<Product>> snapshot) {
+  Widget productContent(List<Product> products) {
     Future.delayed(const Duration(milliseconds: 2000), () {
       setState(() {
-        calculateTotal(snapshot.data);
+        calculateTotal(products);
       });
     });
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 8),
-          child: ListView.builder(
-            itemBuilder: (context, position) {
-              return getListItem(position, snapshot.data);
-            },
-            itemCount: snapshot.data.length,
-            physics: NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            scrollDirection: Axis.vertical,
-            primary: false,
-          ),
-        ),
-        getCartDetailView(context),
-      ],
-    );
+    return products.length > 0
+        ? Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: ListView.builder(
+                  itemBuilder: (context, position) {
+                    return getListItem(position, products);
+                  },
+                  itemCount: products.length,
+                  physics: NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  primary: false,
+                ),
+              ),
+              getCartDetailView(context),
+            ],
+          )
+        : noDataView();
   }
 
   void incrementCount(Product product) {
@@ -1075,11 +1096,20 @@ class _MyCustomFormState extends State<CartPage> {
       print(response);
     } else {
       // Navigator.of(context).pop();
+      Map<String, dynamic> data = {
+        'total': checkoutTotal,
+        'address': address,
+        'city': profile.city,
+        'area': profile.area,
+        'type': profile.type,
+        'discount': discount,
+      };
       Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => PaymentSuccessPage(
                   response: response,
+                  cartExtra: data,
                 ),
           ));
     }
