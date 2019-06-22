@@ -49,4 +49,5 @@ class Repository {
   Future<ResponseRelatedProducts> getRelatedProducts(auth, proId) =>
       apiProvider.getRelatedProducts(auth, proId);
   Future<String> getChecksum(auth, map) => apiProvider.getPayTmChecksum(auth, map);
+  Future<String> checkInventory(auth, map) => apiProvider.checkInventory(auth, map);
 }

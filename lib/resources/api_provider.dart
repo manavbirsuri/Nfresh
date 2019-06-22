@@ -283,4 +283,19 @@ class ApiProvider {
       throw Exception('NFresh: Failed to load getchecksum service');
     }
   }
+
+  Future<String> checkInventory(auth, List<Map<String, dynamic>> data) async {
+    Map map = {
+      'auth_code': auth,
+      'line_items': jsonEncode(data),
+    };
+    final response = await client.post("$baseUrl/checkprodinventory", body: map);
+    print(response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load checkprodinventory service');
+    }
+  }
 }
