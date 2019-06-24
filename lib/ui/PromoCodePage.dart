@@ -266,19 +266,17 @@ class PromoCodeState extends State<PromoCodePage> {
       if (status == "true") {
         int discount = json['discount'];
         saveToPrefs(discount);
-        setState(() {
-          showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return Material(
-                  type: MaterialType.transparency,
-                  child: Container(
-                    child: DynamicDialog(),
-                    padding: EdgeInsets.only(top: 40, bottom: 40),
-                  ),
-                );
-              });
-        });
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Material(
+                type: MaterialType.transparency,
+                child: Container(
+                  child: DynamicDialog(),
+                  padding: EdgeInsets.only(top: 40, bottom: 40),
+                ),
+              );
+            });
       }
       Navigator.pop(context);
     });

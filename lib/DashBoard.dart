@@ -188,7 +188,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          showMessage(context);
+          //showMessage(context);
           return Center(child: CircularProgressIndicator());
         },
       ),

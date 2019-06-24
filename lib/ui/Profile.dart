@@ -173,13 +173,12 @@ class StateProfilePage extends State<stateProfile> {
                                     ),
                                     Container(
                                       margin: EdgeInsets.only(top: 16),
-                                      child: TextFormField(
-                                        focusNode: focus2,
-                                        controller: passwordController,
-                                        textInputAction: TextInputAction.next,
-                                        decoration: InputDecoration(labelText: 'Password'),
-                                        onFieldSubmitted: (v) {
-                                          FocusScope.of(context).requestFocus(focus3);
+                                      child: ListTile(
+                                        contentPadding: EdgeInsets.all(0),
+                                        title: Text("Update Password"),
+                                        trailing: Icon(Icons.chevron_right),
+                                        onTap: () {
+                                          _showPasswordDialog(context);
                                         },
                                       ),
                                     ),
@@ -239,6 +238,94 @@ class StateProfilePage extends State<stateProfile> {
           ),
         ),
       ],
+    );
+  }
+
+  void _showPasswordDialog(context) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return Center(
+            child: SingleChildScrollView(
+          child: AlertDialog(
+            content: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 24.0),
+                    child: Text(
+                      "Update Password",
+                      style: TextStyle(
+                          color: Colors.colorgreen, fontWeight: FontWeight.bold, fontSize: 18.0),
+                    ),
+                  ),
+                  Flexible(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        TextField(
+                          obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: 'Old Password',
+                            hasFloatingPlaceholder: true,
+                            border: OutlineInputBorder(),
+                          ),
+                          textInputAction: TextInputAction.next,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 8),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.all(0),
+                            title: TextField(
+                              decoration: InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  hasFloatingPlaceholder: true,
+                                  labelText: 'New Password'),
+                              obscureText: true,
+                            ),
+                          ),
+                        ),
+                        ListTile(
+                          contentPadding: EdgeInsets.all(0),
+                          title: TextField(
+                            obscureText: true,
+                            decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Confirm Password',
+                                hasFloatingPlaceholder: true),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Flexible(
+                  Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: RaisedButton(
+                      padding: EdgeInsets.only(left: 40, right: 40),
+                      splashColor: Colors.black12,
+                      color: Colors.colorgreen,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  // ),
+                ],
+              ),
+            ),
+          ),
+        ));
+      },
     );
   }
 }

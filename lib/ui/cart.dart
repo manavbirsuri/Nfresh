@@ -16,6 +16,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
 import 'WalletPage.dart';
+import 'login.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -55,26 +56,20 @@ class _MyCustomFormState extends State<CartPage> {
   };
   var blocCheck = ChecksumBloc();
   var prefs = SharedPrefs();
-
   String checksum = "";
-
   String orderId = "";
-
   List<Product> mProducts = [];
-
   bool isLoadingCart = true;
   var address = "Akshya nagar 1st block, 1st Cross, Rammurty nagar, Banglore-560016";
   @override
   void initState() {
     super.initState();
-
     checkIfPromoSaved();
 //      checkIfPromoSaved().then((value) {
 //        setState(() {
 //          check = value;
 //        });
 //      });
-
     prefs.getProfile().then((onValue) {
       profile = onValue;
       walletBalance = profile.walletCredits;
@@ -211,7 +206,14 @@ class _MyCustomFormState extends State<CartPage> {
                                 ),
                               ),
                               onTap: () async {
-                                getCheckSum(context);
+                                if (profile != null) {
+                                  getCheckSum(context);
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    new MaterialPageRoute(builder: (context) => new LoginPage()),
+                                  );
+                                }
 //                                try {
 //
 //                                  final String result = await platform
@@ -1001,14 +1003,14 @@ class _MyCustomFormState extends State<CartPage> {
   }
 
   Future removePromoFromPrefs() async {
-    setState(() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('promoApplies', "");
+    await prefs.setInt('discount', 0);
+    setState(() {
       check = "";
       discount = 0;
       appliedValue = "Apply promo code";
-      SharedPreferences prefs = await SharedPreferences.getInstance();
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
-      await prefs.setString('promoApplies', "");
-      await prefs.setInt('discount', 0);
     });
   }
 
