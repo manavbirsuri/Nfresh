@@ -25,7 +25,6 @@ class WishPage extends State<WishListPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     bloc.fetchFavData();
   }
@@ -33,18 +32,24 @@ class WishPage extends State<WishListPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
-      child: StreamBuilder(
-        stream: bloc.favList,
-        builder: (context, AsyncSnapshot<ResponseGetFav> snapshot) {
-          if (snapshot.hasData) {
-            return snapshot.data.products.length > 0 ? mainContent(snapshot) : noDataView();
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          return Center(child: CircularProgressIndicator());
-        },
-      ),
-    );
+        child: Column(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        StreamBuilder(
+          stream: bloc.favList,
+          builder: (context, AsyncSnapshot<ResponseGetFav> snapshot) {
+            if (snapshot.hasData) {
+              return snapshot.data.products.length > 0 ? mainContent(snapshot) : noDataView();
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            }
+            return Column(
+              children: <Widget>[Center(child: CircularProgressIndicator())],
+            );
+          },
+        ),
+      ],
+    ));
   }
 
   BoxDecoration myBoxDecoration2() {
@@ -273,15 +278,15 @@ class WishPage extends State<WishListPage> {
                                                       });
                                                     },
                                                     child: Container(
-                                                      padding: EdgeInsets.only(left: 4),
+                                                      padding: EdgeInsets.only(left: 2),
                                                       // color: Colors.white,
                                                       child: Container(
                                                         decoration: myBoxDecoration2(),
-                                                        padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                                                         child: Image.asset(
                                                           'assets/minus.png',
-                                                          height: 12,
-                                                          width: 12,
+                                                          height: 10,
+                                                          width: 10,
                                                         ),
                                                       ),
                                                     ),
@@ -311,11 +316,11 @@ class WishPage extends State<WishListPage> {
                                                       padding: EdgeInsets.only(right: 0),
                                                       child: Container(
                                                         decoration: myBoxDecoration2(),
-                                                        padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                        padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                                                         child: Image.asset(
                                                           'assets/plus.png',
-                                                          height: 12,
-                                                          width: 12,
+                                                          height: 10,
+                                                          width: 10,
                                                         ),
                                                       ),
                                                     ),

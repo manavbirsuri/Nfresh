@@ -12,6 +12,7 @@ import 'package:nfresh/models/responses/response_order_detail.dart';
 import 'package:nfresh/models/responses/response_otp.dart';
 import 'package:nfresh/models/responses/response_profile.dart';
 import 'package:nfresh/models/responses/response_related_products.dart';
+import 'package:nfresh/models/responses/response_reorder.dart';
 import 'package:nfresh/models/responses/response_search.dart';
 import 'package:nfresh/models/responses/response_signup.dart';
 import 'package:nfresh/models/responses/response_subcat.dart';
@@ -300,7 +301,7 @@ class ApiProvider {
   }
 
   Future<String> placeOrder(
-      auth, List<Map<String, dynamic>> data, Map<String, dynamic> cart) async {
+      auth, List<Map<String, dynamic>> data, Map<String, dynamic> cart, paytmRes) async {
     Map map = {
       'auth_code': auth,
       'line_items': jsonEncode(data),
@@ -310,6 +311,7 @@ class ApiProvider {
       'area': cart['area'].toString(),
       'type': cart['type'].toString(),
       'discount': cart['discount'].toString(),
+      'paytm_response': paytmRes
     };
     final response = await client.post("$baseUrl/createorder", body: map);
     print(response.body.toString());
@@ -318,6 +320,37 @@ class ApiProvider {
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load createorder service');
+    }
+  }
+
+  Future<ResponseReorder> reOrder(auth, orderId) async {
+    Map map = {
+      'auth_code': auth,
+      'order_id': orderId.toString(),
+    };
+    final response = await client.post("$baseUrl/reorder", body: map);
+    print(response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseReorder.fromJson(jsonDecode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load reorder service');
+    }
+  }
+
+  Future<String> applyCoupon(auth, total, couponCode) async {
+    Map map = {
+      'auth_code': auth,
+      'total': total.toString(),
+      'coupon_code': couponCode,
+    };
+    final response = await client.post("$baseUrl/applycoupon", body: map);
+    print(response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load applycoupon service');
     }
   }
 }

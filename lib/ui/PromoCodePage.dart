@@ -1,17 +1,28 @@
+import 'dart:convert';
+
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/apply_coupon_bloc.dart';
 import 'package:nfresh/bloc/coupon_bloc.dart';
 import 'package:nfresh/models/coupon_model.dart';
 import 'package:nfresh/models/responses/response_coupons.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PromoCodePage extends StatefulWidget {
+  final total;
+  const PromoCodePage({Key key, this.total}) : super(key: key);
+
   @override
   PromoCodeState createState() => PromoCodeState();
 }
 
 class PromoCodeState extends State<PromoCodePage> {
   var bloc = CouponBloc();
+  var blocApply = ApplyCouponBloc();
+  var dialog;
+
+  var couponController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -59,6 +70,7 @@ class PromoCodeState extends State<PromoCodePage> {
                                   children: <Widget>[
                                     Flexible(
                                       child: TextField(
+                                        controller: couponController,
                                         decoration: new InputDecoration.collapsed(
                                             hintText: 'Enter promo code'),
                                       ),
@@ -67,21 +79,14 @@ class PromoCodeState extends State<PromoCodePage> {
                                     Flexible(
                                       child: GestureDetector(
                                         onTap: () {
-                                          saveToPrefs();
-                                          Navigator.pop(context);
-                                          setState(() {
-                                            showDialog(
-                                                context: context,
-                                                builder: (BuildContext context) {
-                                                  return Material(
-                                                    type: MaterialType.transparency,
-                                                    child: Container(
-                                                      child: DynamicDialog(),
-                                                      padding: EdgeInsets.only(top: 40, bottom: 40),
-                                                    ),
-                                                  );
-                                                });
-                                          });
+                                          dialog = new ProgressDialog(
+                                              context, ProgressDialogType.Normal);
+                                          dialog.setMessage("Please wait...");
+                                          dialog.setCancelable(false);
+                                          dialog.show();
+                                          blocApply.fetchData(
+                                              widget.total, couponController.text.toString());
+                                          observeResponse(context);
                                         },
                                         child: Text(
                                           'Apply',
@@ -160,22 +165,16 @@ class PromoCodeState extends State<PromoCodePage> {
               ),
               GestureDetector(
                 onTap: () {
-                  saveToPrefs();
-                  Navigator.pop(context);
-
-                  setState(() {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Material(
-                            type: MaterialType.transparency,
-                            child: Container(
-                              child: DynamicDialog(),
-                              padding: EdgeInsets.only(top: 40, bottom: 40),
-                            ),
-                          );
-                        });
-                  });
+                  if (widget.total < coupon.minValue) {
+                    showMessage(context, coupon);
+                  } else {
+                    dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+                    dialog.setMessage("Please wait...");
+                    // dialog.setCancelable(false);
+                    dialog.show();
+                    blocApply.fetchData(widget.total, coupon.couponCode);
+                    observeResponse(context);
+                  }
                 },
                 child: Text(
                   'Apply',
@@ -210,12 +209,10 @@ class PromoCodeState extends State<PromoCodePage> {
     );
   }
 
-  saveToPrefs() async {
-    print("GGGGGGGGGGGGG tttttttttt");
+  saveToPrefs(int discount) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-//    int counter = (prefs.getInt('counter') ?? 0) + 1;
-//    print('Pressed $counter times.');
     await prefs.setString('promoApplies', "yes");
+    await prefs.setInt("discount", discount);
   }
 
   Widget noDataView() {
@@ -235,6 +232,56 @@ class PromoCodeState extends State<PromoCodePage> {
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
     );
+  }
+
+  void showMessage(context, Coupon coupon) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content:
+              new Text("Your minimum cart value should be ₹${coupon.minValue} to use this offer."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void observeResponse(BuildContext context) {
+    blocApply.getResponse.listen((response) {
+      var json = jsonDecode(response);
+      String status = json['status'];
+
+      dialog.hide();
+      if (status == "true") {
+        int discount = json['discount'];
+        saveToPrefs(discount);
+        setState(() {
+          showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return Material(
+                  type: MaterialType.transparency,
+                  child: Container(
+                    child: DynamicDialog(),
+                    padding: EdgeInsets.only(top: 40, bottom: 40),
+                  ),
+                );
+              });
+        });
+      }
+      Navigator.pop(context);
+    });
   }
 }
 

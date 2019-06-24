@@ -68,13 +68,12 @@ class _MyCustomFormState extends State<CartPage> {
   void initState() {
     super.initState();
 
-    setState(() {
-      checkIfPromoSaved().then((value) {
-        setState(() {
-          check = value;
-        });
-      });
-    });
+    checkIfPromoSaved();
+//      checkIfPromoSaved().then((value) {
+//        setState(() {
+//          check = value;
+//        });
+//      });
 
     prefs.getProfile().then((onValue) {
       profile = onValue;
@@ -473,7 +472,7 @@ class _MyCustomFormState extends State<CartPage> {
                             Padding(
                               padding: EdgeInsets.only(right: 8, left: 8, top: 16),
                               child: Container(
-                                width: 115,
+                                width: 118,
                                 //color: Colors.grey,
                                 child: Padding(
                                   padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -491,15 +490,15 @@ class _MyCustomFormState extends State<CartPage> {
                                                 });
                                               },
                                               child: Container(
-                                                padding: EdgeInsets.only(left: 4),
+                                                padding: EdgeInsets.only(left: 2),
                                                 // color: Colors.white,
                                                 child: Container(
                                                   decoration: myBoxDecoration2(),
-                                                  padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                                                   child: Image.asset(
                                                     'assets/minus.png',
-                                                    height: 12,
-                                                    width: 12,
+                                                    height: 10,
+                                                    width: 10,
                                                   ),
                                                 ),
                                               ),
@@ -529,11 +528,11 @@ class _MyCustomFormState extends State<CartPage> {
                                                 padding: EdgeInsets.only(right: 0),
                                                 child: Container(
                                                   decoration: myBoxDecoration2(),
-                                                  padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                                                   child: Image.asset(
                                                     'assets/plus.png',
-                                                    height: 12,
-                                                    width: 12,
+                                                    height: 10,
+                                                    width: 10,
                                                   ),
                                                 ),
                                               ),
@@ -586,14 +585,16 @@ class _MyCustomFormState extends State<CartPage> {
                   if (check.isEmpty) {
                     Navigator.push(
                       context,
-                      new MaterialPageRoute(builder: (context) => new PromoCodePage()),
+                      new MaterialPageRoute(
+                          builder: (context) => new PromoCodePage(
+                                total: totalAmount,
+                              )),
                     ).then((value) {
-                      setState(() {
-                        checkIfPromoSaved().then((value) {
-                          check = value;
-                          discount = 20;
-                        });
-                      });
+                      checkIfPromoSaved();
+//                        checkIfPromoSaved().then((value) {
+//                          check = value;
+//                          // discount = 20;
+//                        });
                     });
                   } else {
                     removePromoFromPrefs();
@@ -975,15 +976,26 @@ class _MyCustomFormState extends State<CartPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
 //    print('Pressed $counter times.');
-    check = await prefs.getString('promoApplies') ?? "";
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() {
+        check = prefs.getString('promoApplies') ?? "";
+        discount = prefs.getInt('discount') ?? 0;
+        print("Saved Discount: $discount");
+        if (discount > 0) {
+          appliedValue = "Promo code applied";
+        } else {
+          appliedValue = "Apply promo code";
+        }
+      });
+    });
 
-    if (check.isEmpty) {
-      discount = 0;
-      appliedValue = "Apply promo code";
-    } else {
-      discount = 20;
-      appliedValue = "Promo code applied";
-    }
+//    if (check.isEmpty) {
+//      discount = 0;
+//      appliedValue = "Apply promo code";
+//    } else {
+//      discount = 20;
+//      appliedValue = "Promo code applied";
+//    }
     // });
     return check;
   }
@@ -991,14 +1003,16 @@ class _MyCustomFormState extends State<CartPage> {
   Future removePromoFromPrefs() async {
     setState(() async {
       check = "";
+      discount = 0;
       appliedValue = "Apply promo code";
       SharedPreferences prefs = await SharedPreferences.getInstance();
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
       await prefs.setString('promoApplies', "");
+      await prefs.setInt('discount', 0);
     });
   }
 
-  Future<String> getBalance() async {
+  getBalance() async {
     setState(() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
@@ -1138,9 +1152,6 @@ class _MyCustomFormState extends State<CartPage> {
       platform.invokeMethod('$res::${jsonEncode(mapPayTm)}').then((result) {
         handlePayTmResponse(result, context);
       });
-//      setState(() {
-//        checksum = res;
-//      });
     });
   }
 

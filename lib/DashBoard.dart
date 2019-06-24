@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfresh/models/profile_model.dart';
@@ -68,6 +70,8 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
   int _count = 0;
   ProfileModel profile;
 
+  bool isAlert = false;
+
   _MyHomePageState(String title) {
     this.title = title;
   }
@@ -86,7 +90,19 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
     print("initState was called");
     bloc.fetchHomeData();
     blocProfile.fetchData();
-    blocProfile.profileData;
+    blocProfile.profileData.listen((res) {
+      print("Profile Status = " + res.status);
+      if (res.status == "true") {
+        String profile = jsonEncode(res.profile);
+        if (_prefs.getProfile() == null && res.profile.type != 1) {
+          setState(() {
+            isAlert = true;
+          });
+          _database.clearCart();
+        }
+        _prefs.saveProfile(profile);
+      }
+    });
     getCartCount();
     Future.delayed(const Duration(milliseconds: 1000), () async {
       profile = await _prefs.getProfile();
@@ -97,6 +113,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
   Future getCartCount() async {
     var count = await _database.getCartCount();
     setState(() {
+      print("COUNT: $count");
       _count = count;
     });
   }
@@ -171,6 +188,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
+          showMessage(context);
           return Center(child: CircularProgressIndicator());
         },
       ),
@@ -219,11 +237,12 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
           GestureDetector(
             onTap: () {
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CartPage(),
-                  )).then((value) {
-                _count = getCartCount() as int;
+                context,
+                MaterialPageRoute(
+                  builder: (context) => CartPage(),
+                ),
+              ).then((value) {
+                getCartCount();
               });
             },
             child: Padding(
@@ -426,7 +445,12 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                         onTap: () {
                           Navigator.of(context).pop();
                           Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => OrderHistory()));
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => OrderHistory(),
+                              )).then((onValue) {
+                            getCartCount();
+                          });
                         },
                       ),
                       Divider(
@@ -639,6 +663,29 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
           });
         },
       ));
+
+  void showMessage(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text(
+              "You logged in as a non customer account. So if there is any pruduct added into card brfore login will be removed."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
 
 class DrawerList {

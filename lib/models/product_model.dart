@@ -20,7 +20,7 @@ class Product {
   String off = "20% off";
   Packing selectedPacking;
 
-  Product(json) {
+  Product(json, type) {
     id = json['id'];
     name = json['name'];
     nameHindi = json['name_hindi'];
@@ -37,7 +37,12 @@ class Product {
       temp.add(result);
     }
     packing = temp;
-    selectedPacking = packing[0];
+    if (type == "reorder") {
+      selectedPacking = Packing(json['selectedPacking']);
+      count = json['qty'];
+    } else {
+      selectedPacking = packing[0];
+    }
   }
   Map<String, dynamic> toJson() {
     return {
@@ -52,8 +57,7 @@ class Product {
       'inventory': this.inventory,
       'fav': this.fav,
       'packings': jsonEncode(packing),
-      'selected_packing':
-          jsonEncode(selectedPacking), //selectedPacking.toJson(),
+      'selected_packing': jsonEncode(selectedPacking), //selectedPacking.toJson(),
       'count': this.count
     };
   }

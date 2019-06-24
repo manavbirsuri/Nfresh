@@ -11,7 +11,7 @@ class ResponseSearch {
 
     List<Product> tempProduct = [];
     for (int i = 0; i < json['products'].length; i++) {
-      var wallet = Product(json['products'][i]);
+      var wallet = Product(json['products'][i], "order");
       tempProduct.add(wallet);
     }
     products = tempProduct;

@@ -9,6 +9,7 @@ import 'package:nfresh/models/responses/response_order_detail.dart';
 import 'package:nfresh/models/responses/response_otp.dart';
 import 'package:nfresh/models/responses/response_profile.dart';
 import 'package:nfresh/models/responses/response_related_products.dart';
+import 'package:nfresh/models/responses/response_reorder.dart';
 import 'package:nfresh/models/responses/response_search.dart';
 import 'package:nfresh/models/responses/response_signup.dart';
 import 'package:nfresh/models/responses/response_subcat.dart';
@@ -50,5 +51,9 @@ class Repository {
       apiProvider.getRelatedProducts(auth, proId);
   Future<String> getChecksum(auth, map) => apiProvider.getPayTmChecksum(auth, map);
   Future<String> checkInventory(auth, map) => apiProvider.checkInventory(auth, map);
-  Future<String> placeOrder(auth, map, cart) => apiProvider.placeOrder(auth, map, cart);
+  Future<String> placeOrder(auth, map, cart, paytmRes) =>
+      apiProvider.placeOrder(auth, map, cart, paytmRes);
+  Future<ResponseReorder> reorder(auth, orderId) => apiProvider.reOrder(auth, orderId);
+  Future<String> applyCoupon(auth, total, couponCode) =>
+      apiProvider.applyCoupon(auth, total, couponCode);
 }

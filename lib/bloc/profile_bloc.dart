@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:nfresh/models/responses/response_profile.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/resources/repository.dart';
@@ -14,11 +12,6 @@ class ProfileBloc {
   fetchData() async {
     var auth = await _prefs.getAuthCode();
     ResponseProfile itemModel = await _repository.getProfile(auth);
-    print("Profile Status = " + itemModel.status);
-    if (itemModel.status == "true") {
-      String profile = jsonEncode(itemModel.profile);
-      _prefs.saveProfile(profile);
-    }
     _profileFetcher.sink.add(itemModel);
   }
 

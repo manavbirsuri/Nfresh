@@ -11,7 +11,7 @@ class ResponseCatProducts {
 
     List<Product> tempProduct = [];
     for (int i = 0; i < json['products'].length; i++) {
-      var product = Product(json['products'][i]);
+      var product = Product(json['products'][i], "order");
       tempProduct.add(product);
     }
     products = tempProduct;

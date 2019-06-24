@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/order_detail_bloc.dart';
+import 'package:nfresh/bloc/reorder_bloc.dart';
 import 'package:nfresh/models/order_product_model.dart';
+import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/responses/response_order_detail.dart';
+import 'package:nfresh/resources/database.dart';
 
 class OrderPage extends StatefulWidget {
   final String title;
@@ -14,7 +17,10 @@ class OrderPage extends StatefulWidget {
 
 class StateOrderPage extends State<OrderPage> {
   var bloc = OrderDetailBloc();
+  var blocReorder = ReorderBloc();
+  var _database = DatabaseHelper.instance;
 
+  bool showLoader = false;
   @override
   void initState() {
     super.initState();
@@ -199,20 +205,87 @@ class StateOrderPage extends State<OrderPage> {
         Expanded(child: getMainCardItem(context, snapshot.data)),
         Container(
           color: Colors.green,
+          height: 65,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              FlatButton(
-                onPressed: () {},
-                child: Text(
-                  "REORDER",
-                  style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
-                ),
-              )
+              showLoader
+                  ? Center(child: CircularProgressIndicator())
+                  : FlatButton(
+                      onPressed: () {
+                        setState(() {
+                          showLoader = true;
+                        });
+                        blocReorder.fetchSearchData(snapshot.data.order.orderId);
+                        observeReorder(context);
+                      },
+                      child: Text(
+                        "REORDER",
+                        style: TextStyle(
+                            color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                      ),
+                    )
             ],
           ),
         )
       ],
     );
+  }
+
+  void insertIntoCart(List<Product> products, context) {
+    for (int i = 0; i < products.length; i++) {
+      _database.update(products[i]);
+    }
+
+    Scaffold.of(context).showSnackBar(SnackBar(
+      content: Text('Your products added to cart.'),
+      duration: Duration(seconds: 1),
+    ));
+  }
+
+  void observeReorder(context) {
+    blocReorder.reorderedData.listen((response) {
+      setState(() {
+        showLoader = false;
+      });
+      if (response.status == "true") {
+        if (response.msg.length > 3) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              // return object of type Dialog
+              return AlertDialog(
+                title: new Text("Alert!"),
+                content: new Text(response.msg),
+                actions: <Widget>[
+                  // usually buttons at the bottom of the dialog
+                  new FlatButton(
+                    child: new Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      insertIntoCart(response.products, context);
+                    },
+                  ),
+                  new FlatButton(
+                    child: new Text("Cancel"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          insertIntoCart(response.products, context);
+        }
+      } else {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text(response.msg),
+          duration: Duration(seconds: 1),
+        ));
+      }
+    });
   }
 }
