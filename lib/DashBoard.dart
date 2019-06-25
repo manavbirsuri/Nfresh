@@ -31,34 +31,30 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     return MaterialApp(
+      title: '',
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(primaryColor: Colors.colorgreen, fontFamily: 'Bold'),
       home: DashBoard(),
     );
   }
 }
 
-class DashBoard extends StatelessWidget {
-  // This widget is the root of your application.
+//class DashBoard extends StatelessWidget {
+//  // This widget is the root of your application.
+//  @override
+//  Widget build(BuildContext context) {
+//    return MaterialApp(
+//      home: MyHomePage(title: 'Home'),
+//    );
+//  }
+//}
+
+class DashBoard extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primaryColor: Colors.colorgreen, fontFamily: 'Bold'),
-      home: MyHomePage(title: 'Home'),
-    );
-  }
+  _MyHomePageState createState() => _MyHomePageState("Home");
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState(title);
-}
-
-class _MyHomePageState extends State<MyHomePage> implements CountListener {
+class _MyHomePageState extends State<DashBoard> implements CountListener {
   String title;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
   var _curIndex = 0;
@@ -87,7 +83,6 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
 
   initState() {
     super.initState();
-    print("initState was called");
     bloc.fetchHomeData();
     blocProfile.fetchData();
     blocProfile.profileData.listen((res) {
@@ -137,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
       case 2:
         return new OffersPage();
       case 3:
-        return new SearchPage();
+        return new SearchPage(listener: this);
       default:
         return new Text("Error");
     }

@@ -22,11 +22,12 @@ class _CategoryDetailsState extends State<CategoryDetails> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _database.getCartCount().then((value) {
+    _database.getCartCount().then((value) {
+      setState(() {
         cartCount = value;
       });
     });
+
     bloc.fetchSubCategories(widget.selectedCategory.id.toString());
   }
 
@@ -67,7 +68,13 @@ class _CategoryDetailsState extends State<CategoryDetails> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => CartPage(),
-                    ));
+                    )).then((onValue) {
+                  _database.getCartCount().then((value) {
+                    setState(() {
+                      cartCount = value;
+                    });
+                  });
+                });
               },
               child: Padding(
                 padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
@@ -80,25 +87,27 @@ class _CategoryDetailsState extends State<CategoryDetails> {
                     ),
                     new Positioned(
                       right: 0,
-                      child: new Container(
-                        padding: EdgeInsets.all(1),
-                        decoration: new BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        constraints: BoxConstraints(
-                          minWidth: 12,
-                          minHeight: 12,
-                        ),
-                        child: new Text(
-                          cartCount > 0 ? cartCount.toString() : '',
-                          style: new TextStyle(
-                            color: Colors.white,
-                            fontSize: 8,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
+                      child: cartCount > 0
+                          ? Container(
+                              padding: EdgeInsets.all(1),
+                              decoration: new BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              constraints: BoxConstraints(
+                                minWidth: 12,
+                                minHeight: 12,
+                              ),
+                              child: new Text(
+                                cartCount.toString(),
+                                style: new TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            )
+                          : Text(''),
                     )
                   ],
                 ),
@@ -142,9 +151,17 @@ class _CategoryDetailsState extends State<CategoryDetails> {
             child: GestureDetector(
               onTap: () {
                 Navigator.push(
-                    context,
-                    new MaterialPageRoute(
-                        builder: (context) => ShowCategoryDetailPage(subCategory: subCat)));
+                  context,
+                  new MaterialPageRoute(
+                    builder: (context) => ShowCategoryDetailPage(subCategory: subCat),
+                  ),
+                ).then((onValue) {
+                  _database.getCartCount().then((value) {
+                    setState(() {
+                      cartCount = value;
+                    });
+                  });
+                });
               },
               child: Column(
                 mainAxisSize: MainAxisSize.min,

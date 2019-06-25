@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nfresh/bloc/cart_bloc.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:nfresh/bloc/cat_products_bloc.dart';
 import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/category_model.dart';
@@ -31,32 +31,16 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
   var blocFav = SetFavBloc();
   var _database = DatabaseHelper.instance;
   int totalAmount = 0;
-  var blocCart = CartBloc();
+  //var blocCart = CartBloc();
 
   int cartCount = 0;
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      _database.getCartCount().then((value) {
-        cartCount = value;
-      });
-    });
+    getCartCount();
+    getCartTotal();
     bloc.fetchData(widget.subCategory.id.toString());
-    blocCart.fetchData();
-    blocCart.catProductsList.listen((response) {
-      setState(() {
-        calculateTotal(response);
-      });
-    });
-  }
-
-  calculateTotal(List<Product> products) async {
-    totalAmount = 0;
-    for (Product product in products) {
-      totalAmount += (product.selectedPacking.price * product.count);
-    }
   }
 
   @override
@@ -80,10 +64,6 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             centerTitle: true,
-//            leading: IconButton(
-//              icon: Icon(Icons.arrow_back),
-//              onPressed: () => Navigator.pop(context, false),
-//            ),
             actions: [
               Padding(
                 padding: EdgeInsets.all(8),
@@ -99,7 +79,10 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => CartPage(),
-                      ));
+                      )).then((value) {
+                    getCartCount();
+                    getCartTotal();
+                  });
                 },
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
@@ -348,6 +331,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                                 onChanged: (newValue) {
                                                   setState(() {
                                                     product.selectedPacking = newValue;
+                                                    product.count = 0;
                                                   });
                                                 },
                                               ),
@@ -404,9 +388,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                           // color: Colors.grey,
                                           child: GestureDetector(
                                             onTap: () {
-                                              setState(() {
-                                                decrementCount(product);
-                                              });
+                                              decrementCount(product);
                                             },
                                             child: Center(
                                               child: Padding(
@@ -433,9 +415,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                           // color: Colors.grey,
                                           child: GestureDetector(
                                             onTap: () {
-                                              setState(() {
-                                                incrementCount(product);
-                                              });
+                                              incrementCount(product);
                                             },
                                             child: Icon(
                                               Icons.add,
@@ -468,16 +448,29 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
   }
 
   showGridView(List<Product> products) {
-    var size = MediaQuery.of(context).size;
-    double itemHeight = (size.height - kToolbarHeight - 24) / 2;
-    itemHeight = itemHeight;
-    double itemWidth = size.width / 2;
-    itemWidth = itemWidth;
+//    var size = MediaQuery.of(context).size;
+//    double itemHeight = (size.height - kToolbarHeight - 24) / 2;
+//    itemHeight = itemHeight;
+//    double itemWidth = size.width / 2;
+//    itemWidth = itemWidth;
 
     return Expanded(
         child: Container(
+      padding: EdgeInsets.all(4),
       color: Colors.colorlightgreyback,
-      child: GridView.count(
+      child: StaggeredGridView.countBuilder(
+        crossAxisCount: 2,
+        shrinkWrap: true,
+        primary: false,
+        itemCount: products.length,
+        itemBuilder: (BuildContext context, int index) => new Container(
+              child: girdViewItem(index, context, products),
+            ),
+        staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+        mainAxisSpacing: 2.0,
+        crossAxisSpacing: 2.0,
+      ),
+      /*  child: GridView.count(
         // Create a grid with 2 columns. If you change the scrollDirection to
         // horizontal, this would produce 2 rows.
         //childAspectRatio: (itemWidth / itemHeight),
@@ -635,7 +628,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                           ],
                         ),
                       ),
-                      /* Padding(
+                      */ /* Padding(
                         padding: EdgeInsets.only(right: 16, left: 16, top: 16),
                         child: Container(
                           width: 120,
@@ -706,7 +699,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                             ),
                           ),
                         ),
-                      ),*/
+                      ),*/ /*
                       Padding(
                         padding: EdgeInsets.only(right: 8, left: 8, top: 16),
                         child: Container(
@@ -791,17 +784,17 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
             ),
           );
         }),
-      ),
+      ),*/
     ));
   }
 
-  void incrementCount(Product product) {
+  Future incrementCount(Product product) async {
     if (product.count < product.inventory) {
       product.count = product.count + 1;
-      _database.update(product);
-      Future.delayed(const Duration(milliseconds: 500), () async {
-        cartCount = await _database.getCartCount();
-      });
+      await _database.update(product);
+      getCartCount();
+      getCartTotal();
+      // Future.delayed(const Duration(milliseconds: 500), () async {});
     } else {
       Scaffold.of(context).showSnackBar(new SnackBar(
         content: new Text("Available inventory : ${product.inventory}"),
@@ -809,16 +802,37 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
     }
   }
 
-  void decrementCount(Product product) {
+  Future decrementCount(Product product) async {
     if (product.count > 1) {
       product.count = product.count - 1;
-      _database.update(product);
+      await _database.update(product);
     } else if (product.count == 1) {
       product.count = product.count - 1;
       _database.remove(product);
     }
-    Future.delayed(const Duration(milliseconds: 500), () async {
-      cartCount = await _database.getCartCount();
+    getCartCount();
+    getCartTotal();
+    // Future.delayed(const Duration(milliseconds: 500), () async {});
+  }
+
+  getCartCount() {
+    _database.getCartCount().then((count) {
+      setState(() {
+        cartCount = count;
+      });
+    });
+  }
+
+  getCartTotal() {
+    _database.queryAllProducts().then((products) {
+      var amount = 0;
+      for (int i = 0; i < products.length; i++) {
+        var product = products[i];
+        amount += (product.selectedPacking.price * product.count);
+      }
+      setState(() {
+        totalAmount = amount;
+      });
     });
   }
 
@@ -850,6 +864,15 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
     //if(position==0){
     return selectedValues[pos];
     // }
+  }
+
+  // calculate the offer percentage
+  String getOff(Product product) {
+    var salePrice = product.packing[0].price;
+    var costPrice = product.displayPrice;
+    var profit = costPrice - salePrice;
+    var offer = (profit / costPrice) * 100;
+    return "${offer.round()}% off";
   }
 
   Widget mainContent(AsyncSnapshot<ResponseCatProducts> snapshot) {
@@ -923,7 +946,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                 Container(
                   color: Colors.colorlightgreyback,
                   height: 65,
-                  padding: EdgeInsets.all(4),
+                  padding: EdgeInsets.all(0),
                   child: Row(
                     children: <Widget>[
                       Flexible(
@@ -939,14 +962,14 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                         '₹$totalAmount',
                                         style: TextStyle(
                                           fontWeight: FontWeight.bold,
-                                          fontSize: 26,
+                                          fontSize: 24,
                                           color: Colors.colorgrey,
                                         ),
                                       ),
                                       Text(
                                         'Total amount',
                                         style: TextStyle(
-                                          fontSize: 14,
+                                          fontSize: 12,
                                           color: Colors.colorPink,
                                         ),
                                       )
@@ -993,11 +1016,15 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                             ),
                           ),
                           onTap: () {
-//                      Navigator.push(
-//                          context,
-//                          MaterialPageRoute(
-//                            builder: (context) => PlaceOrder(),
-//                          ));
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => CartPage(),
+                              ),
+                            ).then((value) {
+                              getCartTotal();
+                              getCartCount();
+                            });
                           },
                         ),
                         flex: 1,
@@ -1025,6 +1052,238 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
     return Container(
       child: Column(
         children: <Widget>[Text("No product available")],
+      ),
+    );
+  }
+
+  girdViewItem(int index, BuildContext context, List<Product> products) {
+    var product = products[index];
+    return Material(
+      color: Colors.transparent,
+      child: Padding(
+        padding: EdgeInsets.all(0),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0.0),
+          ),
+          child: Container(
+            //height: 330,
+            padding: EdgeInsets.only(bottom: 12),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(right: 8, left: 8, top: 8),
+                  child: Container(
+                    width: 150,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (product.fav == "1") {
+                                product.fav = "0";
+                              } else {
+                                product.fav = "1";
+                              }
+                              blocFav.fetchData(product.fav, product.id.toString());
+                            });
+                          },
+                          child: product.fav == "1"
+                              ? Image.asset(
+                                  'assets/fav_filled.png',
+                                  width: 20.0,
+                                  height: 20.0,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.asset(
+                                  'assets/fav.png',
+                                  width: 20.0,
+                                  height: 20.0,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                        Text(
+                          getOff(product),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.colororange,
+                          ),
+                          textAlign: TextAlign.center,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    goToProductDetail(product);
+                  },
+                  child: Column(
+                    children: <Widget>[
+                      Image.network(
+                        product.image,
+                        fit: BoxFit.contain,
+                        height: 80,
+                      ),
+                      Text(
+                        product.name,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.colorgreen,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                        child: Text(
+                          product.nameHindi,
+                          style: TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                          Text(
+                            '₹${product.selectedPacking.price}  ',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.colorlightgrey,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            '₹${product.displayPrice}',
+                            style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.colororange,
+                                decoration: TextDecoration.lineThrough),
+                            textAlign: TextAlign.center,
+                          ),
+                        ]),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        height: 35,
+                        width: 120,
+                        decoration: myBoxDecoration3(),
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 8, left: 8),
+                            child: DropdownButtonFormField<Packing>(
+                              decoration: InputDecoration.collapsed(
+                                  hintText: product.selectedPacking.unitQtyShow),
+                              value: null,
+                              //value: product.selectedPacking,
+                              items: product.packing.map((Packing value) {
+                                return new DropdownMenuItem<Packing>(
+                                  value: value,
+                                  child: new Text(
+                                    value.unitQtyShow,
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  product.selectedPacking = newValue;
+                                  product.count = 0;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                  child: Container(
+                    width: 150,
+                    //color: Colors.grey,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: IntrinsicHeight(
+                        child: Center(
+                          child: IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () {
+                                    decrementCount(products[index]);
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.only(left: 20),
+                                    // color: Colors.white,
+                                    child: Container(
+                                      decoration: myBoxDecoration2(),
+                                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      child: Image.asset(
+                                        'assets/minus.png',
+                                        height: 12,
+                                        width: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                                  child: Center(
+                                    child: Text(
+                                      product.count.toString(),
+                                      style: TextStyle(
+                                          color: Colors.colorgreen,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    incrementCount(products[index]);
+                                  },
+                                  child: Container(
+                                    //  color: Colors.white,
+                                    padding: EdgeInsets.only(right: 20),
+                                    child: Container(
+                                      decoration: myBoxDecoration2(),
+                                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      child: Image.asset(
+                                        'assets/plus.png',
+                                        height: 12,
+                                        width: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+//                  ),
+            ),
+          ),
+        ),
       ),
     );
   }

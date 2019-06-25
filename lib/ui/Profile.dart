@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/cities_bloc.dart';
+import 'package:nfresh/models/area_model.dart';
+import 'package:nfresh/models/city_model.dart';
 import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/resources/prefrences.dart';
 
@@ -34,10 +37,18 @@ class StateProfilePage extends State<stateProfile> {
   var _prefs = SharedPrefs();
 
   ProfileModel profile;
+  List<CityModel> cities = [];
+  List<AreaModel> areas = [];
+  List<AreaModel> cityAreas = [];
+  CityModel selectedCity;
+  AreaModel selectedArea;
+
+  var blocCity = CityBloc();
 
   @override
   void initState() {
     super.initState();
+    blocCity.fetchData();
     _prefs.getProfile().then((value) {
       setState(() {
         profile = value;
@@ -47,6 +58,28 @@ class StateProfilePage extends State<stateProfile> {
         passwordController.text = profile.password;
         //  cityController.text = profile.city;
         //  areaController.text = profile.name;
+      });
+
+      blocCity.cities.listen((res) {
+        setState(() {
+          this.cities = res.cities;
+          for (int i = 0; i < cities.length; i++) {
+            var city = cities[i];
+            if (profile.city == city.id) {
+              selectedCity = city;
+            }
+          }
+
+          this.areas = res.areas;
+          for (int i = 0; i < areas.length; i++) {
+            var area = areas[i];
+            if (profile.area == area.id) {
+              selectedArea = area;
+            }
+          }
+
+          getCityAreas(selectedCity);
+        });
       });
     });
   }
@@ -160,16 +193,32 @@ class StateProfilePage extends State<stateProfile> {
                                       ),
                                     ),
                                     Container(
-                                      margin: EdgeInsets.only(top: 16),
-                                      child: TextFormField(
-                                        focusNode: focus1,
-                                        controller: phoneController,
-                                        textInputAction: TextInputAction.next,
-                                        decoration: InputDecoration(labelText: 'Phone Number'),
-                                        onFieldSubmitted: (v) {
-                                          FocusScope.of(context).requestFocus(focus2);
+                                      margin: EdgeInsets.only(top: 8),
+                                      child: ListTile(
+                                        contentPadding: EdgeInsets.all(0),
+                                        title: Text(
+                                          "Phone Number",
+                                          style: TextStyle(
+                                            color: Colors.colorlightgrey,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                        subtitle: Text(
+                                          profile.phoneNo,
+                                          style: TextStyle(
+                                            color: Colors.black,
+                                            // fontSize: 12,
+                                          ),
+                                        ),
+                                        trailing: Icon(Icons.chevron_right),
+                                        onTap: () {
+                                          _showPhoneDialog(context);
                                         },
                                       ),
+                                    ),
+                                    Divider(
+                                      height: 1,
+                                      color: Colors.colorlightgrey,
                                     ),
                                     Container(
                                       margin: EdgeInsets.only(top: 16),
@@ -182,24 +231,88 @@ class StateProfilePage extends State<stateProfile> {
                                         },
                                       ),
                                     ),
-                                    Container(
-                                      margin: EdgeInsets.only(top: 16),
-                                      child: TextFormField(
-                                        focusNode: focus3,
-                                        textInputAction: TextInputAction.next,
-                                        decoration: InputDecoration(labelText: 'City'),
-                                        onFieldSubmitted: (v) {
-                                          FocusScope.of(context).requestFocus(focus4);
-                                        },
+                                    Divider(
+                                      height: 1,
+                                      color: Colors.colorlightgrey,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 24, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "City",
+                                            style: TextStyle(
+                                              color: Colors.colorlightgrey,
+                                              fontSize: 12,
+                                            ),
+                                          )
+                                        ],
                                       ),
                                     ),
-                                    Container(
-                                      margin: EdgeInsets.only(top: 16),
-                                      child: TextFormField(
-                                        focusNode: focus4,
-                                        textInputAction: TextInputAction.done,
-                                        decoration: InputDecoration(labelText: 'Area'),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                                      child: Center(
+                                        child: DropdownButtonFormField<CityModel>(
+                                          decoration: InputDecoration.collapsed(hintText: ''),
+                                          value: selectedCity,
+                                          items: cities.map((CityModel value) {
+                                            return new DropdownMenuItem<CityModel>(
+                                              value: value,
+                                              child: new Text(value.name),
+                                            );
+                                          }).toList(),
+                                          onChanged: (newValue) {
+                                            setState(() {
+                                              selectedCity = newValue;
+                                              getCityAreas(newValue);
+                                            });
+                                          },
+                                        ),
                                       ),
+                                    ),
+                                    Divider(
+                                      height: 1,
+                                      color: Colors.colorlightgrey,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 24, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "Area",
+                                            style: TextStyle(
+                                              color: Colors.colorlightgrey,
+                                              fontSize: 12,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                                      child: Center(
+                                        child: DropdownButtonFormField<AreaModel>(
+                                          decoration: InputDecoration.collapsed(hintText: ''),
+                                          value: selectedArea,
+                                          items: cityAreas.map((AreaModel value) {
+                                            return new DropdownMenuItem<AreaModel>(
+                                              value: value,
+                                              child: new Text(value.name),
+                                            );
+                                          }).toList(),
+                                          onChanged: (newValue) {
+                                            setState(() {
+                                              selectedArea = newValue;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    Divider(
+                                      height: 1,
+                                      color: Colors.colorlightgrey,
                                     ),
                                     Container(
                                       margin: EdgeInsets.only(top: 16),
@@ -239,6 +352,21 @@ class StateProfilePage extends State<stateProfile> {
         ),
       ],
     );
+  }
+
+  void getCityAreas(CityModel selectedCity) {
+    cityAreas = [];
+    for (int i = 0; i < areas.length; i++) {
+      var modelArea = areas[i];
+      if (modelArea.cityId == selectedCity.id) {
+        cityAreas.add(modelArea);
+      }
+    }
+    if (cityAreas.length > 0) {
+      selectedArea = cityAreas[0];
+    } else {
+      selectedArea = null;
+    }
   }
 
   void _showPasswordDialog(context) {
@@ -299,6 +427,71 @@ class StateProfilePage extends State<stateProfile> {
                                 labelText: 'Confirm Password',
                                 hasFloatingPlaceholder: true),
                           ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  // Flexible(
+                  Padding(
+                    padding: EdgeInsets.only(top: 20),
+                    child: RaisedButton(
+                      padding: EdgeInsets.only(left: 40, right: 40),
+                      splashColor: Colors.black12,
+                      color: Colors.colorgreen,
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(
+                        'Submit',
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ),
+                  // ),
+                ],
+              ),
+            ),
+          ),
+        ));
+      },
+    );
+  }
+
+  void _showPhoneDialog(context) {
+    // flutter defined function
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return Center(
+            child: SingleChildScrollView(
+          child: AlertDialog(
+            content: Container(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(bottom: 24.0),
+                    child: Text(
+                      "Update Contact",
+                      style: TextStyle(
+                          color: Colors.colorgreen, fontWeight: FontWeight.bold, fontSize: 18.0),
+                    ),
+                  ),
+                  Flexible(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        TextField(
+                          decoration: InputDecoration(
+                            labelText: 'Enter new number',
+                            hasFloatingPlaceholder: true,
+                            border: OutlineInputBorder(),
+                          ),
+                          textInputAction: TextInputAction.next,
+                          keyboardType: TextInputType.phone,
                         ),
                       ],
                     ),

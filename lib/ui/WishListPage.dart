@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/get_fav_bloc.dart';
+import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/responses/response_getFavorite.dart';
@@ -22,6 +23,7 @@ class WishPage extends State<WishListPage> {
   var bloc = GetFavBloc();
 
   var _database = DatabaseHelper.instance;
+  var blocFav = SetFavBloc();
 
   @override
   void initState() {
@@ -197,14 +199,20 @@ class WishPage extends State<WishListPage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: <Widget>[
-                                  Padding(
-                                    padding: EdgeInsets.only(right: 8),
-                                    child: Align(
-                                      alignment: Alignment.topRight,
-                                      child: Image.asset(
-                                        'assets/delete.png',
-                                        height: 20,
-                                        width: 20,
+                                  GestureDetector(
+                                    onTap: () {
+                                      showMessage(
+                                          context, product, snapshot.data.products, position);
+                                    },
+                                    child: Padding(
+                                      padding: EdgeInsets.only(left: 16, right: 8),
+                                      child: Align(
+                                        alignment: Alignment.topRight,
+                                        child: Image.asset(
+                                          'assets/delete.png',
+                                          height: 20,
+                                          width: 20,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -398,5 +406,37 @@ class WishPage extends State<WishListPage> {
     Future.delayed(const Duration(milliseconds: 500), () {
       widget.listener.onCartUpdate();
     });
+  }
+
+  void showMessage(context, product, List<Product> products, int position) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text("Would you like to remove this product from favourites ?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                blocFav.fetchData("0", product.id.toString());
+                setState(() {
+                  products.removeAt(position);
+                });
+              },
+            ),
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

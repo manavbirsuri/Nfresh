@@ -355,7 +355,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                                   ),
                                           )),
                                       Text(
-                                        product.off,
+                                        getOff(product),
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: Colors.colororange,
@@ -678,5 +678,14 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
     Future.delayed(const Duration(milliseconds: 2000), () {
       setState(() {});
     });
+  }
+
+  // calculate the offer percentage
+  String getOff(Product product) {
+    var salePrice = product.packing[0].price;
+    var costPrice = product.displayPrice;
+    var profit = costPrice - salePrice;
+    var offer = (profit / costPrice) * 100;
+    return "${offer.round()}% off";
   }
 }

@@ -5,6 +5,9 @@ import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/responses/response_related_products.dart';
+import 'package:nfresh/resources/database.dart';
+
+import 'cart.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final Product product;
@@ -23,26 +26,17 @@ class ProState extends State<ProductDetailPage> {
   var blocRelated = RelatedProductBloc();
 
   var blocFav = SetFavBloc();
+  var _database = DatabaseHelper.instance;
+
+  int cartCount = 0;
 
   @override
   void initState() {
     super.initState();
     setState(() {});
-    bloc.fetchData();
-    bloc.catProductsList.listen((response) {
-      setState(() {
-        calculateTotal(response);
-      });
-    });
-
+    getCartTotal();
+    getCartCount();
     blocRelated.fetchRelatedProducts(widget.product.id.toString());
-  }
-
-  calculateTotal(List<Product> products) async {
-    totalAmount = 0;
-    for (Product product in products) {
-      totalAmount += (product.selectedPacking.price * product.count);
-    }
   }
 
   @override
@@ -165,7 +159,7 @@ class ProState extends State<ProductDetailPage> {
                                                 ),
                                               ]),
                                           Text(
-                                            widget.product.off,
+                                            getOff(widget.product),
                                             style:
                                                 TextStyle(fontSize: 14, color: Colors.colororange),
                                             textAlign: TextAlign.center,
@@ -202,6 +196,7 @@ class ProState extends State<ProductDetailPage> {
                                                   onChanged: (newValue) {
                                                     setState(() {
                                                       widget.product.selectedPacking = newValue;
+                                                      widget.product.count = 0;
                                                     });
                                                   },
                                                 ),
@@ -275,9 +270,7 @@ class ProState extends State<ProductDetailPage> {
                                                         children: <Widget>[
                                                           GestureDetector(
                                                             onTap: () {
-                                                              setState(() {
-                                                                decrementCount(widget.product);
-                                                              });
+                                                              decrementCount(widget.product);
                                                             },
                                                             child: Container(
                                                               padding: EdgeInsets.only(left: 15),
@@ -313,9 +306,7 @@ class ProState extends State<ProductDetailPage> {
                                                           ),
                                                           GestureDetector(
                                                             onTap: () {
-                                                              setState(() {
-                                                                incrementCount(widget.product);
-                                                              });
+                                                              incrementCount(widget.product);
                                                             },
                                                             child: Container(
                                                               //  color: Colors.white,
@@ -400,7 +391,7 @@ class ProState extends State<ProductDetailPage> {
                     Container(
                       color: Colors.colorlightgreyback,
                       height: 65,
-                      padding: EdgeInsets.all(4),
+                      padding: EdgeInsets.all(0),
                       child: Row(
                         children: <Widget>[
                           Flexible(
@@ -415,13 +406,13 @@ class ProState extends State<ProductDetailPage> {
                                           '₹$totalAmount',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 26,
+                                              fontSize: 24,
                                               color: Colors.colorgrey),
                                         ),
                                         Text(
                                           'Total amount',
                                           style: TextStyle(
-                                            // fontSize: 14,
+                                            fontSize: 12,
                                             color: Colors.colorPink,
                                           ),
                                         )
@@ -466,11 +457,15 @@ class ProState extends State<ProductDetailPage> {
                                 ),
                               ),
                               onTap: () {
-//                      Navigator.push(
-//                          context,
-//                          MaterialPageRoute(
-//                            builder: (context) => PlaceOrder(),
-//                          ));
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CartPage(),
+                                  ),
+                                ).then((value) {
+                                  getCartTotal();
+                                  getCartCount();
+                                });
                               },
                             ),
                             flex: 1,
@@ -504,6 +499,15 @@ class ProState extends State<ProductDetailPage> {
       border: Border.all(color: Colors.grey),
       borderRadius: BorderRadius.all(Radius.circular(8)),
     );
+  }
+
+  // calculate the offer percentage
+  String getOff(Product product) {
+    var salePrice = product.packing[0].price;
+    var costPrice = product.displayPrice;
+    var profit = costPrice - salePrice;
+    var offer = (profit / costPrice) * 100;
+    return "${offer.round()}% off";
   }
 
   showProductsCategories(AsyncSnapshot<ResponseRelatedProducts> snapshot) {
@@ -566,7 +570,7 @@ class ProState extends State<ProductDetailPage> {
                                                   ),
                                           )),
                                       Text(
-                                        '30%off',
+                                        getOff(product),
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: Colors.colororange,
@@ -697,9 +701,7 @@ class ProState extends State<ProductDetailPage> {
                                             children: <Widget>[
                                               GestureDetector(
                                                 onTap: () {
-                                                  setState(() {
-                                                    decrementCount(products[position]);
-                                                  });
+                                                  decrementCount(products[position]);
                                                 },
                                                 child: Container(
                                                   padding: EdgeInsets.only(left: 20),
@@ -731,9 +733,7 @@ class ProState extends State<ProductDetailPage> {
                                               ),
                                               GestureDetector(
                                                 onTap: () {
-                                                  setState(() {
-                                                    incrementCount(products[position]);
-                                                  });
+                                                  incrementCount(products[position]);
                                                 },
                                                 child: Container(
                                                   //  color: Colors.white,
@@ -840,15 +840,57 @@ class ProState extends State<ProductDetailPage> {
         ));
   }
 
-  void incrementCount(Product product) {
+  Future incrementCount(Product product) async {
     if (product.count < product.inventory) {
       product.count = product.count + 1;
+      await _database.update(product);
+
+      _database.getCartCount().then((count) {
+        setState(() {
+          cartCount = count;
+        });
+      });
+      getCartCount();
+      getCartTotal();
+      // Future.delayed(const Duration(milliseconds: 500), () async {});
+    } else {
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text("Available inventory : ${product.inventory}"),
+      ));
     }
   }
 
-  void decrementCount(Product product) {
-    if (product.count > 0) {
+  Future decrementCount(Product product) async {
+    if (product.count > 1) {
       product.count = product.count - 1;
+      await _database.update(product);
+    } else if (product.count == 1) {
+      product.count = product.count - 1;
+      _database.remove(product);
     }
+    getCartCount();
+    getCartTotal();
+    // Future.delayed(const Duration(milliseconds: 500), () async {});
+  }
+
+  getCartCount() {
+    _database.getCartCount().then((count) {
+      setState(() {
+        cartCount = count;
+      });
+    });
+  }
+
+  getCartTotal() {
+    _database.queryAllProducts().then((products) {
+      var amount = 0;
+      for (int i = 0; i < products.length; i++) {
+        var product = products[i];
+        amount += (product.selectedPacking.price * product.count);
+      }
+      setState(() {
+        totalAmount = amount;
+      });
+    });
   }
 }
