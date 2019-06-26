@@ -5,6 +5,7 @@ import 'package:nfresh/models/order_product_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/responses/response_order_detail.dart';
 import 'package:nfresh/resources/database.dart';
+import 'package:toast/toast.dart';
 
 class OrderPage extends StatefulWidget {
   final String title;
@@ -238,10 +239,8 @@ class StateOrderPage extends State<OrderPage> {
       _database.update(products[i]);
     }
 
-    Scaffold.of(context).showSnackBar(SnackBar(
-      content: Text('Your products added to cart.'),
-      duration: Duration(seconds: 1),
-    ));
+    Toast.show('Your products added to cart.', context,
+        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
   }
 
   void observeReorder(context) {
@@ -281,10 +280,7 @@ class StateOrderPage extends State<OrderPage> {
           insertIntoCart(response.products, context);
         }
       } else {
-        Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text(response.msg),
-          duration: Duration(seconds: 1),
-        ));
+        Toast.show(response.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       }
     });
   }

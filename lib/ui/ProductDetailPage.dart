@@ -93,6 +93,8 @@ class ProState extends State<ProductDetailPage> {
                                           } else {
                                             widget.product.fav = "1";
                                           }
+                                          blocFav.fetchData(
+                                              widget.product.fav, widget.product.id.toString());
                                         });
                                       },
                                       child: Align(

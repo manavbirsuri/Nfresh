@@ -76,6 +76,8 @@ class _MyCustomFormState extends State<CartPage> {
   var address = "Akshya nagar 1st block, 1st Cross, Rammurty nagar, Banglore-560016";
 
   var addressController = TextEditingController();
+
+  ProgressDialog dialog;
   @override
   void initState() {
     super.initState();
@@ -1184,7 +1186,7 @@ class _MyCustomFormState extends State<CartPage> {
 
   getCheckSum(context) {
 //    Future.delayed(const Duration(milliseconds: 3000), () {
-    var dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+    dialog = new ProgressDialog(context, ProgressDialogType.Normal);
     dialog.setMessage("Please wait...");
     dialog.show();
     setState(() {
@@ -1266,8 +1268,8 @@ class _MyCustomFormState extends State<CartPage> {
                           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                           child: Center(
                             child: DropdownButtonFormField<CityModel>(
-                              decoration: InputDecoration.collapsed(hintText: ''),
-                              value: selectedCity,
+                              decoration: InputDecoration.collapsed(hintText: selectedCity.name),
+                              value: null,
                               items: cities.map((CityModel value) {
                                 return new DropdownMenuItem<CityModel>(
                                   value: value,
@@ -1278,6 +1280,8 @@ class _MyCustomFormState extends State<CartPage> {
                                 setState(() {
                                   selectedCity = newValue;
                                   getCityAreas(newValue);
+                                  Navigator.of(context).pop();
+                                  _showAddressDialog(context);
                                 });
                               },
                             ),
@@ -1306,8 +1310,8 @@ class _MyCustomFormState extends State<CartPage> {
                           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                           child: Center(
                             child: DropdownButtonFormField<AreaModel>(
-                              decoration: InputDecoration.collapsed(hintText: ''),
-                              value: selectedArea,
+                              decoration: InputDecoration.collapsed(hintText: selectedArea.name),
+                              value: null,
                               items: cityAreas.map((AreaModel value) {
                                 return new DropdownMenuItem<AreaModel>(
                                   value: value,
@@ -1317,6 +1321,8 @@ class _MyCustomFormState extends State<CartPage> {
                               onChanged: (newValue) {
                                 setState(() {
                                   selectedArea = newValue;
+                                  Navigator.of(context).pop();
+                                  _showAddressDialog(context);
                                 });
                               },
                             ),

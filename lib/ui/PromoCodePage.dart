@@ -263,7 +263,9 @@ class PromoCodeState extends State<PromoCodePage> {
       String status = json['status'];
 
       dialog.hide();
+
       if (status == "true") {
+        Navigator.pop(context);
         int discount = json['discount'];
         saveToPrefs(discount);
         showDialog(
@@ -277,8 +279,9 @@ class PromoCodeState extends State<PromoCodePage> {
                 ),
               );
             });
+      } else {
+        Navigator.pop(context);
       }
-      Navigator.pop(context);
     });
   }
 }

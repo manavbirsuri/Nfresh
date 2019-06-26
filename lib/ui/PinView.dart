@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nfresh/DashBoard.dart';
 import 'package:nfresh/bloc/otp_bloc.dart';
 import 'package:pin_view/pin_view.dart';
+import 'package:toast/toast.dart';
 
 class PinViewPage extends StatefulWidget {
   final id;
@@ -16,6 +17,8 @@ class PinState extends State<PinViewPage> {
   var bloc = OtpBloc();
 
   bool showLoader = false;
+
+  String enteredPin = "";
 
   @override
   void initState() {
@@ -34,6 +37,10 @@ class PinState extends State<PinViewPage> {
             context,
             new MaterialPageRoute(builder: (context) => DashBoard()),
           );
+//          Navigator.pushAndRemoveUntil(
+//              context,
+//              MaterialPageRoute(builder: (context) => DashBoard()),
+//              ModalRoute.withName("/DashBoard"));
         }
       } else {
         Scaffold.of(context).showSnackBar(
@@ -94,7 +101,9 @@ class PinState extends State<PinViewPage> {
                       autoFocusFirstField: false,
                       obscureText: true,
                       submit: (String pin) {
-                        verifyOtpWebservice(pin, widget.id);
+                        setState(() {
+                          enteredPin = pin;
+                        });
                       } // gets triggered when all the fields are filled
 
                       // gets triggered when all the fields are filled
@@ -132,15 +141,12 @@ class PinState extends State<PinViewPage> {
               padding: const EdgeInsets.fromLTRB(64, 8, 64, 16),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => DashBoard()),
-                      ModalRoute.withName("/DashBoard"));
-//                  Navigator.push(
-//                    context,
-//                    new MaterialPageRoute(
-//                        builder: (context) => new DashBoard()),
-//                  );
+                  if (enteredPin.length == 4) {
+                    verifyOtpWebservice(enteredPin, widget.id);
+                  } else {
+                    Toast.show("Enter valid OTP", context,
+                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                  }
                 },
                 child: Container(
                   decoration: new BoxDecoration(
