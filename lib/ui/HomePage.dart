@@ -374,7 +374,9 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                         builder: (context) => ProductDetailPage(
                                               product: product,
                                             ),
-                                      ));
+                                      )).then((value) {
+                                    widget.listener.onCartUpdate();
+                                  });
                                 },
                                 child: Column(
                                   children: <Widget>[

@@ -49,7 +49,7 @@ class stateProfilePage extends State<stateProfile> {
   };
 
   ProfileModel profileModel;
-  var totalAmount = 0;
+  var totalAmount = 100;
   int credits = 0;
   @override
   void initState() {

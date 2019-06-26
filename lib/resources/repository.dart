@@ -59,4 +59,6 @@ class Repository {
 
   Future<ResponseProfile> updateWallet(auth, total, resPayTm) =>
       apiProvider.updateWallet(auth, total, resPayTm);
+  Future<ResponseProfile> updateAddress(auth, address, city, area) =>
+      apiProvider.updateAddress(auth, address, city, area);
 }

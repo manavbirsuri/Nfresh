@@ -5,6 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/cart_bloc.dart';
 import 'package:nfresh/bloc/check_inventory_bloc.dart';
 import 'package:nfresh/bloc/checksum_bloc.dart';
+import 'package:nfresh/bloc/cities_bloc.dart';
+import 'package:nfresh/bloc/update_address_bloc.dart';
+import 'package:nfresh/models/area_model.dart';
+import 'package:nfresh/models/city_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/resources/database.dart';
@@ -42,6 +46,14 @@ class _MyCustomFormState extends State<CartPage> {
   var blocInventory = CheckInventoryBloc();
   List<Map<String, dynamic>> lineItems = [];
 
+  List<CityModel> cities = [];
+  List<AreaModel> areas = [];
+  List<AreaModel> cityAreas = [];
+  CityModel selectedCity;
+  AreaModel selectedArea;
+
+  var blocCity = CityBloc();
+
   Map<String, dynamic> mapPayTm = {
     'MID': "apXePW28170154069075",
     'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
@@ -55,12 +67,15 @@ class _MyCustomFormState extends State<CartPage> {
     'CALLBACK_URL': ""
   };
   var blocCheck = ChecksumBloc();
+  var blocAddress = UpdateAddressBloc();
   var prefs = SharedPrefs();
   String checksum = "";
   String orderId = "";
   List<Product> mProducts = [];
   bool isLoadingCart = true;
   var address = "Akshya nagar 1st block, 1st Cross, Rammurty nagar, Banglore-560016";
+
+  var addressController = TextEditingController();
   @override
   void initState() {
     super.initState();
@@ -79,6 +94,43 @@ class _MyCustomFormState extends State<CartPage> {
       });
     });
     //blocInventory.fetchData(map);
+    blocCity.fetchData();
+    blocCity.cities.listen((res) {
+      setState(() {
+        this.cities = res.cities;
+        for (int i = 0; i < cities.length; i++) {
+          var city = cities[i];
+          if (profile.city == city.id) {
+            selectedCity = city;
+          }
+        }
+
+        this.areas = res.areas;
+        for (int i = 0; i < areas.length; i++) {
+          var area = areas[i];
+          if (profile.area == area.id) {
+            selectedArea = area;
+          }
+        }
+
+        getCityAreas(selectedCity);
+      });
+    });
+  }
+
+  void getCityAreas(CityModel selectedCity) {
+    cityAreas = [];
+    for (int i = 0; i < areas.length; i++) {
+      var modelArea = areas[i];
+      if (modelArea.cityId == selectedCity.id) {
+        cityAreas.add(modelArea);
+      }
+    }
+    if (cityAreas.length > 0) {
+      selectedArea = cityAreas[0];
+    } else {
+      selectedArea = null;
+    }
   }
 
   @override
@@ -1193,41 +1245,87 @@ class _MyCustomFormState extends State<CartPage> {
                           textInputAction: TextInputAction.done,
                           keyboardType: TextInputType.multiline,
                           maxLines: 3,
-                        ),
-                        /* Padding(
-                          padding: EdgeInsets.only(top: 12, bottom: 12),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              labelText: 'City',
-                              border: OutlineInputBorder(),
-                              hasFloatingPlaceholder: true,
-                            ),
-                            textInputAction: TextInputAction.next,
-                            maxLines: 1,
-                          ),
-                        ),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: 'State',
-                            border: OutlineInputBorder(),
-                            hasFloatingPlaceholder: true,
-                          ),
-                          textInputAction: TextInputAction.next,
-                          maxLines: 1,
+                          controller: addressController,
                         ),
                         Padding(
-                          padding: EdgeInsets.only(top: 12),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              labelText: 'Pin Code',
-                              border: OutlineInputBorder(),
-                              hasFloatingPlaceholder: true,
-                            ),
-                            textInputAction: TextInputAction.done,
-                            keyboardType: TextInputType.number,
-                            maxLines: 1,
+                          padding: const EdgeInsets.fromLTRB(0, 24, 0, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "City",
+                                style: TextStyle(
+                                  color: Colors.colorlightgrey,
+                                  fontSize: 12,
+                                ),
+                              )
+                            ],
                           ),
-                        ),*/
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                          child: Center(
+                            child: DropdownButtonFormField<CityModel>(
+                              decoration: InputDecoration.collapsed(hintText: ''),
+                              value: selectedCity,
+                              items: cities.map((CityModel value) {
+                                return new DropdownMenuItem<CityModel>(
+                                  value: value,
+                                  child: new Text(value.name),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedCity = newValue;
+                                  getCityAreas(newValue);
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        Divider(
+                          height: 1,
+                          color: Colors.colorlightgrey,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 24, 0, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "Area",
+                                style: TextStyle(
+                                  color: Colors.colorlightgrey,
+                                  fontSize: 12,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                          child: Center(
+                            child: DropdownButtonFormField<AreaModel>(
+                              decoration: InputDecoration.collapsed(hintText: ''),
+                              value: selectedArea,
+                              items: cityAreas.map((AreaModel value) {
+                                return new DropdownMenuItem<AreaModel>(
+                                  value: value,
+                                  child: new Text(value.name),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedArea = newValue;
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        Divider(
+                          height: 1,
+                          color: Colors.colorlightgrey,
+                        ),
                       ],
                     ),
                   ),
@@ -1239,7 +1337,28 @@ class _MyCustomFormState extends State<CartPage> {
                       splashColor: Colors.black12,
                       color: Colors.colorgreen,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        var localAddress = addressController.text.toString();
+                        if (localAddress.length > 0) {
+                          var dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+                          dialog.setMessage("Please wait...");
+                          dialog.show();
+
+                          blocAddress.fetchData(localAddress, selectedCity.id, selectedArea.id);
+                          blocAddress.profileData.listen((response) {
+                            dialog.hide();
+                            if (response.status == "true") {
+                              Navigator.of(context).pop();
+                              String data = jsonEncode(response.profile);
+                              prefs.saveProfile(data);
+                              getProfileDetail();
+                            }
+                            Toast.show(response.msg, context,
+                                duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                          });
+                        } else {
+                          Toast.show("Address cannot be empty", context,
+                              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                        }
                       },
                       child: Text(
                         'Submit',
@@ -1263,6 +1382,7 @@ class _MyCustomFormState extends State<CartPage> {
         profile = onValue;
         walletBalance = profile.walletCredits;
         address = profile.address;
+        addressController.text = profile.address;
       });
     });
   }

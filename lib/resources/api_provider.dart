@@ -362,12 +362,30 @@ class ApiProvider {
       'paytm_response': resPayTm,
     };
     final response = await client.post("$baseUrl/update_wallet", body: map);
-    print("PROFILE: " + response.body.toString());
+    print("Wallet update: " + response.body.toString());
     if (response.statusCode == 200) {
       return ResponseProfile.fromJson(json.decode(response.body));
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load update_wallet service');
+    }
+  }
+
+  // Webservice call to get user profile
+  Future<ResponseProfile> updateAddress(auth, address, city, area) async {
+    Map map = {
+      'auth_code': auth,
+      'address': address,
+      'city': city.toString(),
+      'area': area.toString(),
+    };
+    final response = await client.post("$baseUrl/addressupdate", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseProfile.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load addressupdate service');
     }
   }
 }
