@@ -56,4 +56,7 @@ class Repository {
   Future<ResponseReorder> reorder(auth, orderId) => apiProvider.reOrder(auth, orderId);
   Future<String> applyCoupon(auth, total, couponCode) =>
       apiProvider.applyCoupon(auth, total, couponCode);
+
+  Future<ResponseProfile> updateWallet(auth, total, resPayTm) =>
+      apiProvider.updateWallet(auth, total, resPayTm);
 }

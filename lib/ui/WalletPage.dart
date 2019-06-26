@@ -1,10 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:nfresh/bloc/checksum_bloc.dart';
 import 'package:nfresh/bloc/wallet_bloc.dart';
+import 'package:nfresh/bloc/wallet_update_bloc.dart';
 import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_wallet.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:nfresh/resources/prefrences.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 class WalletPage extends StatelessWidget {
   @override
@@ -23,24 +27,43 @@ class stateProfile extends StatefulWidget {
 }
 
 class stateProfilePage extends State<stateProfile> {
+  static const platform = const MethodChannel('flutter.native/helper');
   var valueChecked = 0;
-  var amount = "";
   var bloc = WalletBloc();
+  var blocCheck = ChecksumBloc();
+  var prefs = SharedPrefs();
+  var blocWallet = UpdateWalletBloc();
+  String checksum = "";
+  String orderId = "";
+  Map<String, dynamic> mapPayTm = {
+    'MID': "apXePW28170154069075",
+    'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
+    'CUST_ID': "cust123",
+    'MOBILE_NO': "7777777777",
+    'EMAIL': "username@emailprovider.com",
+    'CHANNEL_ID': "WAP",
+    'TXN_AMOUNT': "100",
+    'WEBSITE': "WEBSTAGING",
+    'INDUSTRY_TYPE_ID': "Retail",
+    'CALLBACK_URL': ""
+  };
 
-  ProfileModel waletb;
+  ProfileModel profileModel;
+  var totalAmount = 0;
+  int credits = 0;
   @override
   void initState() {
     super.initState();
     bloc.fetchData();
-    fetchDat2a();
+    getProfileDetail();
   }
 
-  Future<ProfileModel> fetchDat2a() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    String profile = prefs.getString("profile") ?? "{}";
-    print(("HHHHHHHHH: " + profile));
-    setState(() {
-      waletb = ProfileModel(jsonDecode(profile));
+  getProfileDetail() {
+    prefs.getProfile().then((profile) {
+      setState(() {
+        profileModel = profile;
+        credits = profileModel.walletCredits;
+      });
     });
   }
 
@@ -116,7 +139,7 @@ class stateProfilePage extends State<stateProfile> {
                   textBaseline: TextBaseline.alphabetic,
                   children: <Widget>[
                     Text(
-                      waletb.walletCredits.toString(),
+                      credits.toString(),
                       style:
                           TextStyle(color: Colors.white, fontSize: 52, fontWeight: FontWeight.bold),
                     ),
@@ -212,9 +235,8 @@ class stateProfilePage extends State<stateProfile> {
                                                 onTap: () {
                                                   setState(() {
                                                     valueChecked = position;
-                                                    amount = snapshot
-                                                        .data.walletOffers[position].walletCredit
-                                                        .toString();
+                                                    totalAmount = snapshot
+                                                        .data.walletOffers[position].moneyAdded;
                                                   });
                                                 },
                                                 child: Container(
@@ -296,23 +318,14 @@ class stateProfilePage extends State<stateProfile> {
                                                           CrossAxisAlignment.baseline,
                                                       textBaseline: TextBaseline.alphabetic,
                                                       children: <Widget>[
-                                                        amount == ""
-                                                            ? Text(
-                                                                snapshot.data.walletOffers[0]
-                                                                    .walletCredit
-                                                                    .toString(),
-                                                                style: TextStyle(
-                                                                    color: Colors.colorgreen,
-                                                                    fontSize: 36,
-                                                                    fontWeight: FontWeight.bold),
-                                                              )
-                                                            : Text(
-                                                                amount,
-                                                                style: TextStyle(
-                                                                    color: Colors.colorgreen,
-                                                                    fontSize: 36,
-                                                                    fontWeight: FontWeight.bold),
-                                                              ),
+                                                        Text(
+                                                          snapshot.data.walletOffers[0].walletCredit
+                                                              .toString(),
+                                                          style: TextStyle(
+                                                              color: Colors.colorgreen,
+                                                              fontSize: 36,
+                                                              fontWeight: FontWeight.bold),
+                                                        ),
                                                         Text(
                                                           ' CREDITS',
                                                           style: TextStyle(
@@ -351,13 +364,7 @@ class stateProfilePage extends State<stateProfile> {
                                 padding: const EdgeInsets.fromLTRB(32, 8, 32, 16),
                                 child: GestureDetector(
                                   onTap: () {
-                                    _showDialog();
-//                              Navigator.push(
-//                                context,
-//                                new MaterialPageRoute(
-//                                    builder: (context) =>
-//                                    new PinViewPage()),
-//                              );
+                                    getCheckSum(context);
                                   },
                                   child: Container(
                                     height: 40,
@@ -390,7 +397,7 @@ class stateProfilePage extends State<stateProfile> {
     );
   }
 
-  void _showDialog() {
+  void _showDialog(String message) {
     // flutter defined function
     showDialog(
       context: context,
@@ -398,7 +405,7 @@ class stateProfilePage extends State<stateProfile> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Alert"),
-          content: new Text("Payment Successfull"),
+          content: new Text(message),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -411,5 +418,61 @@ class stateProfilePage extends State<stateProfile> {
         );
       },
     );
+  }
+
+  getCheckSum(context) {
+//    Future.delayed(const Duration(milliseconds: 3000), () {
+    var dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+    dialog.setMessage("Please wait...");
+    dialog.show();
+    setState(() {
+      orderId = "NFW${new DateTime.now().millisecondsSinceEpoch}";
+      mapPayTm['ORDER_ID'] = orderId;
+      mapPayTm['CUST_ID'] = "Balvinder";
+      mapPayTm['MOBILE_NO'] = "1234567890";
+      mapPayTm['EMAIL'] = "abc@abc.abc";
+      mapPayTm['TXN_AMOUNT'] = totalAmount.toString();
+      mapPayTm['CALLBACK_URL'] =
+          "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
+    });
+    blocCheck.fetchData(mapPayTm);
+//    });
+    blocCheck.checksum.listen((res) {
+      print("CHECKSUM: $res");
+      dialog.hide();
+      platform.invokeMethod('$res::${jsonEncode(mapPayTm)}').then((result) {
+        handlePayTmResponse(result, context);
+      });
+    });
+  }
+
+  void handlePayTmResponse(String response, BuildContext context) {
+    if (response.contains("KITKAT")) {
+      print(response);
+    } else {
+      var obj = jsonDecode(response);
+      var status = obj['STATUS'];
+      if (status == 'TXN_SUCCESS') {
+        // payment success
+        var dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+        dialog.setMessage("Updating wallet...");
+        dialog.show();
+        blocWallet.fetchData(totalAmount, response);
+        blocWallet.profileData.listen((profile) {
+          dialog.hide();
+          if (profile.status == "true") {
+            _showDialog("Amount added to wallet Successfully");
+            String data = jsonEncode(profile.profile);
+            prefs.saveProfile(data);
+            getProfileDetail();
+          } else {
+            blocWallet.fetchData(totalAmount, response);
+          }
+        });
+      } else {
+        // payment failure
+        _showDialog("Payment payment processing error.");
+      }
+    }
   }
 }

@@ -70,13 +70,7 @@ class _MyCustomFormState extends State<CartPage> {
 //          check = value;
 //        });
 //      });
-    prefs.getProfile().then((onValue) {
-      profile = onValue;
-      walletBalance = profile.walletCredits;
-      setState(() {
-        address = profile.address;
-      });
-    });
+    getProfileDetail();
     bloc.fetchData();
     bloc.catProductsList.listen((list) {
       setState(() {
@@ -681,7 +675,9 @@ class _MyCustomFormState extends State<CartPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => WalletPage(),
-                        ));
+                        )).then((value) {
+                      getProfileDetail();
+                    });
                   }
                 });
               },
@@ -1259,6 +1255,16 @@ class _MyCustomFormState extends State<CartPage> {
         ));
       },
     );
+  }
+
+  void getProfileDetail() {
+    prefs.getProfile().then((onValue) {
+      setState(() {
+        profile = onValue;
+        walletBalance = profile.walletCredits;
+        address = profile.address;
+      });
+    });
   }
 }
 

@@ -353,4 +353,21 @@ class ApiProvider {
       throw Exception('NFresh: Failed to load applycoupon service');
     }
   }
+
+  // Webservice call to get user profile
+  Future<ResponseProfile> updateWallet(auth, amount, resPayTm) async {
+    Map map = {
+      'auth_code': auth,
+      'amount': amount.toString(),
+      'paytm_response': resPayTm,
+    };
+    final response = await client.post("$baseUrl/update_wallet", body: map);
+    print("PROFILE: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseProfile.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load update_wallet service');
+    }
+  }
 }
