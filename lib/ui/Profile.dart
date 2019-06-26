@@ -45,6 +45,8 @@ class StateProfilePage extends State<stateProfile> {
 
   var blocCity = CityBloc();
 
+  String customerType = "";
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +58,13 @@ class StateProfilePage extends State<stateProfile> {
         emailController.text = profile.email;
         phoneController.text = profile.phoneNo;
         passwordController.text = profile.password;
+        if (profile.type == 1) {
+          customerType = "Retailer";
+        } else if (profile.type == 2) {
+          customerType = "Customer Daily";
+        } else if (profile.type == 3) {
+          customerType = "Customer Monthly";
+        }
         //  cityController.text = profile.city;
         //  areaController.text = profile.name;
       });
@@ -324,7 +333,7 @@ class StateProfilePage extends State<stateProfile> {
                                     Container(
                                       margin: EdgeInsets.only(top: 16),
                                       child: Text(
-                                        'Retailer',
+                                        customerType,
                                         style: TextStyle(fontSize: 16),
                                       ),
                                     ),

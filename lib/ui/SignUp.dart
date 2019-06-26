@@ -60,8 +60,8 @@ class stateProfilePage extends State<stateProfile> {
       });
     });
     userTypes.add(UserType("1", "Retailer"));
-    userTypes.add(UserType("2", "Customer - month"));
-    userTypes.add(UserType("3", "Customer - 3 months"));
+    userTypes.add(UserType("2", "Customer Daily"));
+    userTypes.add(UserType("3", "Customer Monthly"));
     selectedType = userTypes[0];
 
     bloc.signUp.listen((response) {

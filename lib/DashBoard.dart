@@ -66,8 +66,6 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   int _count = 0;
   ProfileModel profile;
 
-  bool isAlert = false;
-
   _MyHomePageState(String title) {
     this.title = title;
   }
@@ -89,13 +87,14 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       print("Profile Status = " + res.status);
       if (res.status == "true") {
         String profile = jsonEncode(res.profile);
-        if (_prefs.getProfile() == null && res.profile.type != 1) {
-          setState(() {
-            isAlert = true;
-          });
-          _database.clearCart();
-        }
-        _prefs.saveProfile(profile);
+        _prefs.getProfile().then((modelProfile) {
+          if (modelProfile == null && res.profile.type != 1) {
+            _database.clearCart();
+            showMessage(context);
+            getCartCount();
+          }
+          _prefs.saveProfile(profile);
+        });
       }
     });
     getCartCount();

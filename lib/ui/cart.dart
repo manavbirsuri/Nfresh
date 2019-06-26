@@ -73,6 +73,9 @@ class _MyCustomFormState extends State<CartPage> {
     prefs.getProfile().then((onValue) {
       profile = onValue;
       walletBalance = profile.walletCredits;
+      setState(() {
+        address = profile.address;
+      });
     });
     bloc.fetchData();
     bloc.catProductsList.listen((list) {
