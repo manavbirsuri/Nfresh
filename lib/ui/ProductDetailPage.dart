@@ -174,7 +174,7 @@ class ProState extends State<ProductDetailPage> {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
                                           Container(
-                                            height: 35,
+                                            // height: 35,
                                             width: 120,
                                             decoration: myBoxDecoration3(),
                                             child: Center(
@@ -191,7 +191,8 @@ class ProState extends State<ProductDetailPage> {
                                                       value: value,
                                                       child: new Text(
                                                         value.unitQtyShow,
-                                                        style: TextStyle(color: Colors.grey),
+                                                        style: TextStyle(
+                                                            color: Colors.grey, fontSize: 12),
                                                       ),
                                                     );
                                                   }).toList(),

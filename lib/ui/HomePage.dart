@@ -239,10 +239,13 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) =>
-                              CategoryDetails(selectedCategory: categories[position])));
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) =>
+                                  CategoryDetails(selectedCategory: categories[position])))
+                      .then((value) {
+                    widget.listener.onCartUpdate();
+                  });
                 },
                 child: Card(
                   shape: RoundedRectangleBorder(

@@ -125,8 +125,18 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       case 0:
         return new HomePage(data: snapshot, listener: this);
       case 1:
-        return new WishListPage(
-          listener: this,
+        return Container(
+          color: Colors.white,
+          child: Column(
+            // mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                child: WishListPage(
+                  listener: this,
+                ),
+              )
+            ],
+          ),
         );
       case 2:
         return new OffersPage();
@@ -174,18 +184,37 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
           fit: BoxFit.cover,
         ),
       ),
-      StreamBuilder(
-        stream: bloc.homeData,
-        builder: (context, AsyncSnapshot<ResponseHome> snapshot) {
-          if (snapshot.hasData) {
-            return bodyContent(snapshot);
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          //showMessage(context);
-          return Center(child: CircularProgressIndicator());
-        },
-      ),
+      Container(
+        // color: Colors.white,
+        child: StreamBuilder(
+          stream: bloc.homeData,
+          builder: (context, AsyncSnapshot<ResponseHome> snapshot) {
+            if (snapshot.hasData) {
+              return bodyContent(snapshot);
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            }
+            //showMessage(context);
+            return Center(child: CircularProgressIndicator());
+          },
+        ),
+        /*child: Column(
+          children: <Widget>[
+            StreamBuilder(
+              stream: bloc.homeData,
+              builder: (context, AsyncSnapshot<ResponseHome> snapshot) {
+                if (snapshot.hasData) {
+                  return bodyContent(snapshot);
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+                //showMessage(context);
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
+          ],
+        ),*/
+      )
     ]);
   }
 
