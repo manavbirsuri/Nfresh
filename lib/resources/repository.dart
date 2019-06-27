@@ -19,7 +19,7 @@ import 'api_provider.dart';
 
 class Repository {
   final apiProvider = ApiProvider();
-  Future<ResponseHome> fetchHomeData() => apiProvider.fetchHomeData();
+  Future<ResponseHome> fetchHomeData(auth) => apiProvider.fetchHomeData(auth);
 
   Future<ResponseSubCat> getSubCategories(auth, catId) => apiProvider.getSubCategories(auth, catId);
 
@@ -61,4 +61,8 @@ class Repository {
       apiProvider.updateWallet(auth, total, resPayTm);
   Future<ResponseProfile> updateAddress(auth, address, city, area) =>
       apiProvider.updateAddress(auth, address, city, area);
+  Future<ResponseProfile> updateProfile(auth, name, email) =>
+      apiProvider.updateProfile(auth, name, email);
+  Future<String> updatePassword(auth, oldPass, newPass) =>
+      apiProvider.updatePassword(auth, oldPass, newPass);
 }

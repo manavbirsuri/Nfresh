@@ -11,7 +11,8 @@ class HomeBloc {
   Observable<ResponseHome> get homeData => _homeFetcher.stream;
 
   fetchHomeData() async {
-    ResponseHome itemModel = await _repository.fetchHomeData();
+    var auth = await _prefs.getAuthCode();
+    ResponseHome itemModel = await _repository.fetchHomeData(auth);
     var status = itemModel.status;
     if (status == "true") {
       _prefs.setAuthCode(itemModel.authCode);

@@ -24,8 +24,11 @@ class ApiProvider {
   final String baseUrl = "http://cloudart.com.au/projects/nfresh//index.php/api/data_v1";
 
   // Webservice call to fetch home page data
-  Future<ResponseHome> fetchHomeData() async {
+  Future<ResponseHome> fetchHomeData(auth) async {
     Map map = {'device_id': '123456789'};
+    if (auth.length > 3) {
+      map = {'auth_code': auth};
+    }
     final response = await client.post("$baseUrl/homepage", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
@@ -386,6 +389,40 @@ class ApiProvider {
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load addressupdate service');
+    }
+  }
+
+  // Webservice call to get user profile
+  Future<ResponseProfile> updateProfile(auth, name, email) async {
+    Map map = {
+      'auth_code': auth,
+      'name': name,
+      'email': email,
+    };
+    final response = await client.post("$baseUrl/profileupdate", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseProfile.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load profileupdate service');
+    }
+  }
+
+  // Webservice call to get user profile
+  Future<String> updatePassword(auth, oldPass, newPass) async {
+    Map map = {
+      'auth_code': auth,
+      'old_password': oldPass,
+      'new_password': newPass,
+    };
+    final response = await client.post("$baseUrl/updatepassword", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load updatepassword service');
     }
   }
 }

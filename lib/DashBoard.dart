@@ -86,22 +86,22 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     blocProfile.profileData.listen((res) {
       print("Profile Status = " + res.status);
       if (res.status == "true") {
-        String profile = jsonEncode(res.profile);
+        String profileData = jsonEncode(res.profile);
         _prefs.getProfile().then((modelProfile) {
           if (modelProfile == null && res.profile.type != 1) {
             _database.clearCart();
             showMessage(context);
             getCartCount();
           }
-          _prefs.saveProfile(profile);
+          _prefs.saveProfile(profileData);
+          // getProfileDetail();
+          setState(() {
+            profile = res.profile;
+          });
         });
       }
     });
     getCartCount();
-    Future.delayed(const Duration(milliseconds: 1000), () async {
-      profile = await _prefs.getProfile();
-      print("PROFILE : $profile");
-    });
   }
 
   Future getCartCount() async {
@@ -109,6 +109,14 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     setState(() {
       print("COUNT: $count");
       _count = count;
+    });
+  }
+
+  void getProfileDetail() {
+    _prefs.getProfile().then((onValue) {
+      setState(() {
+        profile = onValue;
+      });
     });
   }
 
