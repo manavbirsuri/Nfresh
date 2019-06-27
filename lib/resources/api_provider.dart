@@ -409,7 +409,7 @@ class ApiProvider {
     }
   }
 
-  // Webservice call to get user profile
+  // Webservice call to update password
   Future<String> updatePassword(auth, oldPass, newPass) async {
     Map map = {
       'auth_code': auth,
@@ -423,6 +423,38 @@ class ApiProvider {
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load updatepassword service');
+    }
+  }
+
+  // Webservice call to update phone
+  Future<String> updatePhone(auth, phone) async {
+    Map map = {
+      'auth_code': auth,
+      'phone_no': phone,
+    };
+    final response = await client.post("$baseUrl/updateresendotp", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load updateresendotp service');
+    }
+  }
+
+  // Webservice call to update phone after otp verification locally Step2
+  Future<ResponseProfile> updatePhone2(auth, phone) async {
+    Map map = {
+      'auth_code': auth,
+      'phone_no': phone,
+    };
+    final response = await client.post("$baseUrl/update_telephone_no", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseProfile.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load update_telephone_no service');
     }
   }
 }

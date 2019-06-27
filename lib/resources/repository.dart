@@ -65,4 +65,6 @@ class Repository {
       apiProvider.updateProfile(auth, name, email);
   Future<String> updatePassword(auth, oldPass, newPass) =>
       apiProvider.updatePassword(auth, oldPass, newPass);
+  Future<String> updatePhone(auth, phone) => apiProvider.updatePhone(auth, phone);
+  Future<ResponseProfile> updatePhone2(auth, phone) => apiProvider.updatePhone2(auth, phone);
 }

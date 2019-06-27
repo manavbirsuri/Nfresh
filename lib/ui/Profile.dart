@@ -4,11 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/cities_bloc.dart';
 import 'package:nfresh/bloc/update_address_bloc.dart';
 import 'package:nfresh/bloc/update_password_bloc.dart';
+import 'package:nfresh/bloc/update_phone_bloc.dart';
 import 'package:nfresh/bloc/update_profile_bloc.dart';
 import 'package:nfresh/models/area_model.dart';
 import 'package:nfresh/models/city_model.dart';
 import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/resources/prefrences.dart';
+import 'package:nfresh/ui/pin_view_update.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:toast/toast.dart';
 
@@ -55,6 +57,8 @@ class StateProfilePage extends State<stateProfile> {
   var blocProfile = UpdateProfileBloc();
   var blocAddress = UpdateAddressBloc();
   var blocPassword = UpdatePasswordBloc();
+  var blocPhone = UpdatePhoneBloc();
+
   String customerType = "";
 
   ProgressDialog dialog;
@@ -68,7 +72,7 @@ class StateProfilePage extends State<stateProfile> {
         profile = value;
         nameController.text = profile.name;
         emailController.text = profile.email;
-        phoneController.text = profile.phoneNo;
+        //  phoneController.text = profile.phoneNo;
         addressController.text = profile.address;
         if (profile.type == 1) {
           customerType = "Retailer";
@@ -498,7 +502,13 @@ class StateProfilePage extends State<stateProfile> {
           ),
         ));
       },
-    );
+    ).then((val) {
+      setState(() {
+        oldPasswordController.text = "";
+        newPasswordController.text = "";
+        conPasswordController.text = "";
+      });
+    });
   }
 
   void _showPhoneDialog(context) {
@@ -536,6 +546,7 @@ class StateProfilePage extends State<stateProfile> {
                           ),
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.phone,
+                          controller: phoneController,
                         ),
                       ],
                     ),
@@ -548,10 +559,10 @@ class StateProfilePage extends State<stateProfile> {
                       splashColor: Colors.black12,
                       color: Colors.colorgreen,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        updatePhoneWebservice(phoneController.text.toString());
                       },
                       child: Text(
-                        'Submit',
+                        'Verify',
                         style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
@@ -563,7 +574,11 @@ class StateProfilePage extends State<stateProfile> {
           ),
         ));
       },
-    );
+    ).then((val) {
+      setState(() {
+        phoneController.text = "";
+      });
+    });
   }
 
   void _showAddressDialog(context) {
@@ -806,5 +821,42 @@ class StateProfilePage extends State<stateProfile> {
         r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regExp = new RegExp(p);
     return regExp.hasMatch(em);
+  }
+
+  void updatePhoneWebservice(String phoneNo) {
+    if (phoneNo.length == 0) {
+      Toast.show("Enter new phone number", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      return;
+    }
+    dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+    dialog.setMessage("Please wait...");
+    dialog.show();
+    blocPhone.fetchData(phoneNo);
+    blocPhone.phoneData.listen((res) {
+      dialog.hide();
+      var object = jsonDecode(res);
+      String status = object['status'];
+      if (status == "true") {
+        Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => PinViewUpdatePage(
+                  otp: object['otp'],
+                  phone: phoneNo,
+                ),
+          ),
+        ).then((value) {
+          _prefs.getProfile().then((res) {
+            setState(() {
+              profile = res;
+            });
+          });
+        });
+      } else {
+        Toast.show(object['msg'], context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
   }
 }
