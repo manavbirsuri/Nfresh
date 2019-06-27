@@ -431,10 +431,7 @@ class _MyCustomFormState extends State<CartPage> {
                           children: <Widget>[
                             GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  _database.remove(product);
-                                  products.removeAt(position);
-                                });
+                                showMessage(context, product, products, position);
                               },
                               child: Padding(
                                 padding: EdgeInsets.only(right: 8, left: 16, bottom: 16),
@@ -539,7 +536,7 @@ class _MyCustomFormState extends State<CartPage> {
                                             GestureDetector(
                                               onTap: () {
                                                 setState(() {
-                                                  decrementCount(product, products);
+                                                  decrementCount(product, products, position);
                                                 });
                                               },
                                               child: Container(
@@ -947,6 +944,7 @@ class _MyCustomFormState extends State<CartPage> {
             ),
           ),
           ListTile(
+            // contentPadding: EdgeInsets.only(bottom: 0),
             title: Text(
               'SHIPPING ADDRESS',
               style: TextStyle(fontSize: 16, color: Colors.colorgreen),
@@ -972,6 +970,7 @@ class _MyCustomFormState extends State<CartPage> {
 //            ),
 //          ),
           ListTile(
+            //  contentPadding: EdgeInsets.only(top: 0),
             title: Text(
               address,
               style: TextStyle(color: Colors.colorlightgrey),
@@ -1055,6 +1054,38 @@ class _MyCustomFormState extends State<CartPage> {
     return check;
   }
 
+  void showMessage(context, product, List<Product> products, int position) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text("Are you sure you want to clear this product from the cart?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _database.remove(product);
+                  products.removeAt(position);
+                });
+              },
+            ),
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   Future removePromoFromPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('promoApplies', "");
@@ -1073,9 +1104,16 @@ class _MyCustomFormState extends State<CartPage> {
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
 //    print('Pressed $counter times.');
       String vv = await prefs.getString('walletBal') ?? "";
-      print("GGGGGGGGGGGGGWWWW $vv ");
-      if (profile.walletCredits > int.parse(vv)) {
-        walletDiscount = int.parse(vv);
+      if (vv == "0") {
+        return vv;
+      }
+      if (profile.walletCredits >= int.parse(vv)) {
+        if (checkoutTotal >= int.parse(vv)) {
+          walletDiscount = int.parse(vv);
+        } else {
+          Toast.show("Amount should not be more than your cart total.", context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        }
       } else {
         vv = "0";
         Toast.show("Amount is more than Balance in Wallet.", context,
@@ -1124,14 +1162,13 @@ class _MyCustomFormState extends State<CartPage> {
     }
   }
 
-  void decrementCount(Product product, List<Product> products) {
+  void decrementCount(Product product, List<Product> products, position) {
     if (product.count > 1) {
       product.count = product.count - 1;
       _database.update(product);
     } else if (product.count == 1) {
-      product.count = product.count - 1;
-      _database.remove(product);
-      products.remove(product);
+      // product.count = product.count - 1;
+      showMessage(context, product, products, position);
     }
     // remove from database
   }
@@ -1578,86 +1615,96 @@ class _DynamicDialogState extends State<DynamicDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-      Card(
-          child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-          child: Container(
-            height: 70,
-            width: 320,
-            color: Colors.colorgreen,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Center(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        waletb.walletCredits.toString(),
-                        style: TextStyle(color: Colors.white, fontSize: 26),
-                      ),
-                      Text(
-                        "credits",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ],
+    return Container(
+      child: GestureDetector(
+        onTap: () {
+          saveToPrefs("0");
+          Navigator.of(context).pop();
+        },
+        child: Container(
+            color: Colors.transparent,
+            alignment: Alignment.center,
+            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              Card(
+                  child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: Container(
+                    height: 70,
+                    width: 320,
+                    color: Colors.colorgreen,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Center(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                waletb.walletCredits.toString(),
+                                style: TextStyle(color: Colors.white, fontSize: 26),
+                              ),
+                              Text(
+                                "credits",
+                                style: TextStyle(color: Colors.white, fontSize: 20),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            "available balance",
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                Center(
-                  child: Text(
-                    "available balance",
-                    style: TextStyle(color: Colors.white, fontSize: 15),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                  child: Container(
+                    width: 300,
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      controller: textFieldController,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(labelText: 'Enter Amount'),
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-          child: Container(
-            width: 300,
-            child: TextFormField(
-              keyboardType: TextInputType.number,
-              controller: textFieldController,
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(labelText: 'Enter Amount'),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
-          child: GestureDetector(
-            onTap: () {
-              saveToPrefs(textFieldController.text.toString());
-              Navigator.pop(context);
-              // textFieldController.toString();
-            },
-            child: Container(
-              height: 40,
-              width: 150,
-              decoration: new BoxDecoration(
-                  borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
-                  color: Colors.colorgreen),
-              child: Center(
-                child: new Text("Apply",
-                    style: new TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    )),
-              ),
-            ),
-          ),
-        ),
-      ]))
-    ]));
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                  child: GestureDetector(
+                    onTap: () {
+                      saveToPrefs(textFieldController.text.toString());
+                      Navigator.pop(context);
+                      // textFieldController.toString();
+                    },
+                    child: Container(
+                      height: 40,
+                      width: 150,
+                      decoration: new BoxDecoration(
+                          borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                          color: Colors.colorgreen),
+                      child: Center(
+                        child: new Text("Apply",
+                            style: new TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            )),
+                      ),
+                    ),
+                  ),
+                ),
+              ]))
+            ])),
+      ),
+    );
   }
 
   void saveToPrefs(String string) async {

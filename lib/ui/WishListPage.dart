@@ -753,7 +753,7 @@ class WishPage extends State<WishListPage> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Alert!"),
-          content: new Text("Would you like to remove this product from favourites ?"),
+          content: new Text("Would you like to remove this product from your Wishlist?"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(

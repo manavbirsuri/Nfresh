@@ -1326,6 +1326,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                       Flexible(
                         child: GestureDetector(
                           child: Container(
+                            margin: EdgeInsets.only(top: 4, bottom: 4),
                             color: Colors.colorgreen,
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,

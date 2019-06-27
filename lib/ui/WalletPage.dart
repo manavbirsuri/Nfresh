@@ -51,6 +51,8 @@ class stateProfilePage extends State<stateProfile> {
   ProfileModel profileModel;
   var totalAmount = 100;
   int credits = 0;
+
+  ProgressDialog dialog;
   @override
   void initState() {
     super.initState();
@@ -319,7 +321,8 @@ class stateProfilePage extends State<stateProfile> {
                                                       textBaseline: TextBaseline.alphabetic,
                                                       children: <Widget>[
                                                         Text(
-                                                          snapshot.data.walletOffers[0].walletCredit
+                                                          snapshot.data.walletOffers[valueChecked]
+                                                              .walletCredit
                                                               .toString(),
                                                           style: TextStyle(
                                                               color: Colors.colorgreen,
@@ -422,7 +425,7 @@ class stateProfilePage extends State<stateProfile> {
 
   getCheckSum(context) {
 //    Future.delayed(const Duration(milliseconds: 3000), () {
-    var dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+    dialog = new ProgressDialog(context, ProgressDialogType.Normal);
     dialog.setMessage("Please wait...");
     dialog.show();
     setState(() {
@@ -454,7 +457,7 @@ class stateProfilePage extends State<stateProfile> {
       var status = obj['STATUS'];
       if (status == 'TXN_SUCCESS') {
         // payment success
-        var dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+        dialog = new ProgressDialog(context, ProgressDialogType.Normal);
         dialog.setMessage("Updating wallet...");
         dialog.show();
         blocWallet.fetchData(totalAmount, response);

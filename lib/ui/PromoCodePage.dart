@@ -185,19 +185,19 @@ class PromoCodeState extends State<PromoCodePage> {
             ],
           ),
           Padding(
-            padding: EdgeInsets.only(top: 8),
+            padding: EdgeInsets.only(top: 8, bottom: 16),
             child: Text(
               coupon.name,
               style: TextStyle(color: Colors.black),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(top: 8, bottom: 16),
-            child: Text(
-              'view details',
-              style: TextStyle(color: Colors.colorgreen),
-            ),
-          ),
+//          Padding(
+//            padding: EdgeInsets.only(top: 8, ),
+//            child: Text(
+//              'view details',
+//              style: TextStyle(color: Colors.colorgreen),
+//            ),
+//          ),
           Padding(
               padding: EdgeInsets.only(bottom: 0),
               child: Divider(
