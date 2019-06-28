@@ -35,12 +35,43 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
 
   int cartCount = 0;
 
+  bool showLoader = true;
+
+  ResponseCatProducts productResponse;
+
   @override
   void initState() {
     super.initState();
     getCartCount();
     getCartTotal();
     bloc.fetchData(widget.subCategory.id.toString());
+    bloc.catProductsList.listen((res) {
+      setState(() {
+        showLoader = false;
+      });
+      productResponse = res;
+      updateProducts();
+    });
+  }
+
+  Future updateProducts() async {
+    if (productResponse != null &&
+        productResponse.products != null &&
+        productResponse.products.length > 0) {
+      for (int i = 0; i < productResponse.products.length; i++) {
+        var product = await _database.queryConditionalProduct(productResponse.products[i]);
+        if (product != null) {
+          product.selectedDisplayPrice = getCalculatedPrice(product);
+          setState(() {
+            productResponse.products[i] = product;
+          });
+        } else {
+          setState(() {
+            productResponse.products[i].count = 0;
+          });
+        }
+      }
+    }
   }
 
   @override
@@ -55,75 +86,79 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
           ),
         ),
         Scaffold(
-          backgroundColor: Colors.colorgreen.withOpacity(0.5),
-          appBar: AppBar(
-            backgroundColor: Colors.colorgreen.withOpacity(0.0),
-            // automaticallyImplyLeading: true,
-            title: Text(
-              widget.subCategory.name,
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            centerTitle: true,
-            actions: [
-              Padding(
-                padding: EdgeInsets.all(8),
-                child: Image.asset(
-                  "assets/noti.png",
-                  height: 25,
-                  width: 25,
-                ),
+            backgroundColor: Colors.colorgreen.withOpacity(0.5),
+            appBar: AppBar(
+              backgroundColor: Colors.colorgreen.withOpacity(0.0),
+              // automaticallyImplyLeading: true,
+              title: Text(
+                widget.subCategory.name,
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CartPage(),
-                      )).then((value) {
-                    getCartCount();
-                    getCartTotal();
-                  });
-                },
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
-                  child: Stack(
-                    children: <Widget>[
-                      new Image.asset(
-                        "assets/cart.png",
-                        height: 25,
-                        width: 25,
-                      ),
-                      new Positioned(
-                        right: 0,
-                        child: cartCount > 0
-                            ? Container(
-                                padding: EdgeInsets.all(1),
-                                decoration: new BoxDecoration(
-                                  color: Colors.red,
-                                  borderRadius: BorderRadius.circular(6),
-                                ),
-                                constraints: BoxConstraints(
-                                  minWidth: 12,
-                                  minHeight: 12,
-                                ),
-                                child: new Text(
-                                  cartCount.toString(),
-                                  style: new TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 8,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
-                            : Text(""),
-                      )
-                    ],
+              centerTitle: true,
+              actions: [
+                Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Image.asset(
+                    "assets/noti.png",
+                    height: 25,
+                    width: 25,
                   ),
                 ),
-              ),
-            ],
-          ),
-          body: StreamBuilder(
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CartPage(),
+                        )).then((value) {
+                      getCartCount();
+                      getCartTotal();
+                      updateProducts();
+                    });
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
+                    child: Stack(
+                      children: <Widget>[
+                        new Image.asset(
+                          "assets/cart.png",
+                          height: 25,
+                          width: 25,
+                        ),
+                        new Positioned(
+                          right: 0,
+                          child: cartCount > 0
+                              ? Container(
+                                  padding: EdgeInsets.all(1),
+                                  decoration: new BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  constraints: BoxConstraints(
+                                    minWidth: 12,
+                                    minHeight: 12,
+                                  ),
+                                  child: new Text(
+                                    cartCount.toString(),
+                                    style: new TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 8,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                )
+                              : Text(""),
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            body: showLoader
+                ? Center(child: CircularProgressIndicator())
+                : mainContent(productResponse)
+            /* body: StreamBuilder(
             stream: bloc.catProductsList,
             builder: (context, AsyncSnapshot<ResponseCatProducts> snapshot) {
               if (snapshot.hasData) {
@@ -133,8 +168,8 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
               }
               return Center(child: CircularProgressIndicator());
             },
-          ),
-        )
+          ),*/
+            )
       ],
     );
   }
@@ -1210,9 +1245,9 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
     return (product.selectedPacking.unitQty * product.displayPrice);
   }
 
-  Widget mainContent(AsyncSnapshot<ResponseCatProducts> snapshot) {
-    print("Products: ${snapshot.data.products.length}");
-    return snapshot.data.products.length > 0
+  Widget mainContent(ResponseCatProducts snapshot) {
+    // print("Products: ${snapshot.data.products.length}");
+    return snapshot.products.length > 0
         ? Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
@@ -1273,10 +1308,10 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
               ),
               viewList
                   ? Expanded(
-                      child: showListView(snapshot.data.products),
+                      child: showListView(snapshot.products),
                     )
                   : Container(),
-              viewGrid ? showGridView(snapshot.data.products) : Container(),
+              viewGrid ? showGridView(snapshot.products) : Container(),
               Column(children: <Widget>[
                 Container(
                   color: Colors.colorlightgreyback,
@@ -1381,7 +1416,11 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
           builder: (context) => ProductDetailPage(
                 product: product,
               ),
-        ));
+        )).then((onVal) {
+      getCartCount();
+      getCartTotal();
+      updateProducts();
+    });
   }
 
   Widget noDataView() {

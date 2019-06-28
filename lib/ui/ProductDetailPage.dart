@@ -30,6 +30,9 @@ class ProState extends State<ProductDetailPage> {
 
   int cartCount = 0;
 
+  bool showLoader = true;
+  ResponseRelatedProducts productResponse;
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +40,49 @@ class ProState extends State<ProductDetailPage> {
     getCartTotal();
     getCartCount();
     blocRelated.fetchRelatedProducts(widget.product.id.toString());
+    blocRelated.productsList.listen((res) {
+      setState(() {
+        showLoader = false;
+      });
+      productResponse = res;
+      updateProducts();
+      updateMainProduct();
+    });
+  }
+
+  Future updateMainProduct() async {
+    var product = await _database.queryConditionalProduct(widget.product);
+    if (product != null) {
+      product.selectedDisplayPrice = getCalculatedPrice(product);
+      setState(() {
+        widget.product.count = product.count;
+        widget.product.selectedPacking = product.selectedPacking;
+      });
+    } else {
+      setState(() {
+        widget.product.count = 0;
+      });
+    }
+  }
+
+  Future updateProducts() async {
+    if (productResponse != null &&
+        productResponse.products != null &&
+        productResponse.products.length > 0) {
+      for (int i = 0; i < productResponse.products.length; i++) {
+        var product = await _database.queryConditionalProduct(productResponse.products[i]);
+        if (product != null) {
+          product.selectedDisplayPrice = getCalculatedPrice(product);
+          setState(() {
+            productResponse.products[i] = product;
+          });
+        } else {
+          setState(() {
+            productResponse.products[i].count = 0;
+          });
+        }
+      }
+    }
   }
 
   @override
@@ -369,7 +415,10 @@ class ProState extends State<ProductDetailPage> {
                                     height: 335,
                                     // child: showProductsCategories(),
                                     color: Colors.colorlightgreyback,
-                                    child: StreamBuilder(
+                                    child: showLoader
+                                        ? Center(child: CircularProgressIndicator())
+                                        : showProductsCategories(productResponse),
+                                    /*  child: StreamBuilder(
                                       stream: blocRelated.productsList,
                                       builder: (context,
                                           AsyncSnapshot<ResponseRelatedProducts> snapshot) {
@@ -380,7 +429,7 @@ class ProState extends State<ProductDetailPage> {
                                         }
                                         return Center(child: CircularProgressIndicator());
                                       },
-                                    ),
+                                    ),*/
                                   ),
                                 ],
                               ),
@@ -471,6 +520,8 @@ class ProState extends State<ProductDetailPage> {
                                 ).then((value) {
                                   getCartTotal();
                                   getCartCount();
+                                  updateProducts();
+                                  updateMainProduct();
                                 });
                               },
                             ),
@@ -520,8 +571,8 @@ class ProState extends State<ProductDetailPage> {
     return (product.selectedPacking.unitQty * product.displayPrice);
   }
 
-  showProductsCategories(AsyncSnapshot<ResponseRelatedProducts> snapshot) {
-    var products = snapshot.data.products;
+  showProductsCategories(ResponseRelatedProducts snapshot) {
+    var products = snapshot.products;
     return Padding(
         padding: EdgeInsets.only(top: 16),
         child: ListView.builder(
@@ -599,7 +650,12 @@ class ProState extends State<ProductDetailPage> {
                                         builder: (context) => ProductDetailPage(
                                               product: product,
                                             ),
-                                      ));
+                                      )).then((value) {
+                                    getCartTotal();
+                                    getCartCount();
+                                    updateProducts();
+                                    updateMainProduct();
+                                  });
                                 },
                                 child: Column(
                                   children: <Widget>[
