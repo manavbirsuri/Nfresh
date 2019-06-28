@@ -244,7 +244,7 @@ class _MyHomePageState extends State<SearchPage> {
                                               textAlign: TextAlign.start,
                                             ),
                                             Text(
-                                              '₹${product.displayPrice}',
+                                              '₹${product.selectedDisplayPrice}',
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   color: Colors.colororange,
@@ -283,6 +283,9 @@ class _MyHomePageState extends State<SearchPage> {
                                                   onChanged: (newValue) {
                                                     setState(() {
                                                       product.selectedPacking = newValue;
+                                                      product.count = 0;
+                                                      product.selectedDisplayPrice =
+                                                          getCalculatedPrice(product);
                                                     });
                                                   },
                                                 ),
@@ -844,7 +847,7 @@ class _MyHomePageState extends State<SearchPage> {
                                 ),
                         ),
                         Text(
-                          product.off,
+                          getOff(product),
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.colororange,
@@ -896,7 +899,7 @@ class _MyHomePageState extends State<SearchPage> {
                             textAlign: TextAlign.center,
                           ),
                           Text(
-                            '₹${product.displayPrice}',
+                            '₹${product.selectedDisplayPrice}',
                             style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.colororange,
@@ -938,6 +941,8 @@ class _MyHomePageState extends State<SearchPage> {
                               onChanged: (newValue) {
                                 setState(() {
                                   product.selectedPacking = newValue;
+                                  product.count = 0;
+                                  product.selectedDisplayPrice = getCalculatedPrice(product);
                                 });
                               },
                             ),
@@ -1025,6 +1030,19 @@ class _MyHomePageState extends State<SearchPage> {
         ),
       ),
     );
+  }
+
+  // calculate the offer percentage
+  String getOff(Product product) {
+    var salePrice = product.selectedPacking.price;
+    var costPrice = product.selectedDisplayPrice;
+    var profit = costPrice - salePrice;
+    var offer = (profit / costPrice) * 100;
+    return "${offer.round()}% off";
+  }
+
+  double getCalculatedPrice(Product product) {
+    return (product.selectedPacking.unitQty * product.displayPrice);
   }
 
   BoxDecoration myBoxDecoration() {

@@ -15,7 +15,7 @@ import '../count_listener.dart';
 
 class HomePage extends StatefulWidget {
   final CountListener listener;
-  final AsyncSnapshot<ResponseHome> data;
+  ResponseHome data;
   HomePage({Key key, @required this.data, this.listener}) : super(key: key);
 
   @override
@@ -35,7 +35,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
   List<DropdownMenuItem<String>> _dropDownMenuItems;
   String _currentCity;
 
-  AsyncSnapshot<ResponseHome> snapshot;
+  ResponseHome snapshot;
 
   @override
   void initState() {
@@ -44,9 +44,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
     snapshot = widget.data;
     _dropDownMenuItems = getDropDownMenuItems();
     _currentCity = _dropDownMenuItems[0].value;
-    //  updateProducts();
-    updateUI();
-    WidgetsBinding.instance.addObserver(this);
+    updateProducts();
   }
 
   @override
@@ -61,15 +59,16 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
   }
 
   Future updateProducts() async {
-    var sections = snapshot.data.sections;
-    for (int i = 0; i < sections.length; i++) {
-      var products = sections[i].products;
-      for (int j = 0; j < products.length; j++) {
-        var model = products[j];
-        var product = await _database.queryConditionalProduct(model);
-        setState(() {
-          model = product;
-        });
+    for (int i = 0; i < snapshot.sections.length; i++) {
+      // var products = snapshot.sections[i].products;
+      for (int j = 0; j < snapshot.sections[i].products.length; j++) {
+        var product = await _database.queryConditionalProduct(snapshot.sections[i].products[j]);
+        if (product != null) {
+          product.selectedDisplayPrice = getCalculatedPrice(product);
+          setState(() {
+            snapshot.sections[i].products[j] = product;
+          });
+        }
       }
     }
   }
@@ -93,7 +92,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                 children: <Widget>[
                   AspectRatio(
                     aspectRatio: 2 / 1,
-                    child: showTopPager(snapshot.data.banners),
+                    child: showTopPager(snapshot.banners),
                   ),
                   Column(
                     mainAxisSize: MainAxisSize.max,
@@ -127,7 +126,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                           ],
                         ),
                       ),
-                      Container(height: 122, child: showCategories(snapshot.data.categories)),
+                      Container(height: 122, child: showCategories(snapshot.categories)),
                       Padding(
                         padding: EdgeInsets.only(top: 8),
                         child: Stack(
@@ -162,13 +161,13 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                       ),
                       AspectRatio(
                         aspectRatio: 2 / 1,
-                        child: showTopPagerOffer(snapshot.data.offerBanners),
+                        child: showTopPagerOffer(snapshot.offerBanners),
                       ),
                       Container(
                         height: 4,
                         child: Text(""),
                       ),
-                      Container(child: productsCategories(snapshot.data.sections)),
+                      Container(child: productsCategories(snapshot.sections)),
                     ],
                   ),
                   //),
@@ -245,6 +244,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                   CategoryDetails(selectedCategory: categories[position])))
                       .then((value) {
                     widget.listener.onCartUpdate();
+                    updateProducts();
                   });
                 },
                 child: Card(
@@ -379,6 +379,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                             ),
                                       )).then((value) {
                                     widget.listener.onCartUpdate();
+                                    updateProducts();
                                   });
                                 },
                                 child: Column(
@@ -421,7 +422,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                               textAlign: TextAlign.center,
                                             ),
                                             Text(
-                                              "₹" + products[position].displayPrice.toString(),
+                                              "₹" + product.selectedDisplayPrice.toString(),
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   color: Colors.colororange,
@@ -465,7 +466,8 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                               setState(() {
                                                 products[position].selectedPacking = newValue;
                                                 product.count = 0;
-                                                // product.selectedPrice =
+                                                product.selectedDisplayPrice =
+                                                    getCalculatedPrice(product);
                                               });
                                             },
                                           ),
@@ -687,10 +689,17 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
 
   // calculate the offer percentage
   String getOff(Product product) {
-    var salePrice = product.packing[0].price;
-    var costPrice = product.displayPrice;
+    var salePrice = product.selectedPacking.price;
+    var costPrice = product.selectedDisplayPrice;
     var profit = costPrice - salePrice;
     var offer = (profit / costPrice) * 100;
+    if (costPrice == 0) {
+      return "";
+    }
     return "${offer.round()}% off";
+  }
+
+  double getCalculatedPrice(Product product) {
+    return (product.selectedPacking.unitQty * product.displayPrice);
   }
 }

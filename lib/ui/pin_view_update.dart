@@ -117,19 +117,16 @@ class PinState extends State<PinViewUpdatePage> {
                         duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
                   }
                 },
-                child: Container(
-                  decoration: new BoxDecoration(
-                      borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
-                      color: Colors.colorgreen),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 60,
-                    child: Center(
-                      child: new Text("Verify",
-                          style: new TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          )),
+                child: showLoader
+                    ? Container(
+                        decoration: new BoxDecoration(
+                            borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                            color: Colors.colorgreen),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 60,
+                          child: Center(
+                            child: CircularProgressIndicator(),
 //                                colorBrightness: Brightness.dark,
 //                                onPressed: () {
 //                                  if (emailController.text == "" &&
@@ -144,9 +141,39 @@ class PinState extends State<PinViewUpdatePage> {
 //                                  }
 //                                },
 //                                color: Colors.green,
-                    ),
-                  ),
-                ),
+                          ),
+                        ),
+                      )
+                    : Container(
+                        decoration: new BoxDecoration(
+                            borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                            color: Colors.colorgreen),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 60,
+                          child: Center(
+                            child: new Text("Verify",
+                                style: new TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                )),
+//                                colorBrightness: Brightness.dark,
+//                                onPressed: () {
+//                                  if (emailController.text == "" &&
+//                                      passwordController.text == "") {
+////                              Navigator.push(
+////                                context,
+////                                new MaterialPageRoute(
+////                                    builder: (context) => new DashBoard()),
+////                              );
+//                                  } else {
+//                                    //_showDialog(context);
+//                                  }
+//                                },
+//                                color: Colors.green,
+                          ),
+                        ),
+                      ),
               ),
             ),
           )

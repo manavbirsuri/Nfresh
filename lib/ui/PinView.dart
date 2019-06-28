@@ -23,33 +23,6 @@ class PinState extends State<PinViewPage> {
   @override
   void initState() {
     super.initState();
-    bloc.searchedData.listen((response) {
-      if (response.status == "true") {
-        if (response.activate == 0) {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text(response.msg),
-            ),
-          );
-        } else {
-          Navigator.of(context).pop();
-          Navigator.pushReplacement(
-            context,
-            new MaterialPageRoute(builder: (context) => DashBoard()),
-          );
-//          Navigator.pushAndRemoveUntil(
-//              context,
-//              MaterialPageRoute(builder: (context) => DashBoard()),
-//              ModalRoute.withName("/DashBoard"));
-        }
-      } else {
-        Scaffold.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response.msg),
-          ),
-        );
-      }
-    });
   }
 
   @override
@@ -142,25 +115,22 @@ class PinState extends State<PinViewPage> {
               child: GestureDetector(
                 onTap: () {
                   if (enteredPin.length == 4) {
-                    verifyOtpWebservice(enteredPin, widget.id);
+                    verifyOtpWebservice(enteredPin, widget.id, context);
                   } else {
                     Toast.show("Enter valid OTP", context,
                         duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
                   }
                 },
-                child: Container(
-                  decoration: new BoxDecoration(
-                      borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
-                      color: Colors.colorgreen),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 60,
-                    child: Center(
-                      child: new Text("Verify",
-                          style: new TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          )),
+                child: showLoader
+                    ? Container(
+                        decoration: new BoxDecoration(
+                            borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                            color: Colors.colorgreen),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 60,
+                          child: Center(
+                            child: CircularProgressIndicator(),
 //                                colorBrightness: Brightness.dark,
 //                                onPressed: () {
 //                                  if (emailController.text == "" &&
@@ -175,9 +145,39 @@ class PinState extends State<PinViewPage> {
 //                                  }
 //                                },
 //                                color: Colors.green,
-                    ),
-                  ),
-                ),
+                          ),
+                        ),
+                      )
+                    : Container(
+                        decoration: new BoxDecoration(
+                            borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                            color: Colors.colorgreen),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 60,
+                          child: Center(
+                            child: new Text("Verify",
+                                style: new TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                )),
+//                                colorBrightness: Brightness.dark,
+//                                onPressed: () {
+//                                  if (emailController.text == "" &&
+//                                      passwordController.text == "") {
+////                              Navigator.push(
+////                                context,
+////                                new MaterialPageRoute(
+////                                    builder: (context) => new DashBoard()),
+////                              );
+//                                  } else {
+//                                    //_showDialog(context);
+//                                  }
+//                                },
+//                                color: Colors.green,
+                          ),
+                        ),
+                      ),
               ),
             ),
           )
@@ -186,10 +186,28 @@ class PinState extends State<PinViewPage> {
     );
   }
 
-  void verifyOtpWebservice(String pin, id) {
+  void verifyOtpWebservice(String pin, id, context) {
     setState(() {
       showLoader = true;
     });
     bloc.fetchSearchData(id, pin);
+    bloc.searchedData.listen((response) {
+      setState(() {
+        showLoader = true;
+      });
+      if (response.status == "true") {
+        if (response.activate == 0) {
+          Toast.show(response.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        } else {
+          Navigator.of(context).pop();
+          Navigator.pushReplacement(
+            context,
+            new MaterialPageRoute(builder: (context) => DashBoard()),
+          );
+        }
+      } else {
+        Toast.show(response.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
   }
 }

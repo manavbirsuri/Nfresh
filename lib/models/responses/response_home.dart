@@ -44,7 +44,7 @@ class ResponseHome {
     List<Section> tempSection = [];
     if (json['sections'] != null) {
       for (int i = 0; i < json['sections'].length; i++) {
-        var section = Section.fromJson(json['sections'][i]);
+        var section = Section(json['sections'][i]);
         tempSection.add(section);
       }
       sections = tempSection;

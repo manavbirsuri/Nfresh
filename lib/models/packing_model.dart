@@ -1,10 +1,10 @@
 class Packing {
-  String unitQty;
+  double unitQty;
   int price;
   String unitQtyShow;
 
   Packing(json) {
-    unitQty = json['unitqty'];
+    unitQty = json['unitqty'].toDouble();
     price = json['price'];
     unitQtyShow = json['unitqtyshow'];
   }

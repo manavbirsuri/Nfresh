@@ -200,8 +200,8 @@ class ApiProvider {
   Future<ResponseOtp> verifyOtp(auth, userId, otp) async {
     Map map = {
       'authcode': auth,
-      'otp': otp,
-      'user_id': userId,
+      'otp': otp.toString(),
+      'user_id': userId.toString(),
     };
     final response = await client.post("$baseUrl/verifyOtp", body: map);
     print(response.body.toString());

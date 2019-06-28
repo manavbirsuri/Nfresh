@@ -152,7 +152,7 @@ class ProState extends State<ProductDetailPage> {
                                                   textAlign: TextAlign.start,
                                                 ),
                                                 Text(
-                                                  '₹${widget.product.displayPrice}',
+                                                  '₹${widget.product.selectedDisplayPrice}',
                                                   style: TextStyle(
                                                       fontSize: 16,
                                                       color: Colors.colororange,
@@ -200,6 +200,8 @@ class ProState extends State<ProductDetailPage> {
                                                     setState(() {
                                                       widget.product.selectedPacking = newValue;
                                                       widget.product.count = 0;
+                                                      widget.product.selectedDisplayPrice =
+                                                          getCalculatedPrice(widget.product);
                                                     });
                                                   },
                                                 ),
@@ -507,11 +509,15 @@ class ProState extends State<ProductDetailPage> {
 
   // calculate the offer percentage
   String getOff(Product product) {
-    var salePrice = product.packing[0].price;
-    var costPrice = product.displayPrice;
+    var salePrice = product.selectedPacking.price;
+    var costPrice = product.selectedDisplayPrice;
     var profit = costPrice - salePrice;
     var offer = (profit / costPrice) * 100;
     return "${offer.round()}% off";
+  }
+
+  double getCalculatedPrice(Product product) {
+    return (product.selectedPacking.unitQty * product.displayPrice);
   }
 
   showProductsCategories(AsyncSnapshot<ResponseRelatedProducts> snapshot) {
@@ -635,7 +641,10 @@ class ProState extends State<ProductDetailPage> {
                                               textAlign: TextAlign.center,
                                             ),
                                             Text(
-                                              "₹" + products[position].displayPrice.toString(),
+                                              "₹" +
+                                                  products[position]
+                                                      .selectedDisplayPrice
+                                                      .toString(),
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   color: Colors.colororange,
@@ -679,7 +688,8 @@ class ProState extends State<ProductDetailPage> {
                                               setState(() {
                                                 products[position].selectedPacking = newValue;
                                                 product.count = 0;
-                                                // product.selectedPrice =
+                                                product.selectedDisplayPrice =
+                                                    getCalculatedPrice(product);
                                               });
                                             },
                                           ),

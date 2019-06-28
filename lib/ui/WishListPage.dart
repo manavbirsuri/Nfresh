@@ -483,7 +483,7 @@ class WishPage extends State<WishListPage> {
                                               textAlign: TextAlign.start,
                                             ),
                                             Text(
-                                              '₹${product.displayPrice}',
+                                              '₹${product.selectedDisplayPrice}',
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   color: Colors.colororange,
@@ -522,6 +522,9 @@ class WishPage extends State<WishListPage> {
                                                   onChanged: (newValue) {
                                                     setState(() {
                                                       product.selectedPacking = newValue;
+                                                      product.count = 0;
+                                                      product.selectedDisplayPrice =
+                                                          getCalculatedPrice(product);
                                                     });
                                                   },
                                                 ),
@@ -701,6 +704,10 @@ class WishPage extends State<WishListPage> {
             ),
           )
         ]);
+  }
+
+  double getCalculatedPrice(Product product) {
+    return (product.selectedPacking.unitQty * product.displayPrice);
   }
 
   Widget noDataView() {

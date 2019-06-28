@@ -19,6 +19,7 @@ class Product {
   int count = 0;
   String off = "20% off";
   Packing selectedPacking;
+  double selectedDisplayPrice = 0;
 
   Product(json, type) {
     id = json['id'];
@@ -43,6 +44,7 @@ class Product {
     } else {
       selectedPacking = packing[0];
     }
+    selectedDisplayPrice = displayPrice.toDouble();
   }
   Map<String, dynamic> toJson() {
     return {
@@ -81,7 +83,6 @@ class Product {
       temp.add(result);
     }
     packing = temp;
-
     selectedPacking = Packing(jsonDecode(json['selected_packing']));
     count = json['count'];
   }

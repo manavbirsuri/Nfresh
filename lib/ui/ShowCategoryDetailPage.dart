@@ -1199,11 +1199,15 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
 
   // calculate the offer percentage
   String getOff(Product product) {
-    var salePrice = product.packing[0].price;
-    var costPrice = product.displayPrice;
+    var salePrice = product.selectedPacking.price;
+    var costPrice = product.selectedDisplayPrice;
     var profit = costPrice - salePrice;
     var offer = (profit / costPrice) * 100;
     return "${offer.round()}% off";
+  }
+
+  double getCalculatedPrice(Product product) {
+    return (product.selectedPacking.unitQty * product.displayPrice);
   }
 
   Widget mainContent(AsyncSnapshot<ResponseCatProducts> snapshot) {
@@ -1488,7 +1492,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                             textAlign: TextAlign.center,
                           ),
                           Text(
-                            '₹${product.displayPrice}',
+                            '₹${product.selectedDisplayPrice}',
                             style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.colororange,
@@ -1531,6 +1535,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                 setState(() {
                                   product.selectedPacking = newValue;
                                   product.count = 0;
+                                  product.selectedDisplayPrice = getCalculatedPrice(product);
                                 });
                               },
                             ),

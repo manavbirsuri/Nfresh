@@ -73,7 +73,7 @@ class _MyCustomFormState extends State<CartPage> {
   String orderId = "";
   List<Product> mProducts = [];
   bool isLoadingCart = true;
-  var address = "Akshya nagar 1st block, 1st Cross, Rammurty nagar, Banglore-560016";
+  var address = "No Address";
 
   var addressController = TextEditingController();
 
@@ -360,7 +360,7 @@ class _MyCustomFormState extends State<CartPage> {
                                       textAlign: TextAlign.start,
                                     ),
                                     Text(
-                                      '₹${product.displayPrice}',
+                                      '₹${getCalculatedPrice(product)}',
                                       style: TextStyle(
                                           fontSize: 16,
                                           color: Colors.colororange,
@@ -1417,6 +1417,10 @@ class _MyCustomFormState extends State<CartPage> {
         ));
       },
     );
+  }
+
+  double getCalculatedPrice(Product product) {
+    return (product.selectedPacking.unitQty * product.displayPrice);
   }
 
   void getProfileDetail() {
