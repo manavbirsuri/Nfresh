@@ -207,18 +207,22 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     blocProfile.profileData.listen((res) {
       print("Profile Status = " + res.status);
       if (res.status == "true") {
-        String profileData = jsonEncode(res.profile);
-        _prefs.getProfile().then((modelProfile) {
-          if (modelProfile == null && res.profile.type != 1) {
+        setState(() {
+          profile = res.profile;
+        });
+
+        _prefs.isFirstTime().then((isFirst) {
+          print("First time = $isFirst");
+          if (isFirst && res.profile.type != 1) {
             _database.clearCart();
             showMessage(context);
             getCartCount();
           }
+
+          String profileData = jsonEncode(res.profile);
           _prefs.saveProfile(profileData);
+          _prefs.saveFirstTime(false);
           // getProfileDetail();
-          setState(() {
-            profile = res.profile;
-          });
         });
       }
     });
@@ -776,6 +780,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       blocLogout.fetchData();
 
                                       _prefs.saveProfile("");
+                                      _prefs.saveFirstTime(true);
                                       setState(() {
                                         profile = null;
                                       });
