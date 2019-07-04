@@ -910,6 +910,12 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       ));
 
   void showMessage(context) {
+    var uType = "";
+    if (profile.type == 2) {
+      uType = "Wholesaler";
+    } else if (profile.type == 3) {
+      uType = " Marriage Palace";
+    }
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -917,7 +923,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         return AlertDialog(
           title: new Text("Alert!"),
           content: new Text(
-              "You logged in as a non customer account. So if there is any pruduct added into card brfore login will be removed."),
+              "Seems like you have logged in using a $uType account. The items in the cart will be removed due to the pricing being different for your account type. Please add the items again in the cart and proceed. "),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
