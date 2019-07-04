@@ -482,14 +482,16 @@ class WishPage extends State<WishListPage> {
                                                   fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.start,
                                             ),
-                                            Text(
-                                              '₹${product.selectedDisplayPrice}',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.colororange,
-                                                  decoration: TextDecoration.lineThrough),
-                                              textAlign: TextAlign.start,
-                                            ),
+                                            product.selectedPacking.displayPrice > 0
+                                                ? Text(
+                                                    '₹${product.selectedPacking.displayPrice}',
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.colororange,
+                                                        decoration: TextDecoration.lineThrough),
+                                                    textAlign: TextAlign.start,
+                                                  )
+                                                : Container(),
                                           ]),
                                     ),
                                     Padding(
@@ -707,7 +709,7 @@ class WishPage extends State<WishListPage> {
   }
 
   double getCalculatedPrice(Product product) {
-    return (product.selectedPacking.unitQty * product.displayPrice);
+    return (product.selectedPacking.displayPrice).toDouble();
   }
 
   Widget noDataView() {

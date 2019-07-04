@@ -4,11 +4,14 @@ import 'package:nfresh/bloc/search_bloc.dart';
 import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
+import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_search.dart';
 import 'package:nfresh/resources/database.dart';
+import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 
 import '../count_listener.dart';
+import 'login.dart';
 
 /*class SearchPage extends StatelessWidget {
   // This widget is the root of your application.
@@ -36,7 +39,8 @@ class _MyHomePageState extends State<SearchPage> {
   var gridImage = 'assets/selected_grid.png';
   var listImage = 'assets/unselected_list.png';
   // List<ModelProduct> productArray = List();
-
+  ProfileModel profile;
+  var _prefs = SharedPrefs();
   var bloc = SearchBloc();
   var blocFav = SetFavBloc();
   var _database = DatabaseHelper.instance;
@@ -46,6 +50,11 @@ class _MyHomePageState extends State<SearchPage> {
   @override
   void initState() {
     super.initState();
+    _prefs.getProfile().then((modelProfile) {
+      setState(() {
+        profile = modelProfile;
+      });
+    });
   }
 
 //  void filterSearchResults(String query) {
@@ -169,12 +178,21 @@ class _MyHomePageState extends State<SearchPage> {
                                     child: GestureDetector(
                                         onTap: () {
                                           setState(() {
-                                            if (product.fav == "1") {
-                                              product.fav = "0";
+                                            if (profile == null) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => LoginPage(),
+                                                ),
+                                              );
                                             } else {
-                                              product.fav = "1";
+                                              if (product.fav == "1") {
+                                                product.fav = "0";
+                                              } else {
+                                                product.fav = "1";
+                                              }
+                                              blocFav.fetchData(product.fav, product.id.toString());
                                             }
-                                            blocFav.fetchData(product.fav, product.id.toString());
                                           });
                                         },
                                         child: Container(
@@ -243,14 +261,16 @@ class _MyHomePageState extends State<SearchPage> {
                                                   fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.start,
                                             ),
-                                            Text(
-                                              '₹${product.selectedDisplayPrice}',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.colororange,
-                                                  decoration: TextDecoration.lineThrough),
-                                              textAlign: TextAlign.start,
-                                            ),
+                                            product.selectedPacking.displayPrice > 0
+                                                ? Text(
+                                                    '₹${product.selectedPacking.displayPrice}',
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.colororange,
+                                                        decoration: TextDecoration.lineThrough),
+                                                    textAlign: TextAlign.start,
+                                                  )
+                                                : Container(),
                                           ]),
                                     ),
                                     Padding(
@@ -824,12 +844,21 @@ class _MyHomePageState extends State<SearchPage> {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              if (product.fav == "1") {
-                                product.fav = "0";
+                              if (profile == null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginPage(),
+                                  ),
+                                );
                               } else {
-                                product.fav = "1";
+                                if (product.fav == "1") {
+                                  product.fav = "0";
+                                } else {
+                                  product.fav = "1";
+                                }
+                                blocFav.fetchData(product.fav, product.id.toString());
                               }
-                              blocFav.fetchData(product.fav, product.id.toString());
                             });
                           },
                           child: product.fav == "1"
@@ -846,14 +875,16 @@ class _MyHomePageState extends State<SearchPage> {
                                   fit: BoxFit.cover,
                                 ),
                         ),
-                        Text(
-                          getOff(product),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.colororange,
-                          ),
-                          textAlign: TextAlign.center,
-                        )
+                        product.selectedPacking.displayPrice > 0
+                            ? Text(
+                                getOff(product),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.colororange,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                            : Container(),
                       ],
                     ),
                   ),
@@ -898,14 +929,16 @@ class _MyHomePageState extends State<SearchPage> {
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          Text(
-                            '₹${product.selectedDisplayPrice}',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.colororange,
-                                decoration: TextDecoration.lineThrough),
-                            textAlign: TextAlign.center,
-                          ),
+                          product.selectedPacking.displayPrice > 0
+                              ? Text(
+                                  '₹${product.selectedPacking.displayPrice}',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.colororange,
+                                      decoration: TextDecoration.lineThrough),
+                                  textAlign: TextAlign.center,
+                                )
+                              : Container(),
                         ]),
                       ),
                     ],
@@ -1035,14 +1068,14 @@ class _MyHomePageState extends State<SearchPage> {
   // calculate the offer percentage
   String getOff(Product product) {
     var salePrice = product.selectedPacking.price;
-    var costPrice = product.selectedDisplayPrice;
+    var costPrice = product.selectedPacking.displayPrice;
     var profit = costPrice - salePrice;
     var offer = (profit / costPrice) * 100;
     return "${offer.round()}% off";
   }
 
   double getCalculatedPrice(Product product) {
-    return (product.selectedPacking.unitQty * product.displayPrice);
+    return (product.selectedPacking.displayPrice).toDouble();
   }
 
   BoxDecoration myBoxDecoration() {

@@ -3,6 +3,7 @@ class ProfileModel {
   String email = "";
   String phoneNo = "";
   String address = "Not Selected";
+  String referralCode = "";
   int city = 0;
   int area = 0;
   int walletCredits = 0;
@@ -18,6 +19,7 @@ class ProfileModel {
       city = json['city'];
       area = json['area'];
       walletCredits = json['wallet_credits'];
+      referralCode = json['referral_code'];
       type = json['type'];
     }
   }
@@ -32,6 +34,7 @@ class ProfileModel {
       'area': this.area,
       'wallet_credits': this.walletCredits,
       'type': this.type,
+      'referral_code': this.referralCode,
     };
   }
 }

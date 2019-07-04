@@ -16,10 +16,12 @@ import 'package:nfresh/ui/WalletPage.dart';
 import 'package:nfresh/ui/cart.dart';
 import 'package:nfresh/ui/login.dart';
 import 'package:nfresh/ui/notifications.dart';
+import 'package:nfresh/ui/refers_earn.dart';
 import 'package:page_indicator/page_indicator.dart';
 
 import 'bloc/get_fav_bloc.dart';
 import 'bloc/home_bloc.dart';
+import 'bloc/logout_bloc.dart';
 import 'bloc/profile_bloc.dart';
 import 'bloc/search_bloc.dart';
 import 'bloc/set_fav_bloc.dart';
@@ -380,11 +382,16 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
               title: _getTitle(_selectedDrawerIndex),
               centerTitle: true,
               leading: IconButton(
-                  icon: new Image.asset(
-                    'assets/setting.png',
-                    width: 25,
-                    height: 25,
+                  icon: Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                    size: 30.0,
                   ),
+//                  new Image.asset(
+//                    'assets/setting.png',
+//                    width: 25,
+//                    height: 25,
+//                  ),
                   onPressed: () => _scaffoldKey.currentState.openDrawer()),
               actions: [
                 GestureDetector(
@@ -684,6 +691,41 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               height: 1,
                               color: Colors.grey,
                             ),
+                            ListTile(
+                              leading: Image.asset(
+                                'assets/help.png',
+                                width: 30.0,
+                                height: 30.0,
+                              ),
+                              title: Text(
+                                "Refers & Earn",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                if (profile == null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LoginPage(),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ReferEarnPage(),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                            Divider(
+                              height: 1,
+                              color: Colors.grey,
+                            ),
                             profile == null
                                 ? ListTile(
                                     leading: Image.asset(
@@ -721,12 +763,16 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     ),
                                     onTap: () {
                                       // logout webservice
+
+                                      var blocLogout = LogoutBloc();
+                                      blocLogout.fetchData();
+
                                       _prefs.saveProfile("");
                                       setState(() {
                                         profile = null;
                                       });
                                     },
-                                  )
+                                  ),
                           ],
                         ),
                       )
@@ -827,7 +873,20 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
             _curIndex = index;
             switch (_curIndex) {
               case 0:
-                _getDrawerItemWidget(0, snapshot);
+                bloc.fetchHomeData();
+                bloc.homeData.listen((response) {
+                  homeResponse = response;
+                  setState(() {
+                    showLoader = false;
+                  });
+                  blocProfile.fetchData();
+                  profileObserver();
+
+                  blocFavGet.fetchFavData();
+                  favObserver();
+                });
+                //_getDrawerItemWidget(0, snapshot);
+                homeWidget(homeResponse);
                 break;
               case 1:
                 _getDrawerItemWidget(1, snapshot);
@@ -956,7 +1015,51 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                       ),
                       AspectRatio(
                         aspectRatio: 2 / 1,
-                        child: showTopPagerOffer(snapshot.offerBanners),
+                        //child: showTopPagerOffer(snapshot.offerBanners),
+                        child: Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, position) {
+                                return Padding(
+                                  padding: EdgeInsets.all(1),
+                                  child: GestureDetector(
+                                    onTap: () {
+//
+                                    },
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(0.0),
+                                      ),
+                                      child: Container(
+                                        height: 200,
+
+                                        //decoration: myBoxDecoration(),
+                                        //       <--- BoxDecoration here
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: <Widget>[
+                                            Flexible(
+                                              child: Image.network(
+                                                snapshot.offerBanners[position].image,
+                                                //list[position].image,
+                                                width: 300,
+                                                height: 500,
+                                                fit: BoxFit.fill,
+                                              ),
+                                              flex: 1,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              itemCount: snapshot.offerBanners.length,
+                            )),
                       ),
                       Container(
                         height: 4,
@@ -1029,7 +1132,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, position) {
             return Padding(
-              padding: EdgeInsets.all(4),
+              padding: EdgeInsets.all(1),
               child: GestureDetector(
                 onTap: () {
                   Navigator.push(
@@ -1060,11 +1163,11 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                           child: Image.network(
                             categories[position].image,
                             //list[position].image,
-                            height: 50,
-                            width: 50,
-                            fit: BoxFit.cover,
+                            height: 120,
+                            width: 120,
+                            fit: BoxFit.fill,
                           ),
-                          flex: 2,
+                          flex: 3,
                         ),
                         Flexible(
                           child: Center(
@@ -1125,13 +1228,23 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              if (product.fav == "1") {
-                                                product.fav = "0";
+                                              if (profile == null) {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => LoginPage(),
+                                                  ),
+                                                );
                                               } else {
-                                                product.fav = "1";
-                                              }
+                                                if (product.fav == "1") {
+                                                  product.fav = "0";
+                                                } else {
+                                                  product.fav = "1";
+                                                }
 
-                                              blocFav.fetchData(product.fav, product.id.toString());
+                                                blocFav.fetchData(
+                                                    product.fav, product.id.toString());
+                                              }
                                             });
                                           },
                                           child: Container(
@@ -1152,14 +1265,16 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                     fit: BoxFit.cover,
                                                   ),
                                           )),
-                                      Text(
-                                        getOff(product),
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.colororange,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      )
+                                      products[position].selectedPacking.displayPrice > 0
+                                          ? Text(
+                                              getOff(products[position]),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colororange,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            )
+                                          : Container(),
                                     ],
                                   ),
                                 ),
@@ -1216,14 +1331,20 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
-                                            Text(
-                                              "₹" + product.selectedDisplayPrice.toString(),
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.colororange,
-                                                  decoration: TextDecoration.lineThrough),
-                                              textAlign: TextAlign.center,
-                                            ),
+                                            products[position].selectedPacking.displayPrice > 0
+                                                ? Text(
+                                                    "₹" +
+                                                        products[position]
+                                                            .selectedPacking
+                                                            .displayPrice
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.colororange,
+                                                        decoration: TextDecoration.lineThrough),
+                                                    textAlign: TextAlign.center,
+                                                  )
+                                                : Container(),
                                           ]),
                                     ),
                                   ],
@@ -1479,7 +1600,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   // calculate the offer percentage
   String getOff(Product product) {
     var salePrice = product.selectedPacking.price;
-    var costPrice = product.selectedDisplayPrice;
+    var costPrice = product.selectedPacking.displayPrice;
     var profit = costPrice - salePrice;
     var offer = (profit / costPrice) * 100;
     if (costPrice == 0) {
@@ -1489,7 +1610,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   }
 
   double getCalculatedPrice(Product product) {
-    return (product.selectedPacking.unitQty * product.displayPrice);
+    return (product.selectedPacking.displayPrice).toDouble();
   }
 
 //**************************************************************
@@ -1530,8 +1651,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   }
 
   Widget mainContent(List<Product> products) {
-    return Container(
-        padding: EdgeInsets.only(top: 4),
+    return Stack(children: <Widget>[
+      Container(
+        padding: EdgeInsets.only(bottom: 42),
         child: ListView.builder(
           shrinkWrap: true,
           scrollDirection: Axis.vertical,
@@ -1540,7 +1662,30 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
             return getListItem(position, product, products);
           },
           itemCount: products.length,
-        ));
+        ),
+      ),
+      Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+          child: GestureDetector(
+              onTap: () {
+                showMessageFav2(context, products);
+              },
+              child: Container(
+                height: 40.0,
+                width: double.infinity,
+                color: Colors.colorgreen,
+                child: Center(
+                  child: Text(
+                    "Clear WishList",
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )),
+        ),
+      ),
+    ]);
   }
 
   Widget getListItem(position, Product product, List<Product> products) {
@@ -1625,14 +1770,16 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                   fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.start,
                                             ),
-                                            Text(
-                                              '₹${product.selectedDisplayPrice}',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.colororange,
-                                                  decoration: TextDecoration.lineThrough),
-                                              textAlign: TextAlign.start,
-                                            ),
+                                            product.selectedPacking.displayPrice > 0
+                                                ? Text(
+                                                    '₹${product.selectedPacking.displayPrice}',
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.colororange,
+                                                        decoration: TextDecoration.lineThrough),
+                                                    textAlign: TextAlign.start,
+                                                  )
+                                                : Container(),
                                           ]),
                                     ),
                                     Padding(
@@ -1849,6 +1996,40 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     );
   }
 
+  void showMessageFav2(context, List<Product> products) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text("Would you like to remove all product from your Wishlist?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                for (int i = 0; i < products.length; i++) {
+                  blocFav.fetchData("0", products[i].id.toString());
+                }
+                setState(() {
+                  products.clear();
+                });
+              },
+            ),
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   //**************************************************************
 // Methods for Search page
 //***************************************************************
@@ -2027,12 +2208,21 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     child: GestureDetector(
                                         onTap: () {
                                           setState(() {
-                                            if (product.fav == "1") {
-                                              product.fav = "0";
+                                            if (profile == null) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => LoginPage(),
+                                                ),
+                                              );
                                             } else {
-                                              product.fav = "1";
+                                              if (product.fav == "1") {
+                                                product.fav = "0";
+                                              } else {
+                                                product.fav = "1";
+                                              }
+                                              blocFav.fetchData(product.fav, product.id.toString());
                                             }
-                                            blocFav.fetchData(product.fav, product.id.toString());
                                           });
                                         },
                                         child: Container(
@@ -2101,14 +2291,16 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                   fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.start,
                                             ),
-                                            Text(
-                                              '₹${product.selectedDisplayPrice}',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.colororange,
-                                                  decoration: TextDecoration.lineThrough),
-                                              textAlign: TextAlign.start,
-                                            ),
+                                            product.selectedPacking.displayPrice > 0
+                                                ? Text(
+                                                    '₹${product.selectedPacking.displayPrice}',
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.colororange,
+                                                        decoration: TextDecoration.lineThrough),
+                                                    textAlign: TextAlign.start,
+                                                  )
+                                                : Container(),
                                           ]),
                                     ),
                                     Padding(
@@ -2183,54 +2375,6 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               ),
                             ),
                           ),
-                          /*Padding(
-                            padding: EdgeInsets.only(right: 0, left: 0),
-                            child: Container(
-                              height: 30,
-                              decoration: myBoxDecoration2(),
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 8, left: 8),
-                                child: IntrinsicHeight(
-                                  child: Center(
-                                    child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                      children: <Widget>[
-                                        Container(
-                                          child: Center(
-                                            child: Padding(
-                                              padding: EdgeInsets.only(bottom: 16),
-                                              child: Icon(
-                                                Icons.minimize,
-                                                color: Colors.colorgreen,
-                                                size: 18,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          child: Text(
-                                            "0",
-                                            style: TextStyle(
-                                                color: Colors.colorgreen,
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20),
-                                          ),
-                                        ),
-                                        Container(
-                                          child: Icon(
-                                            Icons.add,
-                                            color: Colors.colorgreen,
-                                            size: 20,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),*/
                           Padding(
                             padding: EdgeInsets.only(right: 0, left: 0, top: 16),
                             child: Container(
@@ -2343,318 +2487,6 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         crossAxisSpacing: 2.0,
       ),
     );
-    /* child: GridView.count(
-      // Create a grid with 2 columns. If you change the scrollDirection to
-      // horizontal, this would produce 2 rows.
-      childAspectRatio: MediaQuery.of(context).size.width <= 360 ? 1 / 1.70 : 1 / 1.55,
-      crossAxisCount: 2,
-      shrinkWrap: true,
-      // Generate 100 Widgets that display their index in the List
-      children: List.generate(products.length, (index) {
-        var product = products[index];
-        return Material(
-          color: Colors.transparent,
-          child: Padding(
-            padding: EdgeInsets.all(0),
-            child: Card(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(0.0),
-              ),
-              child: Container(
-                //height: 330,
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(right: 8, left: 8, top: 8),
-                      child: Container(
-                        width: 150,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  if (product.fav == "1") {
-                                    product.fav = "0";
-                                  } else {
-                                    product.fav = "1";
-                                  }
-                                  blocFav.fetchData(product.fav, product.id.toString());
-                                });
-                              },
-                              child: product.fav == "1"
-                                  ? Image.asset(
-                                      'assets/fav_filled.png',
-                                      width: 20.0,
-                                      height: 20.0,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.asset(
-                                      'assets/fav.png',
-                                      width: 20.0,
-                                      height: 20.0,
-                                      fit: BoxFit.cover,
-                                    ),
-                            ),
-                            Text(
-                              product.off,
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.colororange,
-                              ),
-                              textAlign: TextAlign.center,
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        goToProductDetail(product);
-                      },
-                      child: Column(
-                        children: <Widget>[
-                          Image.network(
-                            product.image,
-                            fit: BoxFit.contain,
-                            height: 80,
-                          ),
-                          Text(
-                            product.name,
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.colorgreen,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                            child: Text(
-                              product.nameHindi,
-                              style: TextStyle(fontSize: 16, color: Colors.colorlightgrey),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                            child:
-                                Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                              Text(
-                                '₹${product.selectedPacking.price}  ',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.colorlightgrey,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                              Text(
-                                '₹${product.displayPrice}',
-                                style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.colororange,
-                                    decoration: TextDecoration.lineThrough),
-                                textAlign: TextAlign.center,
-                              ),
-                            ]),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Container(
-                            height: 35,
-                            width: 120,
-                            decoration: myBoxDecoration3(),
-                            child: Center(
-                              child: Padding(
-                                padding: EdgeInsets.only(right: 8, left: 8),
-                                child: DropdownButtonFormField<Packing>(
-                                  decoration: InputDecoration.collapsed(hintText: ''),
-                                  value: product.selectedPacking,
-                                  items: product.packing.map((Packing value) {
-                                    return new DropdownMenuItem<Packing>(
-                                      value: value,
-                                      child: new Text(
-                                        value.unitQtyShow,
-                                        style: TextStyle(color: Colors.grey),
-                                      ),
-                                    );
-                                  }).toList(),
-                                  onChanged: (newValue) {
-                                    setState(() {
-                                      product.selectedPacking = newValue;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    */ /* Padding(
-                      padding: EdgeInsets.only(right: 16, left: 16, top: 16),
-                      child: Container(
-                        width: 120,
-                        decoration: myBoxDecoration2(),
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: IntrinsicHeight(
-                            child: Center(
-                              child: IntrinsicHeight(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          decrementCount(product);
-                                        });
-                                      },
-                                      child: Container(
-                                        color: Colors.transparent,
-                                        child: Center(
-                                          child: Padding(
-                                            padding: EdgeInsets.fromLTRB(8, 10, 8, 10),
-                                            child: Image.asset(
-                                              'assets/minus.png',
-                                              height: 15,
-                                              width: 15,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      child: Center(
-                                        child: Text(
-                                          product.count.toString(),
-                                          style: TextStyle(
-                                              color: Colors.colorgreen,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 24),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          incrementCount(product);
-                                        });
-                                      },
-                                      child: Container(
-                                        color: Colors.transparent,
-                                        child: Padding(
-                                          padding: EdgeInsets.fromLTRB(8, 10, 8, 10),
-                                          child: Image.asset(
-                                            'assets/plus.png',
-                                            height: 15,
-                                            width: 15,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),*/ /*
-                    Padding(
-                      padding: EdgeInsets.only(right: 8, left: 8, top: 16),
-                      child: Container(
-                        width: 150,
-                        //color: Colors.grey,
-                        child: Padding(
-                          padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                          child: IntrinsicHeight(
-                            child: Center(
-                              child: IntrinsicHeight(
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          decrementCount(products[index]);
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.only(left: 20),
-                                        // color: Colors.white,
-                                        child: Container(
-                                          decoration: myBoxDecoration2(),
-                                          padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                          child: Image.asset(
-                                            'assets/minus.png',
-                                            height: 12,
-                                            width: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      margin: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
-                                      child: Center(
-                                        child: Text(
-                                          product.count.toString(),
-                                          style: TextStyle(
-                                              color: Colors.colorgreen,
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                      ),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          incrementCount(products[index]);
-                                        });
-                                      },
-                                      child: Container(
-                                        //  color: Colors.white,
-                                        padding: EdgeInsets.only(right: 20),
-                                        child: Container(
-                                          decoration: myBoxDecoration2(),
-                                          padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
-                                          child: Image.asset(
-                                            'assets/plus.png',
-                                            height: 12,
-                                            width: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-//                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      }),
-    ));*/
   }
 
   girdViewItem(int index, BuildContext context, List<Product> products) {
@@ -2682,12 +2514,21 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                         GestureDetector(
                           onTap: () {
                             setState(() {
-                              if (product.fav == "1") {
-                                product.fav = "0";
+                              if (profile == null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => LoginPage(),
+                                  ),
+                                );
                               } else {
-                                product.fav = "1";
+                                if (product.fav == "1") {
+                                  product.fav = "0";
+                                } else {
+                                  product.fav = "1";
+                                }
+                                blocFav.fetchData(product.fav, product.id.toString());
                               }
-                              blocFav.fetchData(product.fav, product.id.toString());
                             });
                           },
                           child: product.fav == "1"
@@ -2704,14 +2545,16 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                   fit: BoxFit.cover,
                                 ),
                         ),
-                        Text(
-                          getOff(product),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.colororange,
-                          ),
-                          textAlign: TextAlign.center,
-                        )
+                        product.selectedPacking.displayPrice > 0
+                            ? Text(
+                                getOff(product),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.colororange,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                            : Container(),
                       ],
                     ),
                   ),
@@ -2756,14 +2599,16 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                             ),
                             textAlign: TextAlign.center,
                           ),
-                          Text(
-                            '₹${product.selectedDisplayPrice}',
-                            style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.colororange,
-                                decoration: TextDecoration.lineThrough),
-                            textAlign: TextAlign.center,
-                          ),
+                          product.selectedPacking.displayPrice > 0
+                              ? Text(
+                                  '₹${product.selectedPacking.displayPrice}',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.colororange,
+                                      decoration: TextDecoration.lineThrough),
+                                  textAlign: TextAlign.center,
+                                )
+                              : Container(),
                         ]),
                       ),
                     ],

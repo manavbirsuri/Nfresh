@@ -4,10 +4,13 @@ import 'package:nfresh/bloc/related_product_bloc.dart';
 import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
+import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_related_products.dart';
 import 'package:nfresh/resources/database.dart';
+import 'package:nfresh/resources/prefrences.dart';
 
 import 'cart.dart';
+import 'login.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final Product product;
@@ -24,10 +27,10 @@ class ProState extends State<ProductDetailPage> {
   int totalAmount = 0;
   var bloc = CartBloc();
   var blocRelated = RelatedProductBloc();
-
+  var _prefs = SharedPrefs();
   var blocFav = SetFavBloc();
   var _database = DatabaseHelper.instance;
-
+  ProfileModel profile;
   int cartCount = 0;
 
   bool showLoader = true;
@@ -47,6 +50,11 @@ class ProState extends State<ProductDetailPage> {
       productResponse = res;
       updateProducts();
       updateMainProduct();
+    });
+    _prefs.getProfile().then((modelProfile) {
+      setState(() {
+        profile = modelProfile;
+      });
     });
   }
 
@@ -134,13 +142,22 @@ class ProState extends State<ProductDetailPage> {
                                     child: GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          if (widget.product.fav == "1") {
-                                            widget.product.fav = "0";
+                                          if (profile == null) {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => LoginPage(),
+                                              ),
+                                            );
                                           } else {
-                                            widget.product.fav = "1";
+                                            if (widget.product.fav == "1") {
+                                              widget.product.fav = "0";
+                                            } else {
+                                              widget.product.fav = "1";
+                                            }
+                                            blocFav.fetchData(
+                                                widget.product.fav, widget.product.id.toString());
                                           }
-                                          blocFav.fetchData(
-                                              widget.product.fav, widget.product.id.toString());
                                         });
                                       },
                                       child: Align(
@@ -197,21 +214,25 @@ class ProState extends State<ProductDetailPage> {
                                                       fontWeight: FontWeight.bold),
                                                   textAlign: TextAlign.start,
                                                 ),
-                                                Text(
-                                                  '₹${widget.product.selectedDisplayPrice}',
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.colororange,
-                                                      decoration: TextDecoration.lineThrough),
-                                                  textAlign: TextAlign.start,
-                                                ),
+                                                widget.product.selectedPacking.displayPrice > 0
+                                                    ? Text(
+                                                        '₹${widget.product.selectedPacking.displayPrice}',
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            color: Colors.colororange,
+                                                            decoration: TextDecoration.lineThrough),
+                                                        textAlign: TextAlign.start,
+                                                      )
+                                                    : Container(),
                                               ]),
-                                          Text(
-                                            getOff(widget.product),
-                                            style:
-                                                TextStyle(fontSize: 14, color: Colors.colororange),
-                                            textAlign: TextAlign.center,
-                                          ),
+                                          widget.product.selectedPacking.displayPrice > 0
+                                              ? Text(
+                                                  getOff(widget.product),
+                                                  style: TextStyle(
+                                                      fontSize: 14, color: Colors.colororange),
+                                                  textAlign: TextAlign.center,
+                                                )
+                                              : Container(),
                                         ],
                                       )),
                                   Padding(
@@ -444,7 +465,7 @@ class ProState extends State<ProductDetailPage> {
                   Column(children: <Widget>[
                     Container(
                       color: Colors.colorlightgreyback,
-                      height: 65,
+                      height: 50,
                       padding: EdgeInsets.all(0),
                       child: Row(
                         children: <Widget>[
@@ -561,14 +582,14 @@ class ProState extends State<ProductDetailPage> {
   // calculate the offer percentage
   String getOff(Product product) {
     var salePrice = product.selectedPacking.price;
-    var costPrice = product.selectedDisplayPrice;
+    var costPrice = product.selectedPacking.displayPrice;
     var profit = costPrice - salePrice;
     var offer = (profit / costPrice) * 100;
     return "${offer.round()}% off";
   }
 
   double getCalculatedPrice(Product product) {
-    return (product.selectedPacking.unitQty * product.displayPrice);
+    return (product.selectedPacking.displayPrice).toDouble();
   }
 
   showProductsCategories(ResponseRelatedProducts snapshot) {
@@ -604,13 +625,23 @@ class ProState extends State<ProductDetailPage> {
                                       GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              if (product.fav == "1") {
-                                                product.fav = "0";
+                                              if (profile == null) {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => LoginPage(),
+                                                  ),
+                                                );
                                               } else {
-                                                product.fav = "1";
-                                              }
+                                                if (product.fav == "1") {
+                                                  product.fav = "0";
+                                                } else {
+                                                  product.fav = "1";
+                                                }
 
-                                              blocFav.fetchData(product.fav, product.id.toString());
+                                                blocFav.fetchData(
+                                                    product.fav, product.id.toString());
+                                              }
                                             });
                                           },
                                           child: Container(
@@ -630,14 +661,16 @@ class ProState extends State<ProductDetailPage> {
                                                     fit: BoxFit.cover,
                                                   ),
                                           )),
-                                      Text(
-                                        getOff(product),
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.colororange,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      )
+                                      product.selectedPacking.displayPrice > 0
+                                          ? Text(
+                                              getOff(product),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colororange,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            )
+                                          : Container(),
                                     ],
                                   ),
                                 ),
@@ -696,17 +729,18 @@ class ProState extends State<ProductDetailPage> {
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
-                                            Text(
-                                              "₹" +
-                                                  products[position]
-                                                      .selectedDisplayPrice
-                                                      .toString(),
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.colororange,
-                                                  decoration: TextDecoration.lineThrough),
-                                              textAlign: TextAlign.center,
-                                            ),
+                                            product.selectedPacking.displayPrice > 0
+                                                ? Text(
+                                                    "₹" +
+                                                        product.selectedPacking.displayPrice
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.colororange,
+                                                        decoration: TextDecoration.lineThrough),
+                                                    textAlign: TextAlign.center,
+                                                  )
+                                                : Container(),
                                           ]),
                                     ),
                                   ],

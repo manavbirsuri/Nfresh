@@ -157,7 +157,7 @@ class ApiProvider {
   // Webservice call to Register user
   Future<ResponseSignUp> getSignUp(auth, ProfileSend profile) async {
     print(
-        "DATA: ${profile.name}: ${profile.email}: ${profile.phone}: ${profile.password}: ${profile.address}: ${profile.city}: ${profile.area}: ${profile.type}");
+        "DATA: ${profile.name}: ${profile.email}: ${profile.phone}: ${profile.password}: ${profile.address}: ${profile.city}: ${profile.area}: ${profile.type}: ${profile.referal}");
     Map map = {
       'authcode': auth,
       'name': profile.name,
@@ -168,6 +168,7 @@ class ApiProvider {
       'city': profile.city.toString(),
       'area': profile.area.toString(),
       'type': profile.type,
+      'referred_by_code': profile.referal,
     };
     final response = await client.post("$baseUrl/signup", body: map);
     print(response.body.toString());
@@ -452,6 +453,21 @@ class ApiProvider {
     print("Address Update: " + response.body.toString());
     if (response.statusCode == 200) {
       return ResponseProfile.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load update_telephone_no service');
+    }
+  }
+
+  //Logout APi
+  Future<ResponseLogin> logout(auth) async {
+    Map map = {
+      'auth_code': auth,
+    };
+    final response = await client.post("$baseUrl/logout", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseLogin.fromJson(json.decode(response.body));
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load update_telephone_no service');

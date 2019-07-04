@@ -572,8 +572,16 @@ class stateProfilePage extends State<stateProfile> {
     setState(() {
       showLoader = true;
     });
-    var profile = ProfileSend(name, email, phone, password, selectedArea.name,
-        selectedType.userTypeId, selectedCity.id, selectedArea.id, referral);
+    var profile = ProfileSend(
+        name,
+        email,
+        phone,
+        password,
+        selectedArea.name,
+        selectedType.userTypeId,
+        selectedCity.id,
+        selectedArea.id,
+        refralController.text.toString());
     bloc.doSignUp(profile);
   }
 

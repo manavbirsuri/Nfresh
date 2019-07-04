@@ -357,14 +357,16 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                                     fit: BoxFit.cover,
                                                   ),
                                           )),
-                                      Text(
-                                        getOff(product),
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.colororange,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      )
+                                      product.selectedPacking.displayPrice > 0
+                                          ? Text(
+                                              getOff(product),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colororange,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            )
+                                          : Container(),
                                     ],
                                   ),
                                 ),
@@ -421,14 +423,18 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
-                                            Text(
-                                              "₹" + product.selectedDisplayPrice.toString(),
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.colororange,
-                                                  decoration: TextDecoration.lineThrough),
-                                              textAlign: TextAlign.center,
-                                            ),
+                                            product.selectedPacking.displayPrice > 0
+                                                ? Text(
+                                                    "₹" +
+                                                        product.selectedPacking.displayPrice
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.colororange,
+                                                        decoration: TextDecoration.lineThrough),
+                                                    textAlign: TextAlign.center,
+                                                  )
+                                                : Container(),
                                           ]),
                                     ),
                                   ],
@@ -690,7 +696,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
   // calculate the offer percentage
   String getOff(Product product) {
     var salePrice = product.selectedPacking.price;
-    var costPrice = product.selectedDisplayPrice;
+    var costPrice = product.selectedPacking.displayPrice;
     var profit = costPrice - salePrice;
     var offer = (profit / costPrice) * 100;
     if (costPrice == 0) {
@@ -700,6 +706,6 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
   }
 
   double getCalculatedPrice(Product product) {
-    return (product.selectedPacking.unitQty * product.displayPrice);
+    return (product.selectedPacking.displayPrice).toDouble();
   }
 }

@@ -40,6 +40,7 @@ dependencies:
   progress_dialog: ^1.1.0+1
   #firebase_messaging: ^5.0.4
   flutter_staggered_grid_view: "^0.2.7"
+  flutter_appavailability: "^0.0.21"
 
 dev_dependencies:
   flutter_test:
@@ -95,6 +96,11 @@ flutter:
     - homel.png
     - minus.png
     - plus.png
+    - refer.png
+    - fb.png
+    - mail.png
+    - message.png
+    - wa.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

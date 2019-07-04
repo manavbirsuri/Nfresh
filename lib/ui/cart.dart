@@ -187,84 +187,107 @@ class _MyCustomFormState extends State<CartPage> {
                   ),
 
                   // Cart Bottom bar
-                  Column(children: <Widget>[
-                    Container(
-                      height: 65,
-                      color: Colors.colorlightgreyback,
-                      padding: EdgeInsets.all(4),
-                      child: Row(
-                        children: <Widget>[
-                          Flexible(
-                            child: GestureDetector(
-                              child: Container(
-                                child: Column(
-                                  children: <Widget>[
-                                    // Flexible(
-                                    Column(
-                                      children: <Widget>[
-                                        Text(
-                                          '₹$checkoutTotal',
-                                          style:
-                                              TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                                        ),
-                                        Text(
-                                          'Total amount',
-                                          style: TextStyle(
-                                            //  fontSize: 14,
-                                            color: Colors.colorPink,
+                  mProducts.length > 0
+                      ? Column(children: <Widget>[
+                          Container(
+                            height: 50,
+                            color: Colors.colorlightgreyback,
+                            padding: EdgeInsets.all(4),
+                            child: Row(
+                              children: <Widget>[
+                                Flexible(
+                                  child: GestureDetector(
+                                    child: Container(
+                                      child: Column(
+                                        children: <Widget>[
+                                          // Flexible(
+                                          Column(
+                                            children: <Widget>[
+                                              Text(
+                                                '₹$checkoutTotal',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold, fontSize: 24),
+                                              ),
+                                              Text(
+                                                'Total amount',
+                                                style: TextStyle(
+                                                  //  fontSize: 14,
+                                                  color: Colors.colorPink,
+                                                ),
+                                              )
+                                            ],
+                                            mainAxisAlignment: MainAxisAlignment.center,
                                           ),
-                                        )
-                                      ],
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                          //flex: 1,
+                                          // ),
+                                        ],
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                      ),
                                     ),
-                                    //flex: 1,
-                                    // ),
-                                  ],
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                ),
-                              ),
-                              onTap: () {
+                                    onTap: () {
 //                      Scaffold.of(context).showSnackBar(SnackBar(
 //                        content: Text('View details Coming soon'),
 //                        duration: Duration(seconds: 1),
 //                      ));
-                              },
-                            ),
-                            flex: 1,
-                          ),
-                          Flexible(
-                            child: GestureDetector(
-                              child: Container(
-                                color: Colors.colorgreen,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Flexible(
-                                      child: Row(
+                                    },
+                                  ),
+                                  flex: 1,
+                                ),
+                                Flexible(
+                                  child: GestureDetector(
+                                    child: Container(
+                                      color: Colors.colorgreen,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: <Widget>[
-                                          Text(
-                                            'Place Order',
-                                            style: TextStyle(fontSize: 18, color: Colors.white),
+                                          Flexible(
+                                            child: Row(
+                                              children: <Widget>[
+                                                Text(
+                                                  'Place Order',
+                                                  style:
+                                                      TextStyle(fontSize: 18, color: Colors.white),
+                                                ),
+                                              ],
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                            ),
+                                            flex: 1,
                                           ),
                                         ],
-                                        mainAxisAlignment: MainAxisAlignment.center,
                                       ),
-                                      flex: 1,
                                     ),
-                                  ],
-                                ),
-                              ),
-                              onTap: () async {
-                                if (profile != null) {
-                                  getCheckSum(context);
-                                } else {
-                                  Navigator.push(
-                                    context,
-                                    new MaterialPageRoute(builder: (context) => new LoginPage()),
-                                  );
-                                }
+                                    onTap: () async {
+                                      if (profile != null) {
+                                        if (totalAmount > 0) {
+                                          getCheckSum(context);
+                                        } else {
+                                          Map<String, dynamic> data = {
+                                            'total': checkoutTotal,
+                                            'address': address,
+                                            'city': profile.city,
+                                            'area': profile.area,
+                                            'type': profile.type,
+                                            'discount': discount,
+                                            'wallet_use_amount': walletDiscount,
+                                          };
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => PaymentSuccessPage(
+                                                      response: response,
+                                                      cartExtra: data,
+                                                    ),
+                                              ));
+                                        }
+                                      } else {
+                                        Navigator.push(
+                                          context,
+                                          new MaterialPageRoute(
+                                              builder: (context) => new LoginPage()),
+                                        );
+                                      }
 //                                try {
 //
 //                                  final String result = await platform
@@ -276,14 +299,15 @@ class _MyCustomFormState extends State<CartPage> {
 //
 //                                print("RES: $response");
 //                                handlePayTmResponse(response, context);
-                              },
+                                    },
+                                  ),
+                                  flex: 1,
+                                ),
+                              ],
                             ),
-                            flex: 1,
                           ),
-                        ],
-                      ),
-                    ),
-                  ]),
+                        ])
+                      : Container(),
                 ],
               ),
             ))
@@ -359,14 +383,16 @@ class _MyCustomFormState extends State<CartPage> {
                                           fontWeight: FontWeight.bold),
                                       textAlign: TextAlign.start,
                                     ),
-                                    Text(
-                                      '₹${getCalculatedPrice(product)}',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.colororange,
-                                          decoration: TextDecoration.lineThrough),
-                                      textAlign: TextAlign.start,
-                                    ),
+                                    product.selectedPacking.displayPrice > 0
+                                        ? Text(
+                                            '₹${getCalculatedPrice(product)}',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.colororange,
+                                                decoration: TextDecoration.lineThrough),
+                                            textAlign: TextAlign.start,
+                                          )
+                                        : Container(),
                                   ]),
                             ),
                             Padding(
@@ -377,7 +403,7 @@ class _MyCustomFormState extends State<CartPage> {
                                 children: <Widget>[
                                   Container(
                                     height: 32,
-                                    width: 115,
+                                    width: 105,
                                     decoration: myBoxDecoration3(),
                                     child: Center(
                                       child: Padding(
@@ -522,7 +548,7 @@ class _MyCustomFormState extends State<CartPage> {
                             Padding(
                               padding: EdgeInsets.only(right: 8, left: 8, top: 16),
                               child: Container(
-                                width: 118,
+                                width: 104,
                                 //color: Colors.grey,
                                 child: Padding(
                                   padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -535,16 +561,18 @@ class _MyCustomFormState extends State<CartPage> {
                                           children: <Widget>[
                                             GestureDetector(
                                               onTap: () {
-                                                setState(() {
-                                                  decrementCount(product, products, position);
+                                                decrementCount(product, products, position);
+                                                Future.delayed(const Duration(milliseconds: 2000),
+                                                    () {
+                                                  calculateTotal(products);
                                                 });
                                               },
                                               child: Container(
-                                                padding: EdgeInsets.only(left: 2),
+                                                padding: EdgeInsets.only(left: 0),
                                                 // color: Colors.white,
                                                 child: Container(
                                                   decoration: myBoxDecoration2(),
-                                                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                                  padding: EdgeInsets.fromLTRB(9, 0, 9, 0),
                                                   child: Image.asset(
                                                     'assets/minus.png',
                                                     height: 10,
@@ -570,6 +598,13 @@ class _MyCustomFormState extends State<CartPage> {
                                             GestureDetector(
                                               onTap: () {
                                                 setState(() {
+                                                  if (walletDiscount > totalAmount) {
+                                                    setState(() {
+                                                      walletDiscount = 0;
+                                                      checkoutTotal =
+                                                          totalAmount - discount - walletDiscount;
+                                                    });
+                                                  }
                                                   incrementCount(products[position]);
                                                 });
                                               },
@@ -578,7 +613,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                 padding: EdgeInsets.only(right: 0),
                                                 child: Container(
                                                   decoration: myBoxDecoration2(),
-                                                  padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                                  padding: EdgeInsets.fromLTRB(9, 0, 9, 0),
                                                   child: Image.asset(
                                                     'assets/plus.png',
                                                     height: 10,
@@ -722,13 +757,23 @@ class _MyCustomFormState extends State<CartPage> {
                   } else {
 //                    Toast.show("Insufficiant Balance in Wallet.", context,
 //                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WalletPage(),
-                        )).then((value) {
-                      getProfileDetail();
-                    });
+                    if (profile == null) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginPage(),
+                          )).then((value) {
+                        getProfileDetail();
+                      });
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WalletPage(),
+                          )).then((value) {
+                        getProfileDetail();
+                      });
+                    }
                   }
                 });
               },
@@ -956,7 +1001,14 @@ class _MyCustomFormState extends State<CartPage> {
               ],
             ),
             onTap: () {
-              _showAddressDialog(context);
+              if (profile == null) {
+                Navigator.push(
+                  context,
+                  new MaterialPageRoute(builder: (context) => new LoginPage()),
+                );
+              } else {
+                _showAddressDialog(context);
+              }
             },
           ),
 //          Padding(
@@ -1071,6 +1123,13 @@ class _MyCustomFormState extends State<CartPage> {
                 setState(() {
                   _database.remove(product);
                   products.removeAt(position);
+                  if (products.length == 0) {
+                    setState(() {
+                      saveToPrefs(0);
+                      discount = 0;
+                      walletDiscount = 0;
+                    });
+                  }
                 });
               },
             ),
@@ -1084,6 +1143,12 @@ class _MyCustomFormState extends State<CartPage> {
         );
       },
     );
+  }
+
+  saveToPrefs(int discount) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('promoApplies', "");
+    await prefs.setInt("discount", discount);
   }
 
   Future removePromoFromPrefs() async {
@@ -1111,13 +1176,15 @@ class _MyCustomFormState extends State<CartPage> {
         if (checkoutTotal >= int.parse(vv)) {
           walletDiscount = int.parse(vv);
         } else {
-          Toast.show("Amount should not be more than your cart total.", context,
-              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+          showAlert("Amount should not be more than your cart total.", context);
+//          Toast.show("Amount should not be more than your cart total.", context,
+//              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
         }
       } else {
         vv = "0";
-        Toast.show("Amount is more than Balance in Wallet.", context,
-            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        showAlert("Amount is more than Balance in Wallet.", context);
+//        Toast.show("Amount is more than Balance in Wallet.", context,
+//            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       }
       return vv;
     });
@@ -1179,6 +1246,22 @@ class _MyCustomFormState extends State<CartPage> {
       totalAmount += (product.selectedPacking.price * product.count);
     }
 
+//    if (walletDiscount > totalAmount) {
+//      setState(() {
+//        walletDiscount = 0;
+//      });
+//    }
+    if (walletDiscount + discount > totalAmount ||
+        discount > totalAmount ||
+        walletDiscount > totalAmount) {
+      setState(() {
+        saveToPrefs(0);
+        discount = 0;
+        walletDiscount = 0;
+        check = "";
+        removePromoFromPrefs();
+      });
+    }
     checkoutTotal = totalAmount - discount - walletDiscount;
   }
 
@@ -1191,8 +1274,13 @@ class _MyCustomFormState extends State<CartPage> {
 
   Widget noDataView() {
     return Container(
-      child: Column(
-        children: <Widget>[Text("No item in your cart")],
+      width: double.infinity,
+      height: 400,
+      child: Center(
+        child: Text(
+          "No item in your cart",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
       ),
     );
   }
@@ -1209,6 +1297,7 @@ class _MyCustomFormState extends State<CartPage> {
         'area': profile.area,
         'type': profile.type,
         'discount': discount,
+        'wallet_use_amount': walletDiscount,
       };
       Navigator.push(
           context,
@@ -1420,7 +1509,7 @@ class _MyCustomFormState extends State<CartPage> {
   }
 
   double getCalculatedPrice(Product product) {
-    return (product.selectedPacking.unitQty * product.displayPrice);
+    return (product.selectedPacking.displayPrice).toDouble();
   }
 
   void getProfileDetail() {
@@ -1432,6 +1521,28 @@ class _MyCustomFormState extends State<CartPage> {
         addressController.text = profile.address;
       });
     });
+  }
+
+  void showAlert(String msg, BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text(msg),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 

@@ -92,23 +92,19 @@ class MyHomePage extends State<LoginState> {
                             child: Column(
                               children: <Widget>[
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                  padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
                                         "Phone Number",
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.colorgreen),
+                                        style: TextStyle(fontSize: 18, color: Colors.colorgreen),
                                       ),
                                     ],
                                   ),
                                 ),
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                  padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                   child: Center(
                                     child: TextField(
                                       controller: emailController,
@@ -122,37 +118,30 @@ class MyHomePage extends State<LoginState> {
                                 ),
                                 Divider(height: 1, color: Colors.black),
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                  padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
                                         "Password",
-                                        style: TextStyle(
-                                            fontSize: 18,
-                                            color: Colors.colorgreen),
+                                        style: TextStyle(fontSize: 18, color: Colors.colorgreen),
                                       ),
                                     ],
                                   ),
                                 ),
                                 Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Row(children: <Widget>[
                                       Flexible(
                                         child: Container(
                                           child: Center(
                                             child: TextField(
-                                              decoration:
-                                                  new InputDecoration.collapsed(
-                                                      hintText:
-                                                          'Enter Password'),
+                                              decoration: new InputDecoration.collapsed(
+                                                  hintText: 'Enter Password'),
                                               controller: passwordController,
                                               obscureText: showText,
                                               textAlign: TextAlign.start,
-                                              textInputAction:
-                                                  TextInputAction.done,
+                                              textInputAction: TextInputAction.done,
                                             ),
                                           ),
                                         ),
@@ -162,10 +151,7 @@ class MyHomePage extends State<LoginState> {
                                         child: GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              if (passwordController.text
-                                                      .toString()
-                                                      .length >
-                                                  0) {
+                                              if (passwordController.text.toString().length > 0) {
                                                 if (showText) {
                                                   showText = false;
                                                   valueShow = "Hide";
@@ -178,13 +164,11 @@ class MyHomePage extends State<LoginState> {
                                           },
                                           child: Container(
                                             child: Padding(
-                                              padding: EdgeInsets.only(
-                                                  bottom: 8, left: 0),
+                                              padding: EdgeInsets.only(bottom: 8, left: 0),
                                               child: Text(
                                                 valueShow,
                                                 style: TextStyle(
-                                                    fontSize: 18,
-                                                    color: Colors.colorgreen),
+                                                    fontSize: 18, color: Colors.colorgreen),
                                               ),
                                             ),
                                           ),
@@ -194,8 +178,7 @@ class MyHomePage extends State<LoginState> {
                                     ])),
                                 Divider(height: 1, color: Colors.black),
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
                                   child: Align(
                                     child: Text("Forget Password?"),
                                     alignment: Alignment.topRight,
@@ -203,60 +186,47 @@ class MyHomePage extends State<LoginState> {
                                 ),
                                 showLoader
                                     ? Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            32, 32, 32, 0),
+                                        padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
                                         child: Container(
                                           decoration: new BoxDecoration(
-                                              borderRadius: new BorderRadius
-                                                      .all(
-                                                  new Radius.circular(100.0)),
+                                              borderRadius:
+                                                  new BorderRadius.all(new Radius.circular(100.0)),
                                               color: Colors.colorgreen),
                                           child: SizedBox(
                                             width: double.infinity,
                                             height: 60,
                                             child: Center(
-                                              child:
-                                                  CircularProgressIndicator(),
+                                              child: CircularProgressIndicator(),
                                             ),
                                           ),
                                         ),
                                       )
                                     : Padding(
-                                        padding: const EdgeInsets.fromLTRB(
-                                            32, 32, 32, 0),
+                                        padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
                                         child: GestureDetector(
                                           onTap: () {
-                                            String phone =
-                                                emailController.text.toString();
-                                            String password = passwordController
-                                                .text
-                                                .toString();
+                                            String phone = emailController.text.toString();
+                                            String password = passwordController.text.toString();
 
                                             if (phone.length > 0 &&
                                                 phone.length == 10 &&
                                                 password.length > 3) {
-                                              print(
-                                                  "Phone: $phone Password: $password");
+                                              print("Phone: $phone Password: $password");
                                               setState(() {
                                                 showLoader = true;
                                               });
                                               bloc.fetchData(phone, password);
                                             } else {
-                                              if (phone.length < 10 ||
-                                                  phone.length > 10) {
-                                                Scaffold.of(context)
-                                                    .showSnackBar(
+                                              if (phone.length < 10 || phone.length > 10) {
+                                                Scaffold.of(context).showSnackBar(
                                                   SnackBar(
-                                                    content: Text(
-                                                        "Enter 10 digit mobile number"),
+                                                    content: Text("Enter 10 digit mobile number"),
                                                   ),
                                                 );
                                               } else {
-                                                Scaffold.of(context)
-                                                    .showSnackBar(
+                                                Scaffold.of(context).showSnackBar(
                                                   SnackBar(
-                                                    content: Text(
-                                                        "Enter valid credentials"),
+                                                    content: Text("Enter valid credentials"),
                                                   ),
                                                 );
                                               }
@@ -264,8 +234,7 @@ class MyHomePage extends State<LoginState> {
                                           },
                                           child: Container(
                                             decoration: new BoxDecoration(
-                                                borderRadius: new BorderRadius
-                                                        .all(
+                                                borderRadius: new BorderRadius.all(
                                                     new Radius.circular(100.0)),
                                                 color: Colors.colorgreen),
                                             child: SizedBox(
@@ -297,26 +266,21 @@ class MyHomePage extends State<LoginState> {
                                         ),
                                       ),
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
                                   child: Align(
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: <Widget>[
                                         Text(
                                           "Don't have an account?",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              color: Colors.black),
+                                          style: TextStyle(fontSize: 16, color: Colors.black),
                                         ),
                                         GestureDetector(
                                           onTap: () {
                                             Navigator.push(
                                               context,
                                               new MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      new SignUp()),
+                                                  builder: (context) => new SignUp()),
                                             );
                                           },
                                           child: Text(
