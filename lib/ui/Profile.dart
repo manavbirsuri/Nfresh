@@ -77,9 +77,9 @@ class StateProfilePage extends State<stateProfile> {
         if (profile.type == 1) {
           customerType = "Retailer";
         } else if (profile.type == 2) {
-          customerType = "Customer Daily";
+          customerType = "Wholesaler";
         } else if (profile.type == 3) {
-          customerType = "Customer Monthly";
+          customerType = "Marriage Palace";
         }
         //  cityController.text = profile.city;
         //  areaController.text = profile.name;

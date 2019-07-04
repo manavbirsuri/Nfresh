@@ -494,8 +494,11 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        profile == null ? LoginPage() : new Profile(),
+                                    builder: (context) => profile == null
+                                        ? LoginPage(
+                                            from: 0,
+                                          )
+                                        : new Profile(),
                                   ));
                             },
                             child: Row(
@@ -709,7 +712,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => LoginPage(),
+                                      builder: (context) => LoginPage(
+                                            from: 0,
+                                          ),
                                     ),
                                   );
                                 } else {
@@ -744,7 +749,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => LoginPage(),
+                                          builder: (context) => LoginPage(
+                                                from: 0,
+                                              ),
                                         ),
                                       );
                                     },
@@ -1232,7 +1239,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
-                                                    builder: (context) => LoginPage(),
+                                                    builder: (context) => LoginPage(
+                                                          from: 1,
+                                                        ),
                                                   ),
                                                 );
                                               } else {
@@ -2212,7 +2221,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                               Navigator.push(
                                                 context,
                                                 MaterialPageRoute(
-                                                  builder: (context) => LoginPage(),
+                                                  builder: (context) => LoginPage(
+                                                        from: 1,
+                                                      ),
                                                 ),
                                               );
                                             } else {
@@ -2518,7 +2529,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => LoginPage(),
+                                    builder: (context) => LoginPage(
+                                          from: 1,
+                                        ),
                                   ),
                                 );
                               } else {

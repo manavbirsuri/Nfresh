@@ -282,11 +282,7 @@ class _MyCustomFormState extends State<CartPage> {
                                               ));
                                         }
                                       } else {
-                                        Navigator.push(
-                                          context,
-                                          new MaterialPageRoute(
-                                              builder: (context) => new LoginPage()),
-                                        );
+                                        showAlertMessage(context);
                                       }
 //                                try {
 //
@@ -758,13 +754,7 @@ class _MyCustomFormState extends State<CartPage> {
 //                    Toast.show("Insufficiant Balance in Wallet.", context,
 //                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
                     if (profile == null) {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => LoginPage(),
-                          )).then((value) {
-                        getProfileDetail();
-                      });
+                      showAlertMessage(context);
                     } else {
                       Navigator.push(
                           context,
@@ -1002,10 +992,7 @@ class _MyCustomFormState extends State<CartPage> {
             ),
             onTap: () {
               if (profile == null) {
-                Navigator.push(
-                  context,
-                  new MaterialPageRoute(builder: (context) => new LoginPage()),
-                );
+                showAlertMessage(context);
               } else {
                 _showAddressDialog(context);
               }
@@ -1318,9 +1305,9 @@ class _MyCustomFormState extends State<CartPage> {
     setState(() {
       orderId = "NF${new DateTime.now().millisecondsSinceEpoch}";
       mapPayTm['ORDER_ID'] = orderId;
-      mapPayTm['CUST_ID'] = "Balvinder";
-      mapPayTm['MOBILE_NO'] = "1234567890";
-      mapPayTm['EMAIL'] = "abc@abc.abc";
+      mapPayTm['CUST_ID'] = profile.name;
+      mapPayTm['MOBILE_NO'] = profile.phoneNo;
+      mapPayTm['EMAIL'] = profile.email;
       mapPayTm['TXN_AMOUNT'] = checkoutTotal.toString();
       mapPayTm['CALLBACK_URL'] =
           "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
@@ -1508,6 +1495,36 @@ class _MyCustomFormState extends State<CartPage> {
     );
   }
 
+  void showAlertMessage(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content:
+              new Text("You would need to login in order to proceed. Please click here to Login."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Login"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                goToLogin();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   double getCalculatedPrice(Product product) {
     return (product.selectedPacking.displayPrice).toDouble();
   }
@@ -1543,6 +1560,18 @@ class _MyCustomFormState extends State<CartPage> {
         );
       },
     );
+  }
+
+  void goToLogin() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(
+                from: 1,
+              ),
+        )).then((value) {
+      getProfileDetail();
+    });
   }
 }
 

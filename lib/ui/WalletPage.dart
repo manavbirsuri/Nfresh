@@ -10,6 +10,8 @@ import 'package:nfresh/models/responses/response_wallet.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 
+import 'login.dart';
+
 class WalletPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -367,7 +369,11 @@ class stateProfilePage extends State<stateProfile> {
                                 padding: const EdgeInsets.fromLTRB(32, 8, 32, 16),
                                 child: GestureDetector(
                                   onTap: () {
-                                    getCheckSum(context);
+                                    if (profileModel != null) {
+                                      getCheckSum(context);
+                                    } else {
+                                      showAlertMessage(context);
+                                    }
                                   },
                                   child: Container(
                                     height: 40,
@@ -398,6 +404,48 @@ class stateProfilePage extends State<stateProfile> {
         ),
       ],
     );
+  }
+
+  void showAlertMessage(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content:
+              new Text("You would need to login in order to proceed. Please click here to Login."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Login"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                goToLogin();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void goToLogin() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(
+                from: 1,
+              ),
+        )).then((value) {
+      getProfileDetail();
+    });
   }
 
   void _showDialog(String message) {
@@ -431,9 +479,9 @@ class stateProfilePage extends State<stateProfile> {
     setState(() {
       orderId = "NFW${new DateTime.now().millisecondsSinceEpoch}";
       mapPayTm['ORDER_ID'] = orderId;
-      mapPayTm['CUST_ID'] = "Balvinder";
-      mapPayTm['MOBILE_NO'] = "1234567890";
-      mapPayTm['EMAIL'] = "abc@abc.abc";
+      mapPayTm['CUST_ID'] = profileModel.name;
+      mapPayTm['MOBILE_NO'] = profileModel.phoneNo;
+      mapPayTm['EMAIL'] = profileModel.email;
       mapPayTm['TXN_AMOUNT'] = totalAmount.toString();
       mapPayTm['CALLBACK_URL'] =
           "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
