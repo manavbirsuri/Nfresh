@@ -423,6 +423,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                       updateProducts();
                       updateFavProducts();
                       updateSearchProducts();
+                      getProfileDetail();
                     });
                   },
                   child: Padding(
@@ -1242,14 +1243,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                           onTap: () {
                                             setState(() {
                                               if (profile == null) {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) => LoginPage(
-                                                          from: 1,
-                                                        ),
-                                                  ),
-                                                );
+                                                showAlertMessage(context);
                                               } else {
                                                 if (product.fav == "1") {
                                                   product.fav = "0";
@@ -2224,14 +2218,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                         onTap: () {
                                           setState(() {
                                             if (profile == null) {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => LoginPage(
-                                                        from: 1,
-                                                      ),
-                                                ),
-                                              );
+                                              showAlertMessage(context);
                                             } else {
                                               if (product.fav == "1") {
                                                 product.fav = "0";
@@ -2532,14 +2519,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                           onTap: () {
                             setState(() {
                               if (profile == null) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginPage(
-                                          from: 1,
-                                        ),
-                                  ),
-                                );
+                                showAlertMessage(context);
                               } else {
                                 if (product.fav == "1") {
                                   product.fav = "0";
@@ -2765,6 +2745,48 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     ).then((value) {
       getCartCount();
       updateSearchProducts();
+    });
+  }
+
+  void showAlertMessage(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content:
+              new Text("You would need to login in order to proceed. Please click here to Login."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Login"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                goToLogin();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void goToLogin() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(
+                from: 1,
+              ),
+        )).then((value) {
+      getProfileDetail();
     });
   }
 }

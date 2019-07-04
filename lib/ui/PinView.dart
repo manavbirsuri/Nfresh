@@ -193,7 +193,7 @@ class PinState extends State<PinViewPage> {
     bloc.fetchSearchData(id, pin);
     bloc.searchedData.listen((response) {
       setState(() {
-        showLoader = true;
+        showLoader = false;
       });
       if (response.status == "true") {
         if (response.activate == 0) {

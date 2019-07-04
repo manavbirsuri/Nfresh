@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:nfresh/bloc/cat_products_bloc.dart';
-import 'package:nfresh/bloc/profile_bloc.dart';
 import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/category_model.dart';
 import 'package:nfresh/models/packing_model.dart';
@@ -60,6 +57,10 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
       productResponse = res;
       updateProducts();
     });
+    getProfileDetail();
+  }
+
+  getProfileDetail() {
     _prefs.getProfile().then((modelProfile) {
       setState(() {
         profile = modelProfile;
@@ -535,28 +536,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                         onTap: () {
                                           setState(() {
                                             if (profile == null) {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => LoginPage(),
-                                                ),
-                                              ).then((res) {
-                                                var blocProfile = ProfileBloc();
-                                                blocProfile.fetchData();
-                                                blocProfile.profileData.listen((res) {
-                                                  print("Profile Status = " + res.status);
-                                                  if (res.status == "true") {
-                                                    String profileData = jsonEncode(res.profile);
-                                                    _prefs.getProfile().then((modelProfile) {
-                                                      _prefs.saveProfile(profileData);
-                                                      // getProfileDetail();
-                                                      setState(() {
-                                                        profile = res.profile;
-                                                      });
-                                                    });
-                                                  }
-                                                });
-                                              });
+                                              showAlertMessage(context);
                                             } else {
                                               if (product.fav == "1") {
                                                 product.fav = "0";
@@ -1356,8 +1336,8 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                   ? Column(children: <Widget>[
                       Container(
                         color: Colors.colorlightgreyback,
-                        height: 50,
-                        padding: EdgeInsets.all(0),
+                        height: 55,
+                        // padding: EdgeInsets.all(0),
                         child: Row(
                           children: <Widget>[
                             Flexible(
@@ -1373,7 +1353,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                               '₹$totalAmount',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 24,
+                                                fontSize: 21,
                                                 color: Colors.colorgrey,
                                               ),
                                             ),
@@ -1406,7 +1386,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                             Flexible(
                               child: GestureDetector(
                                 child: Container(
-                                  margin: EdgeInsets.only(top: 0, bottom: 0),
+                                  // margin: EdgeInsets.only(top: 0, bottom: 0),
                                   color: Colors.colorgreen,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1465,6 +1445,48 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
     });
   }
 
+  void showAlertMessage(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content:
+              new Text("You would need to login in order to proceed. Please click here to Login."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Login"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                goToLogin();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void goToLogin() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(
+                from: 1,
+              ),
+        )).then((value) {
+      getProfileDetail();
+    });
+  }
+
   Widget noDataView() {
     return Container(
       child: Column(
@@ -1499,12 +1521,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                           onTap: () {
                             setState(() {
                               if (profile == null) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginPage(),
-                                  ),
-                                );
+                                showAlertMessage(context);
                               } else {
                                 if (product.fav == "1") {
                                   product.fav = "0";

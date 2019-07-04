@@ -190,9 +190,9 @@ class _MyCustomFormState extends State<CartPage> {
                   mProducts.length > 0
                       ? Column(children: <Widget>[
                           Container(
-                            height: 50,
+                            height: 55,
                             color: Colors.colorlightgreyback,
-                            padding: EdgeInsets.all(4),
+                            //  padding: EdgeInsets.all(4),
                             child: Row(
                               children: <Widget>[
                                 Flexible(
@@ -206,12 +206,12 @@ class _MyCustomFormState extends State<CartPage> {
                                               Text(
                                                 '₹$checkoutTotal',
                                                 style: TextStyle(
-                                                    fontWeight: FontWeight.bold, fontSize: 24),
+                                                    fontWeight: FontWeight.bold, fontSize: 21),
                                               ),
                                               Text(
                                                 'Total amount',
                                                 style: TextStyle(
-                                                  //  fontSize: 14,
+                                                  fontSize: 12,
                                                   color: Colors.colorPink,
                                                 ),
                                               )
@@ -1305,7 +1305,7 @@ class _MyCustomFormState extends State<CartPage> {
     setState(() {
       orderId = "NF${new DateTime.now().millisecondsSinceEpoch}";
       mapPayTm['ORDER_ID'] = orderId;
-      mapPayTm['CUST_ID'] = profile.name;
+      mapPayTm['CUST_ID'] = profile.name.split(" ")[0];
       mapPayTm['MOBILE_NO'] = profile.phoneNo;
       mapPayTm['EMAIL'] = profile.email;
       mapPayTm['TXN_AMOUNT'] = checkoutTotal.toString();
@@ -1571,6 +1571,7 @@ class _MyCustomFormState extends State<CartPage> {
               ),
         )).then((value) {
       getProfileDetail();
+      blocCity.fetchData();
     });
   }
 }

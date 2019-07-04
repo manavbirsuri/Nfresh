@@ -226,7 +226,7 @@ class stateProfilePage extends State<referEarnProfile> {
                                                   gap: 3,
                                                   strokeWidth: 1,
                                                   child: Container(
-                                                    height: 40,
+                                                    // height: 40,
                                                     child: Center(
                                                       child: Text(
                                                         code,

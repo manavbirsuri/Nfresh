@@ -51,6 +51,10 @@ class ProState extends State<ProductDetailPage> {
       updateProducts();
       updateMainProduct();
     });
+    getProfileDetail();
+  }
+
+  getProfileDetail() {
     _prefs.getProfile().then((modelProfile) {
       setState(() {
         profile = modelProfile;
@@ -143,12 +147,7 @@ class ProState extends State<ProductDetailPage> {
                                       onTap: () {
                                         setState(() {
                                           if (profile == null) {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => LoginPage(),
-                                              ),
-                                            );
+                                            showAlertMessage(context);
                                           } else {
                                             if (widget.product.fav == "1") {
                                               widget.product.fav = "0";
@@ -465,8 +464,8 @@ class ProState extends State<ProductDetailPage> {
                   Column(children: <Widget>[
                     Container(
                       color: Colors.colorlightgreyback,
-                      height: 50,
-                      padding: EdgeInsets.all(0),
+                      height: 55,
+                      // padding: EdgeInsets.all(0),
                       child: Row(
                         children: <Widget>[
                           Flexible(
@@ -481,7 +480,7 @@ class ProState extends State<ProductDetailPage> {
                                           '₹$totalAmount',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 24,
+                                              fontSize: 21,
                                               color: Colors.colorgrey),
                                         ),
                                         Text(
@@ -511,7 +510,7 @@ class ProState extends State<ProductDetailPage> {
                           Flexible(
                             child: GestureDetector(
                               child: Container(
-                                margin: EdgeInsets.only(top: 4, bottom: 4),
+                                //  margin: EdgeInsets.only(top: 4, bottom: 4),
                                 color: Colors.colorgreen,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -626,12 +625,7 @@ class ProState extends State<ProductDetailPage> {
                                           onTap: () {
                                             setState(() {
                                               if (profile == null) {
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) => LoginPage(),
-                                                  ),
-                                                );
+                                                showAlertMessage(context);
                                               } else {
                                                 if (product.fav == "1") {
                                                   product.fav = "0";
@@ -861,77 +855,6 @@ class ProState extends State<ProductDetailPage> {
                                   ),
                                 ),
                               ),
-                              /* Padding(
-                                padding: EdgeInsets.only(right: 16, left: 16, top: 16),
-                                child: Container(
-                                  width: 120,
-                                  decoration: myBoxDecoration2(),
-                                  child: Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                    child: IntrinsicHeight(
-                                      child: Center(
-                                        child: IntrinsicHeight(
-                                          child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    decrementCount(products[position]);
-                                                  });
-                                                },
-                                                child: Container(
-                                                  color: Colors.transparent,
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding: EdgeInsets.fromLTRB(18, 10, 18, 10),
-                                                      child: Image.asset(
-                                                        'assets/minus.png',
-                                                        height: 15,
-                                                        width: 15,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Container(
-                                                child: Center(
-                                                  child: Text(
-                                                    product.count.toString(),
-                                                    style: TextStyle(
-                                                        color: Colors.colorgreen,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 20),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    incrementCount(products[position]);
-                                                  });
-                                                },
-                                                child: Container(
-                                                  child: Padding(
-                                                    padding: EdgeInsets.fromLTRB(18, 10, 18, 10),
-                                                    child: Image.asset(
-                                                      'assets/plus.png',
-                                                      height: 15,
-                                                      width: 15,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),*/
                             ],
 //                  ),
                           ),
@@ -942,6 +865,48 @@ class ProState extends State<ProductDetailPage> {
           },
           itemCount: products.length,
         ));
+  }
+
+  void showAlertMessage(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content:
+              new Text("You would need to login in order to proceed. Please click here to Login."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Login"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                goToLogin();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void goToLogin() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(
+                from: 1,
+              ),
+        )).then((value) {
+      getProfileDetail();
+    });
   }
 
   Future incrementCount(Product product) async {

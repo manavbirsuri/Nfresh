@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/login_bloc.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/SignUp.dart';
+import 'package:toast/toast.dart';
 
 import '../DashBoard.dart';
 
@@ -58,11 +59,7 @@ class MyHomePage extends State<LoginPage> {
           );
         }
       } else {
-        Scaffold.of(context).showSnackBar(
-          SnackBar(
-            content: Text(data.msg),
-          ),
-        );
+        Toast.show(data.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       }
     });
   }
