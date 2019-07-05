@@ -479,7 +479,7 @@ class stateProfilePage extends State<stateProfile> {
     setState(() {
       orderId = "NFW${new DateTime.now().millisecondsSinceEpoch}";
       mapPayTm['ORDER_ID'] = orderId;
-      mapPayTm['CUST_ID'] = profileModel.name;
+      mapPayTm['CUST_ID'] = "C_" + profileModel.phoneNo;
       mapPayTm['MOBILE_NO'] = profileModel.phoneNo;
       mapPayTm['EMAIL'] = profileModel.email;
       mapPayTm['TXN_AMOUNT'] = totalAmount.toString();

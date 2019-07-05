@@ -473,4 +473,21 @@ class ApiProvider {
       throw Exception('NFresh: Failed to load update_telephone_no service');
     }
   }
+
+  // Webservice call for Forgot password
+  Future<String> forgotPassword(auth, phone, pass) async {
+    Map map = {
+      'auth_code': auth,
+      'phone_no': phone,
+      'password': pass,
+    };
+    final response = await client.post("$baseUrl/updateforgotpassword", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load updateforgotpassword service');
+    }
+  }
 }

@@ -845,6 +845,7 @@ class StateProfilePage extends State<stateProfile> {
             builder: (context) => PinViewUpdatePage(
                   otp: object['otp'],
                   phone: phoneNo,
+                  password: "",
                 ),
           ),
         ).then((value) {

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/forgot_password_bloc.dart';
 import 'package:nfresh/bloc/update_phone2_bloc.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:pin_view/pin_view.dart';
@@ -9,7 +10,8 @@ import 'package:toast/toast.dart';
 class PinViewUpdatePage extends StatefulWidget {
   final String otp;
   final String phone;
-  const PinViewUpdatePage({Key key, this.otp, this.phone}) : super(key: key);
+  final String password;
+  const PinViewUpdatePage({Key key, this.otp, this.phone, this.password}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -19,6 +21,7 @@ class PinViewUpdatePage extends StatefulWidget {
 
 class PinState extends State<PinViewUpdatePage> {
   var bloc = UpdatePhone2Bloc();
+  var blocPassword = ForgotPasswordBloc();
   bool showLoader = false;
   String enteredPin = "";
   var _prefs = SharedPrefs();
@@ -111,7 +114,7 @@ class PinState extends State<PinViewUpdatePage> {
               child: GestureDetector(
                 onTap: () {
                   if (enteredPin.length == 4) {
-                    verifyOtpWebservice(enteredPin, widget.otp, widget.phone);
+                    verifyOtpWebservice(enteredPin, widget.otp, widget.phone, widget.password);
                   } else {
                     Toast.show("Enter valid OTP", context,
                         duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
@@ -182,7 +185,7 @@ class PinState extends State<PinViewUpdatePage> {
     );
   }
 
-  void verifyOtpWebservice(String pin, String otp, String phone) {
+  void verifyOtpWebservice(String pin, String otp, String phone, String password) {
     if (pin != otp) {
       Toast.show("You entered wrong OTP", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
@@ -192,18 +195,32 @@ class PinState extends State<PinViewUpdatePage> {
       showLoader = true;
     });
 
-    bloc.fetchData(phone);
-    bloc.phoneData.listen((res) {
-      setState(() {
-        showLoader = false;
+    if (password.length > 0) {
+      blocPassword.fetchData(phone, password);
+      blocPassword.passwordData.listen((res) {
+        setState(() {
+          showLoader = false;
+        });
+        var obj = jsonDecode(res);
+        if (obj['status'] == "true") {
+          Navigator.of(context).pop();
+        }
+        Toast.show(obj['msg'], context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       });
-      if (res.status == "true") {
-        String data = jsonEncode(res.profile);
-        _prefs.saveProfile(data);
-        Navigator.of(context).pop();
-      } //else {
-      Toast.show(res.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-      // }
-    });
+    } else {
+      bloc.fetchData(phone);
+      bloc.phoneData.listen((res) {
+        setState(() {
+          showLoader = false;
+        });
+        if (res.status == "true") {
+          String data = jsonEncode(res.profile);
+          _prefs.saveProfile(data);
+          Navigator.of(context).pop();
+        } //else {
+        Toast.show(res.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        // }
+      });
+    }
   }
 }

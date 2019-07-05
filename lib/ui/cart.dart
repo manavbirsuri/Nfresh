@@ -1305,7 +1305,7 @@ class _MyCustomFormState extends State<CartPage> {
     setState(() {
       orderId = "NF${new DateTime.now().millisecondsSinceEpoch}";
       mapPayTm['ORDER_ID'] = orderId;
-      mapPayTm['CUST_ID'] = profile.name.split(" ")[0];
+      mapPayTm['CUST_ID'] = "C_" + profile.phoneNo;
       mapPayTm['MOBILE_NO'] = profile.phoneNo;
       mapPayTm['EMAIL'] = profile.email;
       mapPayTm['TXN_AMOUNT'] = checkoutTotal.toString();

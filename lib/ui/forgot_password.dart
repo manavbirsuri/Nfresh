@@ -1,70 +1,29 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:nfresh/bloc/login_bloc.dart';
+import 'package:nfresh/bloc/update_phone_bloc.dart';
 import 'package:nfresh/resources/prefrences.dart';
-import 'package:nfresh/ui/SignUp.dart';
+import 'package:nfresh/ui/pin_view_update.dart';
 import 'package:toast/toast.dart';
 
-import '../DashBoard.dart';
-import 'forgot_password.dart';
-
-/*class LoginPage extends StatelessWidget {
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: LoginState(),
-    );
-  }
-}*/
-
-class LoginPage extends StatefulWidget {
-  final int from;
-  const LoginPage({Key key, this.from}) : super(key: key);
-
+class ForgotPasswordPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return MyHomePage();
+    return ForgotPasswordState();
   }
 }
 
-class MyHomePage extends State<LoginPage> {
-  TextEditingController emailController = new TextEditingController();
+class ForgotPasswordState extends State<ForgotPasswordPage> {
+  TextEditingController phoneController = new TextEditingController();
   TextEditingController passwordController = new TextEditingController();
+  TextEditingController password2Controller = new TextEditingController();
   var showText = true;
   var valueShow = "Show";
-  var bloc = LoginBloc();
+  var showText2 = true;
+  var valueShow2 = "Show";
+  var bloc = UpdatePhoneBloc();
   bool showLoader = false;
   var _prefs = SharedPrefs();
-
-  @override
-  void initState() {
-    super.initState();
-    bloc.profileData.listen((data) {
-      print("PRO DATA:: $data");
-
-      setState(() {
-        showLoader = false;
-      });
-      if (data.status == "true") {
-        String profileData = jsonEncode(data.profile);
-        _prefs.saveProfile(profileData);
-        if (widget.from == 1) {
-          Navigator.of(context).pop();
-        } else {
-          Navigator.of(context).pop();
-          Navigator.pushReplacement(
-            context,
-            new MaterialPageRoute(builder: (context) => DashBoard()),
-          );
-        }
-      } else {
-        Toast.show(data.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -121,7 +80,7 @@ class MyHomePage extends State<LoginPage> {
                                     padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
                                       child: TextField(
-                                        controller: emailController,
+                                        controller: phoneController,
                                         decoration: new InputDecoration.collapsed(
                                             hintText: 'Enter Phone No.'),
                                         textAlign: TextAlign.start,
@@ -151,7 +110,7 @@ class MyHomePage extends State<LoginPage> {
                                             child: Center(
                                               child: TextField(
                                                 decoration: new InputDecoration.collapsed(
-                                                    hintText: 'Enter Password'),
+                                                    hintText: 'Enter New Password'),
                                                 controller: passwordController,
                                                 obscureText: showText,
                                                 textAlign: TextAlign.start,
@@ -191,22 +150,67 @@ class MyHomePage extends State<LoginPage> {
                                         ),
                                       ])),
                                   Divider(height: 1, color: Colors.black),
-                                  GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        new MaterialPageRoute(
-                                            builder: (context) => ForgotPasswordPage()),
-                                      );
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                      child: Align(
-                                        child: Text("Forget Password?"),
-                                        alignment: Alignment.topRight,
-                                      ),
+                                  Padding(
+                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          "Confirm Password",
+                                          style: TextStyle(fontSize: 18, color: Colors.colorgreen),
+                                        ),
+                                      ],
                                     ),
                                   ),
+                                  Padding(
+                                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      child: Row(children: <Widget>[
+                                        Flexible(
+                                          child: Container(
+                                            child: Center(
+                                              child: TextField(
+                                                decoration: new InputDecoration.collapsed(
+                                                    hintText: 'Confirm New Password'),
+                                                controller: password2Controller,
+                                                obscureText: showText2,
+                                                textAlign: TextAlign.start,
+                                                textInputAction: TextInputAction.done,
+                                              ),
+                                            ),
+                                          ),
+                                          flex: 4,
+                                        ),
+                                        Flexible(
+                                          child: GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                if (password2Controller.text.toString().length >
+                                                    0) {
+                                                  if (showText2) {
+                                                    showText2 = false;
+                                                    valueShow2 = "Hide";
+                                                  } else {
+                                                    showText2 = true;
+                                                    valueShow2 = "Show";
+                                                  }
+                                                }
+                                              });
+                                            },
+                                            child: Container(
+                                              child: Padding(
+                                                padding: EdgeInsets.only(bottom: 8, left: 0),
+                                                child: Text(
+                                                  valueShow2,
+                                                  style: TextStyle(
+                                                      fontSize: 18, color: Colors.colorgreen),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                          flex: 1,
+                                        ),
+                                      ])),
+                                  Divider(height: 1, color: Colors.black),
                                   showLoader
                                       ? Padding(
                                           padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
@@ -228,21 +232,29 @@ class MyHomePage extends State<LoginPage> {
                                           padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
                                           child: GestureDetector(
                                             onTap: () {
-                                              String phone = emailController.text.toString();
+                                              String phone = phoneController.text.toString();
                                               String password = passwordController.text.toString();
+                                              String cPassword =
+                                                  password2Controller.text.toString();
 
                                               if (phone.length > 0 &&
                                                   phone.length == 10 &&
-                                                  password.length > 3) {
+                                                  password.length > 3 &&
+                                                  cPassword == password) {
                                                 print("Phone: $phone Password: $password");
                                                 setState(() {
                                                   showLoader = true;
                                                 });
-                                                bloc.fetchData(phone, password);
+                                                bloc.fetchData(phone);
+                                                passwordObserver(context);
                                               } else {
                                                 if (phone.length < 10 || phone.length > 10) {
                                                   Toast.show(
                                                       "Enter 10 digit mobile number", context,
+                                                      duration: Toast.LENGTH_SHORT,
+                                                      gravity: Toast.BOTTOM);
+                                                } else if (password != cPassword) {
+                                                  Toast.show("Passowrd not matched", context,
                                                       duration: Toast.LENGTH_SHORT,
                                                       gravity: Toast.BOTTOM);
                                                 } else {
@@ -261,61 +273,16 @@ class MyHomePage extends State<LoginPage> {
                                                 width: double.infinity,
                                                 height: 60,
                                                 child: Center(
-                                                  child: new Text("Sign In",
+                                                  child: new Text("Submit",
                                                       style: new TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 20,
                                                       )),
-//                                colorBrightness: Brightness.dark,
-//                                onPressed: () {
-//                                  if (emailController.text == "" &&
-//                                      passwordController.text == "") {
-////                              Navigator.push(
-////                                context,
-////                                new MaterialPageRoute(
-////                                    builder: (context) => new DashBoard()),
-////                              );
-//                                  } else {
-//                                    //_showDialog(context);
-//                                  }
-//                                },
-//                                color: Colors.green,
                                                 ),
                                               ),
                                             ),
                                           ),
                                         ),
-                                  Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-                                    child: Align(
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Text(
-                                            "Don't have an account?",
-                                            style: TextStyle(fontSize: 16, color: Colors.black),
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              Navigator.push(
-                                                context,
-                                                new MaterialPageRoute(
-                                                    builder: (context) => new SignUp()),
-                                              );
-                                            },
-                                            child: Text(
-                                              "Sign Up",
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.colorgreen,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      alignment: Alignment.center,
-                                    ),
-                                  ),
                                 ],
                               )),
                         ],
@@ -327,5 +294,29 @@ class MyHomePage extends State<LoginPage> {
         ],
       ),
     );
+  }
+
+  void passwordObserver(BuildContext context) {
+    bloc.phoneData.listen((res) {
+      setState(() {
+        showLoader = false;
+      });
+      var obj = jsonDecode(res);
+      if (obj['status'] == "true") {
+        Navigator.of(context).pop();
+        Navigator.push(
+          context,
+          new MaterialPageRoute(
+            builder: (context) => PinViewUpdatePage(
+                  otp: obj['otp'],
+                  phone: phoneController.text.toString(),
+                  password: passwordController.text.toString(),
+                ),
+          ),
+        );
+      } else {
+        Toast.show(obj['msg'], context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
   }
 }
