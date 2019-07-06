@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nfresh/DashBoard.dart';
 import 'package:nfresh/bloc/otp_bloc.dart';
 import 'package:pin_view/pin_view.dart';
+import 'package:toast/toast.dart';
 
 class PinViewPage extends StatefulWidget {
   final id;
@@ -17,32 +18,11 @@ class PinState extends State<PinViewPage> {
 
   bool showLoader = false;
 
+  String enteredPin = "";
+
   @override
   void initState() {
     super.initState();
-    bloc.searchedData.listen((response) {
-      if (response.status == "true") {
-        if (response.activate == 0) {
-          Scaffold.of(context).showSnackBar(
-            SnackBar(
-              content: Text(response.msg),
-            ),
-          );
-        } else {
-          Navigator.of(context).pop();
-          Navigator.pushReplacement(
-            context,
-            new MaterialPageRoute(builder: (context) => DashBoard()),
-          );
-        }
-      } else {
-        Scaffold.of(context).showSnackBar(
-          SnackBar(
-            content: Text(response.msg),
-          ),
-        );
-      }
-    });
   }
 
   @override
@@ -94,7 +74,9 @@ class PinState extends State<PinViewPage> {
                       autoFocusFirstField: false,
                       obscureText: true,
                       submit: (String pin) {
-                        verifyOtpWebservice(pin, widget.id);
+                        setState(() {
+                          enteredPin = pin;
+                        });
                       } // gets triggered when all the fields are filled
 
                       // gets triggered when all the fields are filled
@@ -132,29 +114,23 @@ class PinState extends State<PinViewPage> {
               padding: const EdgeInsets.fromLTRB(64, 8, 64, 16),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (context) => DashBoard()),
-                      ModalRoute.withName("/DashBoard"));
-//                  Navigator.push(
-//                    context,
-//                    new MaterialPageRoute(
-//                        builder: (context) => new DashBoard()),
-//                  );
+                  if (enteredPin.length == 4) {
+                    verifyOtpWebservice(enteredPin, widget.id, context);
+                  } else {
+                    Toast.show("Enter valid OTP", context,
+                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                  }
                 },
-                child: Container(
-                  decoration: new BoxDecoration(
-                      borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
-                      color: Colors.colorgreen),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 60,
-                    child: Center(
-                      child: new Text("Verify",
-                          style: new TextStyle(
-                            color: Colors.white,
-                            fontSize: 20,
-                          )),
+                child: showLoader
+                    ? Container(
+                        decoration: new BoxDecoration(
+                            borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                            color: Colors.colorgreen),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 60,
+                          child: Center(
+                            child: CircularProgressIndicator(),
 //                                colorBrightness: Brightness.dark,
 //                                onPressed: () {
 //                                  if (emailController.text == "" &&
@@ -169,9 +145,39 @@ class PinState extends State<PinViewPage> {
 //                                  }
 //                                },
 //                                color: Colors.green,
-                    ),
-                  ),
-                ),
+                          ),
+                        ),
+                      )
+                    : Container(
+                        decoration: new BoxDecoration(
+                            borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                            color: Colors.colorgreen),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 60,
+                          child: Center(
+                            child: new Text("Verify",
+                                style: new TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
+                                )),
+//                                colorBrightness: Brightness.dark,
+//                                onPressed: () {
+//                                  if (emailController.text == "" &&
+//                                      passwordController.text == "") {
+////                              Navigator.push(
+////                                context,
+////                                new MaterialPageRoute(
+////                                    builder: (context) => new DashBoard()),
+////                              );
+//                                  } else {
+//                                    //_showDialog(context);
+//                                  }
+//                                },
+//                                color: Colors.green,
+                          ),
+                        ),
+                      ),
               ),
             ),
           )
@@ -180,10 +186,28 @@ class PinState extends State<PinViewPage> {
     );
   }
 
-  void verifyOtpWebservice(String pin, id) {
+  void verifyOtpWebservice(String pin, id, context) {
     setState(() {
       showLoader = true;
     });
     bloc.fetchSearchData(id, pin);
+    bloc.searchedData.listen((response) {
+      setState(() {
+        showLoader = false;
+      });
+      if (response.status == "true") {
+        if (response.activate == 0) {
+          Toast.show(response.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        } else {
+          Navigator.of(context).pop();
+          Navigator.pushReplacement(
+            context,
+            new MaterialPageRoute(builder: (context) => DashBoard()),
+          );
+        }
+      } else {
+        Toast.show(response.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
   }
 }

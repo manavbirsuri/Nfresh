@@ -5,6 +5,10 @@ import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/cart_bloc.dart';
 import 'package:nfresh/bloc/check_inventory_bloc.dart';
 import 'package:nfresh/bloc/checksum_bloc.dart';
+import 'package:nfresh/bloc/cities_bloc.dart';
+import 'package:nfresh/bloc/update_address_bloc.dart';
+import 'package:nfresh/models/area_model.dart';
+import 'package:nfresh/models/city_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/resources/database.dart';
@@ -16,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
 import 'WalletPage.dart';
+import 'login.dart';
 
 class CartPage extends StatefulWidget {
   @override
@@ -41,6 +46,14 @@ class _MyCustomFormState extends State<CartPage> {
   var blocInventory = CheckInventoryBloc();
   List<Map<String, dynamic>> lineItems = [];
 
+  List<CityModel> cities = [];
+  List<AreaModel> areas = [];
+  List<AreaModel> cityAreas = [];
+  CityModel selectedCity;
+  AreaModel selectedArea;
+
+  var blocCity = CityBloc();
+
   Map<String, dynamic> mapPayTm = {
     'MID': "apXePW28170154069075",
     'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
@@ -54,32 +67,27 @@ class _MyCustomFormState extends State<CartPage> {
     'CALLBACK_URL': ""
   };
   var blocCheck = ChecksumBloc();
+  var blocAddress = UpdateAddressBloc();
   var prefs = SharedPrefs();
-
   String checksum = "";
-
   String orderId = "";
-
   List<Product> mProducts = [];
-
   bool isLoadingCart = true;
-  var address = "Akshya nagar 1st block, 1st Cross, Rammurty nagar, Banglore-560016";
+  var address = "No Address";
+
+  var addressController = TextEditingController();
+
+  ProgressDialog dialog;
   @override
   void initState() {
     super.initState();
-
-    setState(() {
-      checkIfPromoSaved().then((value) {
-        setState(() {
-          check = value;
-        });
-      });
-    });
-
-    prefs.getProfile().then((onValue) {
-      profile = onValue;
-      walletBalance = profile.walletCredits;
-    });
+    checkIfPromoSaved();
+//      checkIfPromoSaved().then((value) {
+//        setState(() {
+//          check = value;
+//        });
+//      });
+    getProfileDetail();
     bloc.fetchData();
     bloc.catProductsList.listen((list) {
       setState(() {
@@ -88,6 +96,43 @@ class _MyCustomFormState extends State<CartPage> {
       });
     });
     //blocInventory.fetchData(map);
+    blocCity.fetchData();
+    blocCity.cities.listen((res) {
+      setState(() {
+        this.cities = res.cities;
+        for (int i = 0; i < cities.length; i++) {
+          var city = cities[i];
+          if (profile.city == city.id) {
+            selectedCity = city;
+          }
+        }
+
+        this.areas = res.areas;
+        for (int i = 0; i < areas.length; i++) {
+          var area = areas[i];
+          if (profile.area == area.id) {
+            selectedArea = area;
+          }
+        }
+
+        getCityAreas(selectedCity);
+      });
+    });
+  }
+
+  void getCityAreas(CityModel selectedCity) {
+    cityAreas = [];
+    for (int i = 0; i < areas.length; i++) {
+      var modelArea = areas[i];
+      if (modelArea.cityId == selectedCity.id) {
+        cityAreas.add(modelArea);
+      }
+    }
+    if (cityAreas.length > 0) {
+      selectedArea = cityAreas[0];
+    } else {
+      selectedArea = null;
+    }
   }
 
   @override
@@ -142,77 +187,103 @@ class _MyCustomFormState extends State<CartPage> {
                   ),
 
                   // Cart Bottom bar
-                  Column(children: <Widget>[
-                    Container(
-                      height: 65,
-                      color: Colors.colorlightgreyback,
-                      padding: EdgeInsets.all(4),
-                      child: Row(
-                        children: <Widget>[
-                          Flexible(
-                            child: GestureDetector(
-                              child: Container(
-                                child: Column(
-                                  children: <Widget>[
-                                    // Flexible(
-                                    Column(
-                                      children: <Widget>[
-                                        Text(
-                                          '₹$checkoutTotal',
-                                          style:
-                                              TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                                        ),
-                                        Text(
-                                          'Total amount',
-                                          style: TextStyle(
-                                            //  fontSize: 14,
-                                            color: Colors.colorPink,
+                  mProducts.length > 0
+                      ? Column(children: <Widget>[
+                          Container(
+                            height: 55,
+                            color: Colors.colorlightgreyback,
+                            //  padding: EdgeInsets.all(4),
+                            child: Row(
+                              children: <Widget>[
+                                Flexible(
+                                  child: GestureDetector(
+                                    child: Container(
+                                      child: Column(
+                                        children: <Widget>[
+                                          // Flexible(
+                                          Column(
+                                            children: <Widget>[
+                                              Text(
+                                                '₹$checkoutTotal',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold, fontSize: 21),
+                                              ),
+                                              Text(
+                                                'Total amount',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.colorPink,
+                                                ),
+                                              )
+                                            ],
+                                            mainAxisAlignment: MainAxisAlignment.center,
                                           ),
-                                        )
-                                      ],
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                          //flex: 1,
+                                          // ),
+                                        ],
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                      ),
                                     ),
-                                    //flex: 1,
-                                    // ),
-                                  ],
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                ),
-                              ),
-                              onTap: () {
+                                    onTap: () {
 //                      Scaffold.of(context).showSnackBar(SnackBar(
 //                        content: Text('View details Coming soon'),
 //                        duration: Duration(seconds: 1),
 //                      ));
-                              },
-                            ),
-                            flex: 1,
-                          ),
-                          Flexible(
-                            child: GestureDetector(
-                              child: Container(
-                                color: Colors.colorgreen,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Flexible(
-                                      child: Row(
+                                    },
+                                  ),
+                                  flex: 1,
+                                ),
+                                Flexible(
+                                  child: GestureDetector(
+                                    child: Container(
+                                      color: Colors.colorgreen,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: <Widget>[
-                                          Text(
-                                            'Place Order',
-                                            style: TextStyle(fontSize: 18, color: Colors.white),
+                                          Flexible(
+                                            child: Row(
+                                              children: <Widget>[
+                                                Text(
+                                                  'Place Order',
+                                                  style:
+                                                      TextStyle(fontSize: 18, color: Colors.white),
+                                                ),
+                                              ],
+                                              mainAxisAlignment: MainAxisAlignment.center,
+                                            ),
+                                            flex: 1,
                                           ),
                                         ],
-                                        mainAxisAlignment: MainAxisAlignment.center,
                                       ),
-                                      flex: 1,
                                     ),
-                                  ],
-                                ),
-                              ),
-                              onTap: () async {
-                                getCheckSum(context);
+                                    onTap: () async {
+                                      if (profile != null) {
+                                        if (totalAmount > 0) {
+                                          getCheckSum(context);
+                                        } else {
+                                          Map<String, dynamic> data = {
+                                            'total': checkoutTotal,
+                                            'address': address,
+                                            'city': profile.city,
+                                            'area': profile.area,
+                                            'type': profile.type,
+                                            'discount': discount,
+                                            'wallet_use_amount': walletDiscount,
+                                          };
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => PaymentSuccessPage(
+                                                      response: response,
+                                                      cartExtra: data,
+                                                    ),
+                                              ));
+                                        }
+                                      } else {
+                                        showAlertMessage(context);
+                                      }
 //                                try {
 //
 //                                  final String result = await platform
@@ -224,14 +295,15 @@ class _MyCustomFormState extends State<CartPage> {
 //
 //                                print("RES: $response");
 //                                handlePayTmResponse(response, context);
-                              },
+                                    },
+                                  ),
+                                  flex: 1,
+                                ),
+                              ],
                             ),
-                            flex: 1,
                           ),
-                        ],
-                      ),
-                    ),
-                  ]),
+                        ])
+                      : Container(),
                 ],
               ),
             ))
@@ -307,14 +379,16 @@ class _MyCustomFormState extends State<CartPage> {
                                           fontWeight: FontWeight.bold),
                                       textAlign: TextAlign.start,
                                     ),
-                                    Text(
-                                      '₹${product.displayPrice}',
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          color: Colors.colororange,
-                                          decoration: TextDecoration.lineThrough),
-                                      textAlign: TextAlign.start,
-                                    ),
+                                    product.selectedPacking.displayPrice > 0
+                                        ? Text(
+                                            '₹${getCalculatedPrice(product)}',
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.colororange,
+                                                decoration: TextDecoration.lineThrough),
+                                            textAlign: TextAlign.start,
+                                          )
+                                        : Container(),
                                   ]),
                             ),
                             Padding(
@@ -325,7 +399,7 @@ class _MyCustomFormState extends State<CartPage> {
                                 children: <Widget>[
                                   Container(
                                     height: 32,
-                                    width: 115,
+                                    width: 105,
                                     decoration: myBoxDecoration3(),
                                     child: Center(
                                       child: Padding(
@@ -379,10 +453,7 @@ class _MyCustomFormState extends State<CartPage> {
                           children: <Widget>[
                             GestureDetector(
                               onTap: () {
-                                setState(() {
-                                  _database.remove(product);
-                                  products.removeAt(position);
-                                });
+                                showMessage(context, product, products, position);
                               },
                               child: Padding(
                                 padding: EdgeInsets.only(right: 8, left: 16, bottom: 16),
@@ -473,7 +544,7 @@ class _MyCustomFormState extends State<CartPage> {
                             Padding(
                               padding: EdgeInsets.only(right: 8, left: 8, top: 16),
                               child: Container(
-                                width: 115,
+                                width: 104,
                                 //color: Colors.grey,
                                 child: Padding(
                                   padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -486,20 +557,22 @@ class _MyCustomFormState extends State<CartPage> {
                                           children: <Widget>[
                                             GestureDetector(
                                               onTap: () {
-                                                setState(() {
-                                                  decrementCount(product, products);
+                                                decrementCount(product, products, position);
+                                                Future.delayed(const Duration(milliseconds: 2000),
+                                                    () {
+                                                  calculateTotal(products);
                                                 });
                                               },
                                               child: Container(
-                                                padding: EdgeInsets.only(left: 4),
+                                                padding: EdgeInsets.only(left: 0),
                                                 // color: Colors.white,
                                                 child: Container(
                                                   decoration: myBoxDecoration2(),
-                                                  padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                  padding: EdgeInsets.fromLTRB(9, 0, 9, 0),
                                                   child: Image.asset(
                                                     'assets/minus.png',
-                                                    height: 12,
-                                                    width: 12,
+                                                    height: 10,
+                                                    width: 10,
                                                   ),
                                                 ),
                                               ),
@@ -521,6 +594,13 @@ class _MyCustomFormState extends State<CartPage> {
                                             GestureDetector(
                                               onTap: () {
                                                 setState(() {
+                                                  if (walletDiscount > totalAmount) {
+                                                    setState(() {
+                                                      walletDiscount = 0;
+                                                      checkoutTotal =
+                                                          totalAmount - discount - walletDiscount;
+                                                    });
+                                                  }
                                                   incrementCount(products[position]);
                                                 });
                                               },
@@ -529,11 +609,11 @@ class _MyCustomFormState extends State<CartPage> {
                                                 padding: EdgeInsets.only(right: 0),
                                                 child: Container(
                                                   decoration: myBoxDecoration2(),
-                                                  padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                  padding: EdgeInsets.fromLTRB(9, 0, 9, 0),
                                                   child: Image.asset(
                                                     'assets/plus.png',
-                                                    height: 12,
-                                                    width: 12,
+                                                    height: 10,
+                                                    width: 10,
                                                   ),
                                                 ),
                                               ),
@@ -586,14 +666,16 @@ class _MyCustomFormState extends State<CartPage> {
                   if (check.isEmpty) {
                     Navigator.push(
                       context,
-                      new MaterialPageRoute(builder: (context) => new PromoCodePage()),
+                      new MaterialPageRoute(
+                          builder: (context) => new PromoCodePage(
+                                total: totalAmount,
+                              )),
                     ).then((value) {
-                      setState(() {
-                        checkIfPromoSaved().then((value) {
-                          check = value;
-                          discount = 20;
-                        });
-                      });
+                      checkIfPromoSaved();
+//                        checkIfPromoSaved().then((value) {
+//                          check = value;
+//                          // discount = 20;
+//                        });
                     });
                   } else {
                     removePromoFromPrefs();
@@ -671,11 +753,17 @@ class _MyCustomFormState extends State<CartPage> {
                   } else {
 //                    Toast.show("Insufficiant Balance in Wallet.", context,
 //                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => WalletPage(),
-                        ));
+                    if (profile == null) {
+                      showAlertMessage(context);
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => WalletPage(),
+                          )).then((value) {
+                        getProfileDetail();
+                      });
+                    }
                   }
                 });
               },
@@ -891,6 +979,7 @@ class _MyCustomFormState extends State<CartPage> {
             ),
           ),
           ListTile(
+            // contentPadding: EdgeInsets.only(bottom: 0),
             title: Text(
               'SHIPPING ADDRESS',
               style: TextStyle(fontSize: 16, color: Colors.colorgreen),
@@ -902,7 +991,11 @@ class _MyCustomFormState extends State<CartPage> {
               ],
             ),
             onTap: () {
-              _showAddressDialog(context);
+              if (profile == null) {
+                showAlertMessage(context);
+              } else {
+                _showAddressDialog(context);
+              }
             },
           ),
 //          Padding(
@@ -916,6 +1009,7 @@ class _MyCustomFormState extends State<CartPage> {
 //            ),
 //          ),
           ListTile(
+            //  contentPadding: EdgeInsets.only(top: 0),
             title: Text(
               address,
               style: TextStyle(color: Colors.colorlightgrey),
@@ -975,42 +1069,109 @@ class _MyCustomFormState extends State<CartPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
 //    print('Pressed $counter times.');
-    check = await prefs.getString('promoApplies') ?? "";
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() {
+        check = prefs.getString('promoApplies') ?? "";
+        discount = prefs.getInt('discount') ?? 0;
+        print("Saved Discount: $discount");
+        if (discount > 0) {
+          appliedValue = "Promo code applied";
+        } else {
+          appliedValue = "Apply promo code";
+        }
+      });
+    });
 
-    if (check.isEmpty) {
-      discount = 0;
-      appliedValue = "Apply promo code";
-    } else {
-      discount = 20;
-      appliedValue = "Promo code applied";
-    }
+//    if (check.isEmpty) {
+//      discount = 0;
+//      appliedValue = "Apply promo code";
+//    } else {
+//      discount = 20;
+//      appliedValue = "Promo code applied";
+//    }
     // });
     return check;
   }
 
+  void showMessage(context, product, List<Product> products, int position) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text("Are you sure you want to clear this product from the cart?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                setState(() {
+                  _database.remove(product);
+                  products.removeAt(position);
+                  if (products.length == 0) {
+                    setState(() {
+                      saveToPrefs(0);
+                      discount = 0;
+                      walletDiscount = 0;
+                    });
+                  }
+                });
+              },
+            ),
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  saveToPrefs(int discount) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('promoApplies', "");
+    await prefs.setInt("discount", discount);
+  }
+
   Future removePromoFromPrefs() async {
-    setState(() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('promoApplies', "");
+    await prefs.setInt('discount', 0);
+    setState(() {
       check = "";
+      discount = 0;
       appliedValue = "Apply promo code";
-      SharedPreferences prefs = await SharedPreferences.getInstance();
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
-      await prefs.setString('promoApplies', "");
     });
   }
 
-  Future<String> getBalance() async {
+  getBalance() async {
     setState(() async {
       SharedPreferences prefs = await SharedPreferences.getInstance();
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
 //    print('Pressed $counter times.');
       String vv = await prefs.getString('walletBal') ?? "";
-      print("GGGGGGGGGGGGGWWWW $vv ");
-      if (profile.walletCredits > int.parse(vv)) {
-        walletDiscount = int.parse(vv);
+      if (vv == "0") {
+        return vv;
+      }
+      if (profile.walletCredits >= int.parse(vv)) {
+        if (checkoutTotal >= int.parse(vv)) {
+          walletDiscount = int.parse(vv);
+        } else {
+          showAlert("Amount should not be more than your cart total.", context);
+//          Toast.show("Amount should not be more than your cart total.", context,
+//              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        }
       } else {
         vv = "0";
-        Toast.show("Amount is more than Balance in Wallet.", context,
-            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        showAlert("Amount is more than Balance in Wallet.", context);
+//        Toast.show("Amount is more than Balance in Wallet.", context,
+//            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       }
       return vv;
     });
@@ -1055,14 +1216,13 @@ class _MyCustomFormState extends State<CartPage> {
     }
   }
 
-  void decrementCount(Product product, List<Product> products) {
+  void decrementCount(Product product, List<Product> products, position) {
     if (product.count > 1) {
       product.count = product.count - 1;
       _database.update(product);
     } else if (product.count == 1) {
-      product.count = product.count - 1;
-      _database.remove(product);
-      products.remove(product);
+      // product.count = product.count - 1;
+      showMessage(context, product, products, position);
     }
     // remove from database
   }
@@ -1073,6 +1233,22 @@ class _MyCustomFormState extends State<CartPage> {
       totalAmount += (product.selectedPacking.price * product.count);
     }
 
+//    if (walletDiscount > totalAmount) {
+//      setState(() {
+//        walletDiscount = 0;
+//      });
+//    }
+    if (walletDiscount + discount > totalAmount ||
+        discount > totalAmount ||
+        walletDiscount > totalAmount) {
+      setState(() {
+        saveToPrefs(0);
+        discount = 0;
+        walletDiscount = 0;
+        check = "";
+        removePromoFromPrefs();
+      });
+    }
     checkoutTotal = totalAmount - discount - walletDiscount;
   }
 
@@ -1085,8 +1261,13 @@ class _MyCustomFormState extends State<CartPage> {
 
   Widget noDataView() {
     return Container(
-      child: Column(
-        children: <Widget>[Text("No item in your cart")],
+      width: double.infinity,
+      height: 400,
+      child: Center(
+        child: Text(
+          "No item in your cart",
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+        ),
       ),
     );
   }
@@ -1103,6 +1284,7 @@ class _MyCustomFormState extends State<CartPage> {
         'area': profile.area,
         'type': profile.type,
         'discount': discount,
+        'wallet_use_amount': walletDiscount,
       };
       Navigator.push(
           context,
@@ -1117,15 +1299,15 @@ class _MyCustomFormState extends State<CartPage> {
 
   getCheckSum(context) {
 //    Future.delayed(const Duration(milliseconds: 3000), () {
-    var dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+    dialog = new ProgressDialog(context, ProgressDialogType.Normal);
     dialog.setMessage("Please wait...");
     dialog.show();
     setState(() {
       orderId = "NF${new DateTime.now().millisecondsSinceEpoch}";
       mapPayTm['ORDER_ID'] = orderId;
-      mapPayTm['CUST_ID'] = "Balvinder";
-      mapPayTm['MOBILE_NO'] = "1234567890";
-      mapPayTm['EMAIL'] = "abc@abc.abc";
+      mapPayTm['CUST_ID'] = "C_" + profile.phoneNo;
+      mapPayTm['MOBILE_NO'] = profile.phoneNo;
+      mapPayTm['EMAIL'] = profile.email;
       mapPayTm['TXN_AMOUNT'] = checkoutTotal.toString();
       mapPayTm['CALLBACK_URL'] =
           "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
@@ -1138,9 +1320,6 @@ class _MyCustomFormState extends State<CartPage> {
       platform.invokeMethod('$res::${jsonEncode(mapPayTm)}').then((result) {
         handlePayTmResponse(result, context);
       });
-//      setState(() {
-//        checksum = res;
-//      });
     });
   }
 
@@ -1181,41 +1360,91 @@ class _MyCustomFormState extends State<CartPage> {
                           textInputAction: TextInputAction.done,
                           keyboardType: TextInputType.multiline,
                           maxLines: 3,
-                        ),
-                        /* Padding(
-                          padding: EdgeInsets.only(top: 12, bottom: 12),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              labelText: 'City',
-                              border: OutlineInputBorder(),
-                              hasFloatingPlaceholder: true,
-                            ),
-                            textInputAction: TextInputAction.next,
-                            maxLines: 1,
-                          ),
-                        ),
-                        TextField(
-                          decoration: InputDecoration(
-                            labelText: 'State',
-                            border: OutlineInputBorder(),
-                            hasFloatingPlaceholder: true,
-                          ),
-                          textInputAction: TextInputAction.next,
-                          maxLines: 1,
+                          controller: addressController,
                         ),
                         Padding(
-                          padding: EdgeInsets.only(top: 12),
-                          child: TextField(
-                            decoration: InputDecoration(
-                              labelText: 'Pin Code',
-                              border: OutlineInputBorder(),
-                              hasFloatingPlaceholder: true,
-                            ),
-                            textInputAction: TextInputAction.done,
-                            keyboardType: TextInputType.number,
-                            maxLines: 1,
+                          padding: const EdgeInsets.fromLTRB(0, 24, 0, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "City",
+                                style: TextStyle(
+                                  color: Colors.colorlightgrey,
+                                  fontSize: 12,
+                                ),
+                              )
+                            ],
                           ),
-                        ),*/
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                          child: Center(
+                            child: DropdownButtonFormField<CityModel>(
+                              decoration: InputDecoration.collapsed(hintText: selectedCity.name),
+                              value: null,
+                              items: cities.map((CityModel value) {
+                                return new DropdownMenuItem<CityModel>(
+                                  value: value,
+                                  child: new Text(value.name),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedCity = newValue;
+                                  getCityAreas(newValue);
+                                  Navigator.of(context).pop();
+                                  _showAddressDialog(context);
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        Divider(
+                          height: 1,
+                          color: Colors.colorlightgrey,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 24, 0, 0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "Area",
+                                style: TextStyle(
+                                  color: Colors.colorlightgrey,
+                                  fontSize: 12,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                          child: Center(
+                            child: DropdownButtonFormField<AreaModel>(
+                              decoration: InputDecoration.collapsed(hintText: selectedArea.name),
+                              value: null,
+                              items: cityAreas.map((AreaModel value) {
+                                return new DropdownMenuItem<AreaModel>(
+                                  value: value,
+                                  child: new Text(value.name),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  selectedArea = newValue;
+                                  Navigator.of(context).pop();
+                                  _showAddressDialog(context);
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                        Divider(
+                          height: 1,
+                          color: Colors.colorlightgrey,
+                        ),
                       ],
                     ),
                   ),
@@ -1227,7 +1456,28 @@ class _MyCustomFormState extends State<CartPage> {
                       splashColor: Colors.black12,
                       color: Colors.colorgreen,
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        var localAddress = addressController.text.toString();
+                        if (localAddress.length > 0) {
+                          var dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+                          dialog.setMessage("Please wait...");
+                          dialog.show();
+
+                          blocAddress.fetchData(localAddress, selectedCity.id, selectedArea.id);
+                          blocAddress.profileData.listen((response) {
+                            dialog.hide();
+                            if (response.status == "true") {
+                              Navigator.of(context).pop();
+                              String data = jsonEncode(response.profile);
+                              prefs.saveProfile(data);
+                              getProfileDetail();
+                            }
+                            Toast.show(response.msg, context,
+                                duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                          });
+                        } else {
+                          Toast.show("Address cannot be empty", context,
+                              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                        }
                       },
                       child: Text(
                         'Submit',
@@ -1243,6 +1493,86 @@ class _MyCustomFormState extends State<CartPage> {
         ));
       },
     );
+  }
+
+  void showAlertMessage(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content:
+              new Text("You would need to login in order to proceed. Please click here to Login."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Login"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                goToLogin();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  double getCalculatedPrice(Product product) {
+    return (product.selectedPacking.displayPrice).toDouble();
+  }
+
+  void getProfileDetail() {
+    prefs.getProfile().then((onValue) {
+      setState(() {
+        profile = onValue;
+        walletBalance = profile.walletCredits;
+        address = profile.address;
+        addressController.text = profile.address;
+      });
+    });
+  }
+
+  void showAlert(String msg, BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text(msg),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void goToLogin() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(
+                from: 1,
+              ),
+        )).then((value) {
+      getProfileDetail();
+      blocCity.fetchData();
+    });
   }
 }
 
@@ -1430,86 +1760,96 @@ class _DynamicDialogState extends State<DynamicDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-      Card(
-          child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-          child: Container(
-            height: 70,
-            width: 320,
-            color: Colors.colorgreen,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Center(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        waletb.walletCredits.toString(),
-                        style: TextStyle(color: Colors.white, fontSize: 26),
-                      ),
-                      Text(
-                        "credits",
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ],
+    return Container(
+      child: GestureDetector(
+        onTap: () {
+          saveToPrefs("0");
+          Navigator.of(context).pop();
+        },
+        child: Container(
+            color: Colors.transparent,
+            alignment: Alignment.center,
+            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              Card(
+                  child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: Container(
+                    height: 70,
+                    width: 320,
+                    color: Colors.colorgreen,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.baseline,
+                      textBaseline: TextBaseline.alphabetic,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Center(
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.baseline,
+                            textBaseline: TextBaseline.alphabetic,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                waletb.walletCredits.toString(),
+                                style: TextStyle(color: Colors.white, fontSize: 26),
+                              ),
+                              Text(
+                                "credits",
+                                style: TextStyle(color: Colors.white, fontSize: 20),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            "available balance",
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                Center(
-                  child: Text(
-                    "available balance",
-                    style: TextStyle(color: Colors.white, fontSize: 15),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
+                  child: Container(
+                    width: 300,
+                    child: TextFormField(
+                      keyboardType: TextInputType.number,
+                      controller: textFieldController,
+                      textInputAction: TextInputAction.next,
+                      decoration: InputDecoration(labelText: 'Enter Amount'),
+                    ),
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 16, 0, 0),
-          child: Container(
-            width: 300,
-            child: TextFormField(
-              keyboardType: TextInputType.number,
-              controller: textFieldController,
-              textInputAction: TextInputAction.next,
-              decoration: InputDecoration(labelText: 'Enter Amount'),
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
-          child: GestureDetector(
-            onTap: () {
-              saveToPrefs(textFieldController.text.toString());
-              Navigator.pop(context);
-              // textFieldController.toString();
-            },
-            child: Container(
-              height: 40,
-              width: 150,
-              decoration: new BoxDecoration(
-                  borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
-                  color: Colors.colorgreen),
-              child: Center(
-                child: new Text("Apply",
-                    style: new TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                    )),
-              ),
-            ),
-          ),
-        ),
-      ]))
-    ]));
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
+                  child: GestureDetector(
+                    onTap: () {
+                      saveToPrefs(textFieldController.text.toString());
+                      Navigator.pop(context);
+                      // textFieldController.toString();
+                    },
+                    child: Container(
+                      height: 40,
+                      width: 150,
+                      decoration: new BoxDecoration(
+                          borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                          color: Colors.colorgreen),
+                      child: Center(
+                        child: new Text("Apply",
+                            style: new TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                            )),
+                      ),
+                    ),
+                  ),
+                ),
+              ]))
+            ])),
+      ),
+    );
   }
 
   void saveToPrefs(String string) async {

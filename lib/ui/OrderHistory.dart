@@ -47,19 +47,19 @@ class OrderHistoryState extends State<OrderState> {
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             centerTitle: true,
-            actions: <Widget>[
-              GestureDetector(
-                onTap: () {},
-                child: Container(
-                  padding: EdgeInsets.only(right: 16),
-                  child: Icon(
-                    Icons.filter_list,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                ),
-              )
-            ],
+//            actions: <Widget>[
+//              GestureDetector(
+//                onTap: () {},
+//                child: Container(
+//                  padding: EdgeInsets.only(right: 16),
+//                  child: Icon(
+//                    Icons.filter_list,
+//                    color: Colors.white,
+//                    size: 30,
+//                  ),
+//                ),
+//              )
+//            ],
           ),
           body: Container(
             color: Colors.colorlightgreyback,

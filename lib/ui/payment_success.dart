@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/create_order_bloc.dart';
 import 'package:nfresh/resources/database.dart';
-import 'package:progress_dialog/progress_dialog.dart';
 
 import '../DashBoard.dart';
 
@@ -24,6 +23,8 @@ class PaymentState extends State<PaymentSuccessPage> {
   List<Map<String, dynamic>> lineItems = [];
   var bloc = CreateOrderBloc();
   var dialog;
+
+  bool showLoader = false;
 
   @override
   void initState() {
@@ -46,10 +47,16 @@ class PaymentState extends State<PaymentSuccessPage> {
       });
     }
 
+    Future.delayed(const Duration(milliseconds: 1000), () {
+      if (isSuccess) {
+        placeOrder(widget.cartExtra);
+      }
+    });
     bloc.createOrderResponse.listen((res) {
       var obj = jsonDecode(res);
       String status = obj['status'];
       setState(() {
+        showLoader = false;
         message = obj['msg'];
       });
       if (status == "true") {
@@ -60,9 +67,6 @@ class PaymentState extends State<PaymentSuccessPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (isSuccess) {
-      placeOrder(widget.cartExtra, context);
-    }
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -93,21 +97,23 @@ class PaymentState extends State<PaymentSuccessPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(message),
-                    FlatButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        if (isSuccess) {
-                          Route route = MaterialPageRoute(
-                            builder: (context) => DashBoard(),
-                          );
-                          Navigator.pushReplacement(context, route);
-                        }
-                      },
-                      child: Text(
-                        "Done",
-                        style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-                      ),
-                    )
+                    showLoader
+                        ? Center(child: CircularProgressIndicator())
+                        : FlatButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                              if (isSuccess) {
+                                Route route = MaterialPageRoute(
+                                  builder: (context) => DashBoard(),
+                                );
+                                Navigator.pushReplacement(context, route);
+                              }
+                            },
+                            child: Text(
+                              "Done",
+                              style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                            ),
+                          )
                   ],
                 )
               ],
@@ -118,10 +124,15 @@ class PaymentState extends State<PaymentSuccessPage> {
     );
   }
 
-  void placeOrder(cartExtra, context) {
-    dialog = ProgressDialog(context, ProgressDialogType.Normal);
-    dialog.setMessage("Placing your order.Please wait...");
-    dialog.show();
+  void placeOrder(cartExtra) {
+    // dialog = ProgressDialog(context, ProgressDialogType.Normal);
+    //   dialog.setMessage("Placing your order...");
+    // dialog.show();
+    setState(() {
+      message = "Placing your order. Please wait...";
+      showLoader = true;
+    });
+
     _database.queryAllProducts().then((products) {
       products.forEach((product) {
         Map<String, dynamic> map = {
@@ -131,7 +142,7 @@ class PaymentState extends State<PaymentSuccessPage> {
         };
         lineItems.add(map);
       });
-      bloc.fetchData(lineItems, cartExtra);
+      bloc.fetchData(lineItems, cartExtra, widget.response);
     });
   }
 }

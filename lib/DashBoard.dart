@@ -1,23 +1,39 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/resources/prefrences.dart';
-import 'package:nfresh/ui/HomePage.dart';
+import 'package:nfresh/ui/CategoryDetails.dart';
 import 'package:nfresh/ui/OffersPage.dart';
 import 'package:nfresh/ui/OrderHistory.dart';
+import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:nfresh/ui/Profile.dart';
-import 'package:nfresh/ui/SearchPage.dart';
 import 'package:nfresh/ui/WalletPage.dart';
-import 'package:nfresh/ui/WishListPage.dart';
 import 'package:nfresh/ui/cart.dart';
 import 'package:nfresh/ui/login.dart';
 import 'package:nfresh/ui/notifications.dart';
+import 'package:nfresh/ui/refers_earn.dart';
+import 'package:onesignal/onesignal.dart';
+import 'package:page_indicator/page_indicator.dart';
 
+import 'bloc/get_fav_bloc.dart';
 import 'bloc/home_bloc.dart';
+import 'bloc/logout_bloc.dart';
 import 'bloc/profile_bloc.dart';
+import 'bloc/search_bloc.dart';
+import 'bloc/set_fav_bloc.dart';
 import 'count_listener.dart';
+import 'models/banner_model.dart';
+import 'models/category_model.dart';
+import 'models/packing_model.dart';
+import 'models/product_model.dart';
+import 'models/responses/response_getFavorite.dart';
+import 'models/responses/response_search.dart';
+import 'models/section_model.dart';
 
 void main() => runApp(MyApp());
 
@@ -29,44 +45,59 @@ class MyApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
     return MaterialApp(
+      title: '',
       debugShowCheckedModeBanner: false,
+      theme: ThemeData(primaryColor: Colors.colorgreen, fontFamily: 'Bold'),
       home: DashBoard(),
     );
   }
 }
 
-class DashBoard extends StatelessWidget {
-  // This widget is the root of your application.
+//class DashBoard extends StatelessWidget {
+//  // This widget is the root of your application.
+//  @override
+//  Widget build(BuildContext context) {
+//    return MaterialApp(
+//      home: MyHomePage(title: 'Home'),
+//    );
+//  }
+//}
+
+class DashBoard extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: '',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(primaryColor: Colors.colorgreen, fontFamily: 'Bold'),
-      home: MyHomePage(title: 'Home'),
-    );
-  }
+  _MyHomePageState createState() => _MyHomePageState("Home");
 }
 
-class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-
-  @override
-  _MyHomePageState createState() => _MyHomePageState(title);
-}
-
-class _MyHomePageState extends State<MyHomePage> implements CountListener {
+class _MyHomePageState extends State<DashBoard> implements CountListener {
   String title;
   final GlobalKey<ScaffoldState> _scaffoldKey = new GlobalKey<ScaffoldState>();
+  TextEditingController editingController = TextEditingController();
   var _curIndex = 0;
   var bloc = HomeBloc();
   var blocProfile = ProfileBloc();
+  var blocFav = SetFavBloc();
+  var blocFavGet = GetFavBloc();
+  var blocSearch = SearchBloc();
+  var _pageController = new PageController();
+  var _pageControllerOffers = new PageController();
   var _prefs = SharedPrefs();
   var _database = DatabaseHelper.instance;
+  var showLoader = true;
+  var showLoaderFav = true;
+
+  var viewList = false;
+  var viewGrid = true;
+  var gridImage = 'assets/selected_grid.png';
+  var listImage = 'assets/unselected_list.png';
 
   int _count = 0;
   ProfileModel profile;
+  ResponseHome homeResponse;
+  ResponseGetFav favResponse;
+
+  var showLoaderSearch = true;
+
+  ResponseSearch responseSearch;
 
   _MyHomePageState(String title) {
     this.title = title;
@@ -83,21 +114,136 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
 
   initState() {
     super.initState();
-    print("initState was called");
+
     bloc.fetchHomeData();
-    blocProfile.fetchData();
-    blocProfile.profileData;
+    bloc.homeData.listen((response) {
+      homeResponse = response;
+      setState(() {
+        showLoader = false;
+      });
+      blocProfile.fetchData();
+      profileObserver();
+
+      blocFavGet.fetchFavData();
+      favObserver();
+    });
     getCartCount();
-    Future.delayed(const Duration(milliseconds: 1000), () async {
-      profile = await _prefs.getProfile();
-      print("PROFILE : $profile");
+
+    blocSearch.searchedData.listen((data) {
+      setState(() {
+        showLoaderSearch = false;
+      });
+      responseSearch = data;
+      updateSearchProducts();
+    });
+    OneSignal.shared.init("fddecd6c-3940-472d-a65d-4200ae829891");
+  }
+
+  Future updateProducts() async {
+    for (int i = 0; i < homeResponse.sections.length; i++) {
+      // var products = snapshot.sections[i].products;
+      for (int j = 0; j < homeResponse.sections[i].products.length; j++) {
+        var product = await _database.queryConditionalProduct(homeResponse.sections[i].products[j]);
+        if (product != null) {
+          product.selectedDisplayPrice = getCalculatedPrice(product);
+          setState(() {
+            homeResponse.sections[i].products[j] = product;
+          });
+        } else {
+          setState(() {
+            homeResponse.sections[i].products[j].count = 0;
+          });
+        }
+      }
+    }
+  }
+
+  Future updateFavProducts() async {
+    if (favResponse != null && favResponse.products != null && favResponse.products.length > 0) {
+      for (int i = 0; i < favResponse.products.length; i++) {
+        var product = await _database.queryConditionalProduct(favResponse.products[i]);
+        if (product != null) {
+          product.selectedDisplayPrice = getCalculatedPrice(product);
+          setState(() {
+            favResponse.products[i] = product;
+          });
+        } else {
+          setState(() {
+            favResponse.products[i].count = 0;
+          });
+        }
+      }
+    }
+  }
+
+  Future updateSearchProducts() async {
+    if (responseSearch != null &&
+        responseSearch.products != null &&
+        responseSearch.products.length > 0) {
+      for (int i = 0; i < responseSearch.products.length; i++) {
+        var product = await _database.queryConditionalProduct(responseSearch.products[i]);
+        if (product != null) {
+          product.selectedDisplayPrice = getCalculatedPrice(product);
+          setState(() {
+            responseSearch.products[i] = product;
+          });
+        } else {
+          setState(() {
+            responseSearch.products[i].count = 0;
+          });
+        }
+      }
+    }
+  }
+
+  void favObserver() {
+    blocFavGet.favList.listen((resFav) {
+      setState(() {
+        showLoaderFav = false;
+      });
+      favResponse = resFav;
+      updateFavProducts();
+    });
+  }
+
+  void profileObserver() {
+    blocProfile.profileData.listen((res) {
+      print("Profile Status = " + res.status);
+      if (res.status == "true") {
+        setState(() {
+          profile = res.profile;
+        });
+
+        _prefs.isFirstTime().then((isFirst) {
+          print("First time = $isFirst");
+          if (isFirst && res.profile.type != 1) {
+            _database.clearCart();
+            showMessage(context);
+            getCartCount();
+          }
+
+          String profileData = jsonEncode(res.profile);
+          _prefs.saveProfile(profileData);
+          _prefs.saveFirstTime(false);
+          // getProfileDetail();
+        });
+      }
     });
   }
 
   Future getCartCount() async {
     var count = await _database.getCartCount();
     setState(() {
+      print("COUNT: $count");
       _count = count;
+    });
+  }
+
+  void getProfileDetail() {
+    _prefs.getProfile().then((onValue) {
+      setState(() {
+        profile = onValue;
+      });
     });
   }
 
@@ -109,18 +255,46 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
     });
   }
 
-  _getDrawerItemWidget(int pos, AsyncSnapshot<ResponseHome> snapshot) {
+  _getDrawerItemWidget(int pos, ResponseHome snapshot) {
     switch (pos) {
       case 0:
-        return new HomePage(data: snapshot, listener: this);
+        return Container(
+          color: Colors.white,
+          child: Column(
+            // mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                child: homeWidget(snapshot),
+//                child: HomePage(
+//                  data: snapshot,
+//                  listener: this,
+//                ),
+              )
+            ],
+          ),
+        );
+      // return new HomePage(data: snapshot, listener: this);
       case 1:
-        return new WishListPage(
-          listener: this,
+        // blocFavGet.fetchFavData();
+        return Container(
+          color: Colors.white,
+          child: Column(
+            // mainAxisSize: MainAxisSize.max,
+            children: <Widget>[
+              Expanded(
+                child: wishListWidget(),
+//                child: WishListPage(
+//                  listener: this,
+//                ),
+              )
+            ],
+          ),
         );
       case 2:
         return new OffersPage();
       case 3:
-        return new SearchPage();
+        //return new SearchPage(listener: this);
+        return searchViewWidget();
       default:
         return new Text("Error");
     }
@@ -163,337 +337,257 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
           fit: BoxFit.cover,
         ),
       ),
-      StreamBuilder(
-        stream: bloc.homeData,
-        builder: (context, AsyncSnapshot<ResponseHome> snapshot) {
-          if (snapshot.hasData) {
-            return bodyContent(snapshot);
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          return Center(child: CircularProgressIndicator());
-        },
-      ),
+      Container(
+        // color: Colors.white,
+        child: showLoader
+            ? Container(
+                color: Colors.white,
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : bodyContent(homeResponse),
+        /* child: StreamBuilder(
+          stream: bloc.homeData,
+          builder: (context, AsyncSnapshot<ResponseHome> snapshot) {
+            if (snapshot.hasData) {
+              return bodyContent(snapshot);
+            } else if (snapshot.hasError) {
+              return Text(snapshot.error.toString());
+            }
+            //showMessage(context);
+            return Center(child: CircularProgressIndicator());
+          },
+        ),*/
+        /*child: Column(
+          children: <Widget>[
+            StreamBuilder(
+              stream: bloc.homeData,
+              builder: (context, AsyncSnapshot<ResponseHome> snapshot) {
+                if (snapshot.hasData) {
+                  return bodyContent(snapshot);
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+                //showMessage(context);
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
+          ],
+        ),*/
+      )
     ]);
   }
 
-  Widget bodyContent(AsyncSnapshot<ResponseHome> snapshot) {
-    return Scaffold(
-      key: _scaffoldKey,
-      appBar: AppBar(
-        backgroundColor: Colors.colorgreen.withOpacity(0.0),
-        title: _getTitle(_selectedDrawerIndex),
-        centerTitle: true,
-        leading:
-//          new Image.asset(
-//            "assets/setting.png",
-//            width: 2,
-//            height: 2,
-//          ),
-
-            new IconButton(
-                icon: new Image.asset(
-                  'assets/setting.png',
-                  width: 25,
-                  height: 25,
-                ),
-                onPressed: () => _scaffoldKey.currentState.openDrawer()),
-        actions: [
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => NotificationsPage(),
-                  ));
-            },
-            child: Padding(
-              padding: EdgeInsets.all(8),
-              child: Image.asset(
-                "assets/noti.png",
-                height: 25,
-                width: 25,
-              ),
-            ),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => CartPage(),
-                  )).then((value) {
-                _count = getCartCount() as int;
-              });
-            },
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
-              child: Stack(
-                children: <Widget>[
-                  new Image.asset(
-                    "assets/cart.png",
-                    height: 25,
-                    width: 25,
+  Widget bodyContent(ResponseHome snapshot) {
+    String status = snapshot.status;
+    return status == "true"
+        ? Scaffold(
+            key: _scaffoldKey,
+            appBar: AppBar(
+              backgroundColor: Colors.colorgreen.withOpacity(0.0),
+              title: _getTitle(_selectedDrawerIndex),
+              centerTitle: true,
+              leading: IconButton(
+                  icon: Icon(
+                    Icons.menu,
+                    color: Colors.white,
+                    size: 30.0,
                   ),
-                  _count > 0
-                      ? Positioned(
-                          right: 0,
-                          child: new Container(
-                            padding: EdgeInsets.all(1),
-                            decoration: new BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            constraints: BoxConstraints(
-                              minWidth: 12,
-                              minHeight: 12,
-                            ),
-                            child: new Text(
-                              _count.toString(),
-                              style: new TextStyle(
-                                color: Colors.white,
-                                fontSize: 8,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        )
-                      : Text('')
-                ],
-              ),
+//                  new Image.asset(
+//                    'assets/setting.png',
+//                    width: 25,
+//                    height: 25,
+//                  ),
+                  onPressed: () => _scaffoldKey.currentState.openDrawer()),
+              actions: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NotificationsPage(),
+                        ));
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Image.asset(
+                      "assets/noti.png",
+                      height: 25,
+                      width: 25,
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CartPage(),
+                      ),
+                    ).then((value) {
+                      getCartCount();
+                      updateProducts();
+                      updateFavProducts();
+                      updateSearchProducts();
+                      getProfileDetail();
+                    });
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
+                    child: Stack(
+                      children: <Widget>[
+                        new Image.asset(
+                          "assets/cart.png",
+                          height: 25,
+                          width: 25,
+                        ),
+                        _count > 0
+                            ? Positioned(
+                                right: 0,
+                                child: new Container(
+                                  padding: EdgeInsets.all(1),
+                                  decoration: new BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  constraints: BoxConstraints(
+                                    minWidth: 12,
+                                    minHeight: 12,
+                                  ),
+                                  child: new Text(
+                                    _count.toString(),
+                                    style: new TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 8,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              )
+                            : Text('')
+                      ],
+                    ),
 
 //              child: Image.asset(
 //                "assets/cart.png",
 //                height: 25,
 //                width: 25,
 //              ),
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.colorgreen.withOpacity(0.5),
-      body: _getDrawerItemWidget(_selectedDrawerIndex, snapshot),
-      bottomNavigationBar: _bottomNormal(_curIndex, snapshot),
-      drawer: Drawer(
-        elevation: 8,
-        child: SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: <Widget>[
-                DrawerHeader(
-                  decoration: BoxDecoration(
-                    color: Colors.transparent.withOpacity(0.5),
-                    image: DecorationImage(image: AssetImage('assets/bg.jpg'), fit: BoxFit.fill),
                   ),
-                  margin: EdgeInsets.all(0),
-                  child: Container(
-                    color: Colors.transparent.withOpacity(0.3),
-                    child: GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => profile == null ? LoginPage() : new Profile(),
-                            ));
-                      },
-                      child: Row(
-                        children: <Widget>[
-                          Container(
-                            margin: EdgeInsets.all(12),
-                            padding: EdgeInsets.all(5),
-                            height: 80,
-                            width: 80,
-                            color: Colors.white,
-                            child: Image.asset(
-                              'assets/logo.png',
-                            ),
-                          ),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(
-                                profile == null ? "No name" : profile.name,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.white,
-                                ),
-                                textAlign: TextAlign.start,
-                              ),
-                              Text(
-                                profile == null ? "Please login" : profile.email,
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: profile == null ? Colors.grey : Colors.white,
-                                ),
-                                textAlign: TextAlign.start,
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                  padding: EdgeInsets.all(0),
                 ),
-                Container(
-                  // color: Colors.colorPink,
+              ],
+            ),
+            backgroundColor: Colors.colorgreen.withOpacity(0.5),
+            body: _getDrawerItemWidget(_selectedDrawerIndex, snapshot),
+            bottomNavigationBar: _bottomNormal(_curIndex, snapshot),
+            drawer: Drawer(
+              elevation: 8,
+              child: SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
                   child: Column(
                     children: <Widget>[
-                      ListTile(
-                        leading: Image.asset(
-                          'assets/offer.png',
-                          width: 30.0,
-                          height: 30.0,
+                      DrawerHeader(
+                        decoration: BoxDecoration(
+                          color: Colors.transparent.withOpacity(0.5),
+                          image:
+                              DecorationImage(image: AssetImage('assets/bg.jpg'), fit: BoxFit.fill),
                         ),
-                        title: Text(
-                          "Offers & Promotions",
-                          style: TextStyle(
-                            fontSize: 18,
+                        margin: EdgeInsets.all(0),
+                        child: Container(
+                          color: Colors.transparent.withOpacity(0.3),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => profile == null
+                                        ? LoginPage(
+                                            from: 0,
+                                          )
+                                        : new Profile(),
+                                  ));
+                            },
+                            child: Row(
+                              children: <Widget>[
+                                Container(
+                                  margin: EdgeInsets.all(12),
+                                  padding: EdgeInsets.all(5),
+                                  height: 80,
+                                  width: 80,
+                                  color: Colors.white,
+                                  child: Image.asset(
+                                    'assets/logo.png',
+                                  ),
+                                ),
+                                Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      profile == null ? "No name" : profile.name,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.white,
+                                      ),
+                                      textAlign: TextAlign.start,
+                                    ),
+                                    Text(
+                                      profile == null ? "Please login" : profile.email,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: profile == null ? Colors.grey : Colors.white,
+                                      ),
+                                      textAlign: TextAlign.start,
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
                           ),
                         ),
-                        onTap: () {
-                          /* Navigator.pop(context);
+                        padding: EdgeInsets.all(0),
+                      ),
+                      Container(
+                        // color: Colors.colorPink,
+                        child: Column(
+                          children: <Widget>[
+                            ListTile(
+                              leading: Image.asset(
+                                'assets/offer.png',
+                                width: 30.0,
+                                height: 30.0,
+                              ),
+                              title: Text(
+                                "Offers & Promotions",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                              onTap: () {
+                                /* Navigator.pop(context);
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => new OffersPage(),
                                 ));*/
-                          Navigator.pop(context);
-                          changeTabs(2);
-                        },
-                      ),
-                      Divider(
-                        height: 1,
-                        color: Colors.grey,
-                      ),
-                      ListTile(
-                        leading: Image.asset(
-                          'assets/mywallet.png',
-                          width: 30.0,
-                          height: 30.0,
-                        ),
-                        title: Text(
-                          "My Wallet",
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => WalletPage()));
-                        },
-                      ),
-                      Divider(
-                        height: 1,
-                        color: Colors.grey,
-                      ),
-                      ListTile(
-                        leading: Image.asset(
-                          'assets/fav.png',
-                          width: 30.0,
-                          height: 30.0,
-                        ),
-                        title: Text(
-                          "My Wishlist",
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.pop(context);
-                          changeTabs(1);
-                        },
-                      ),
-                      Divider(
-                        height: 1,
-                        color: Colors.grey,
-                      ),
-                      ListTile(
-                        leading: Image.asset(
-                          'assets/orderhistory.png',
-                          width: 30.0,
-                          height: 30.0,
-                        ),
-                        title: Text(
-                          "Order History",
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.of(context).pop();
-                          Navigator.push(
-                              context, MaterialPageRoute(builder: (context) => OrderHistory()));
-                        },
-                      ),
-                      Divider(
-                        height: 1,
-                        color: Colors.grey,
-                      ),
-                      ListTile(
-                        leading: Image.asset(
-                          'assets/contactus.png',
-                          width: 30.0,
-                          height: 30.0,
-                        ),
-                        title: Text(
-                          "Contact Us",
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        onTap: () {
-//                    Navigator.of(context).pop();
-//                    Navigator.push(
-//                      context,
-//                      MaterialPageRoute(
-//                        builder: (context) => LoginPage(),
-//                      ),
-//                    );
-                        },
-                      ),
-                      Divider(
-                        height: 1,
-                        color: Colors.grey,
-                      ),
-                      ListTile(
-                        leading: Image.asset(
-                          'assets/help.png',
-                          width: 30.0,
-                          height: 30.0,
-                        ),
-                        title: Text(
-                          "Help Center",
-                          style: TextStyle(
-                            fontSize: 18,
-                          ),
-                        ),
-                        onTap: () {
-//                    Navigator.of(context).pop();
-//                    Navigator.push(
-//                      context,
-//                      MaterialPageRoute(
-//                        builder: (context) => TermAndPrivacy(),
-//                      ),
-//                    );
-                        },
-                      ),
-                      Divider(
-                        height: 1,
-                        color: Colors.grey,
-                      ),
-                      profile == null
-                          ? ListTile(
+                                Navigator.pop(context);
+                                changeTabs(2);
+                              },
+                            ),
+                            Divider(
+                              height: 1,
+                              color: Colors.grey,
+                            ),
+                            ListTile(
                               leading: Image.asset(
-                                'assets/logout.png',
+                                'assets/mywallet.png',
                                 width: 30.0,
                                 height: 30.0,
                               ),
                               title: Text(
-                                "Login",
+                                "My Wallet",
                                 style: TextStyle(
                                   fontSize: 18,
                                 ),
@@ -501,43 +595,211 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
                               onTap: () {
                                 Navigator.of(context).pop();
                                 Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => LoginPage(),
-                                  ),
-                                );
+                                    context, MaterialPageRoute(builder: (context) => WalletPage()));
                               },
-                            )
-                          : ListTile(
+                            ),
+                            Divider(
+                              height: 1,
+                              color: Colors.grey,
+                            ),
+                            ListTile(
                               leading: Image.asset(
-                                'assets/logout.png',
+                                'assets/fav.png',
                                 width: 30.0,
                                 height: 30.0,
                               ),
                               title: Text(
-                                "Logout",
+                                "My Wishlist",
                                 style: TextStyle(
                                   fontSize: 18,
                                 ),
                               ),
                               onTap: () {
-                                // logout webservice
-                                _prefs.saveProfile("");
-                                setState(() {
-                                  profile = null;
+                                Navigator.pop(context);
+                                changeTabs(1);
+                              },
+                            ),
+                            Divider(
+                              height: 1,
+                              color: Colors.grey,
+                            ),
+                            ListTile(
+                              leading: Image.asset(
+                                'assets/orderhistory.png',
+                                width: 30.0,
+                                height: 30.0,
+                              ),
+                              title: Text(
+                                "Order History",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => OrderHistory(),
+                                    )).then((onValue) {
+                                  getCartCount();
                                 });
                               },
-                            )
+                            ),
+                            Divider(
+                              height: 1,
+                              color: Colors.grey,
+                            ),
+                            ListTile(
+                              leading: Image.asset(
+                                'assets/contactus.png',
+                                width: 30.0,
+                                height: 30.0,
+                              ),
+                              title: Text(
+                                "Contact Us",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                              onTap: () {
+//                    Navigator.of(context).pop();
+//                    Navigator.push(
+//                      context,
+//                      MaterialPageRoute(
+//                        builder: (context) => LoginPage(),
+//                      ),
+//                    );
+                              },
+                            ),
+                            Divider(
+                              height: 1,
+                              color: Colors.grey,
+                            ),
+                            ListTile(
+                              leading: Image.asset(
+                                'assets/help.png',
+                                width: 30.0,
+                                height: 30.0,
+                              ),
+                              title: Text(
+                                "Help Center",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                              onTap: () {
+//                    Navigator.of(context).pop();
+//                    Navigator.push(
+//                      context,
+//                      MaterialPageRoute(
+//                        builder: (context) => TermAndPrivacy(),
+//                      ),
+//                    );
+                              },
+                            ),
+                            Divider(
+                              height: 1,
+                              color: Colors.grey,
+                            ),
+                            ListTile(
+                              leading: Image.asset(
+                                'assets/help.png',
+                                width: 30.0,
+                                height: 30.0,
+                              ),
+                              title: Text(
+                                "Refers & Earn",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                                if (profile == null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LoginPage(
+                                            from: 0,
+                                          ),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ReferEarnPage(),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                            Divider(
+                              height: 1,
+                              color: Colors.grey,
+                            ),
+                            profile == null
+                                ? ListTile(
+                                    leading: Image.asset(
+                                      'assets/logout.png',
+                                      width: 30.0,
+                                      height: 30.0,
+                                    ),
+                                    title: Text(
+                                      "Login",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      Navigator.of(context).pop();
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => LoginPage(
+                                                from: 0,
+                                              ),
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : ListTile(
+                                    leading: Image.asset(
+                                      'assets/logout.png',
+                                      width: 30.0,
+                                      height: 30.0,
+                                    ),
+                                    title: Text(
+                                      "Logout",
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                    onTap: () {
+                                      // logout webservice
+
+                                      var blocLogout = LogoutBloc();
+                                      blocLogout.fetchData();
+
+                                      _prefs.saveProfile("");
+                                      _prefs.saveFirstTime(true);
+                                      setState(() {
+                                        profile = null;
+                                      });
+                                    },
+                                  ),
+                          ],
+                        ),
+                      )
                     ],
-                  ),
-                )
-              ],
-            )),
-      ),
-    );
+                  )),
+            ),
+          )
+        : noDataView();
   }
 
-  Widget _bottomNormal(int curIndex, AsyncSnapshot<ResponseHome> snapshot) => Container(
+  Widget _bottomNormal(int curIndex, ResponseHome snapshot) => Container(
           child: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
@@ -618,13 +880,29 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
         type: BottomNavigationBarType.fixed,
         currentIndex: _curIndex,
         onTap: (index) {
-          print("GGGGGGGGG  " + index.toString());
+          if (index == 1) {
+            blocFavGet.fetchFavData();
+          }
+
           setState(() {
             _selectedDrawerIndex = index;
             _curIndex = index;
             switch (_curIndex) {
               case 0:
-                _getDrawerItemWidget(0, snapshot);
+                bloc.fetchHomeData();
+                bloc.homeData.listen((response) {
+                  homeResponse = response;
+                  setState(() {
+                    showLoader = false;
+                  });
+                  blocProfile.fetchData();
+                  profileObserver();
+
+                  blocFavGet.fetchFavData();
+                  favObserver();
+                });
+                //_getDrawerItemWidget(0, snapshot);
+                homeWidget(homeResponse);
                 break;
               case 1:
                 _getDrawerItemWidget(1, snapshot);
@@ -639,6 +917,1886 @@ class _MyHomePageState extends State<MyHomePage> implements CountListener {
           });
         },
       ));
+
+  void showMessage(context) {
+    var uType = "";
+    if (profile.type == 2) {
+      uType = "Wholesaler";
+    } else if (profile.type == 3) {
+      uType = " Marriage Palace";
+    }
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text(
+              "Seems like you have logged in using a $uType account. The items in the cart will be removed due to the pricing being different for your account type. Please add the items again in the cart and proceed. "),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Ok"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget noDataView() {
+    return Container(
+      child: Center(
+        child: Text("No Data"),
+      ),
+    );
+  }
+
+  //**************************************************************
+  // Methods for Home page
+  //***************************************************************
+  Widget homeWidget(ResponseHome snapshot) {
+    return SingleChildScrollView(
+        child: Container(
+            color: Colors.colorlightgreyback,
+            child: Stack(children: <Widget>[
+              Column(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  AspectRatio(
+                    aspectRatio: 2 / 1,
+                    child: showTopPager(snapshot.banners),
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.max,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.only(top: 12),
+                        child: Stack(
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                child: Image.asset('assets/ribbon.png'),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "CATEGORIES",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(height: 122, child: showCategories(snapshot.categories)),
+                      Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: Stack(
+                          children: <Widget>[
+                            Align(
+                              alignment: Alignment.center,
+                              child: Container(
+                                child: Image.asset('assets/ribbon.png'),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 4),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "OFFERS & PROMOTIONS",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: Colors.black,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        height: 12,
+                        child: Text(""),
+                      ),
+                      AspectRatio(
+                        aspectRatio: 2 / 1,
+                        //child: showTopPagerOffer(snapshot.offerBanners),
+                        child: Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.horizontal,
+                              itemBuilder: (context, position) {
+                                return Padding(
+                                  padding: EdgeInsets.all(1),
+                                  child: GestureDetector(
+                                    onTap: () {
+//
+                                    },
+                                    child: Card(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(0.0),
+                                      ),
+                                      child: Container(
+                                        height: 200,
+
+                                        //decoration: myBoxDecoration(),
+                                        //       <--- BoxDecoration here
+                                        child: Column(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: <Widget>[
+                                            Flexible(
+                                              child: Image.network(
+                                                snapshot.offerBanners[position].image,
+                                                //list[position].image,
+                                                width: 300,
+                                                height: 500,
+                                                fit: BoxFit.fill,
+                                              ),
+                                              flex: 1,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              },
+                              itemCount: snapshot.offerBanners.length,
+                            )),
+                      ),
+                      Container(
+                        height: 4,
+                        child: Text(""),
+                      ),
+                      Container(child: productsCategories(snapshot.sections)),
+                    ],
+                  ),
+                  //),
+                ],
+              )
+            ])));
+  }
+
+  Widget showTopPager(List<BannerModel> banners) {
+    return PageIndicatorContainer(
+      pageView: new PageView.builder(
+        controller: _pageController,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            child: Image.network(
+              banners[index].image,
+              fit: BoxFit.cover,
+            ),
+          );
+        },
+        // controller: controller,
+        itemCount: banners.length,
+      ),
+      align: IndicatorAlign.bottom,
+      length: banners.length,
+      indicatorSpace: 8.0,
+      padding: const EdgeInsets.all(8),
+      indicatorColor: Colors.grey,
+      indicatorSelectorColor: Colors.green,
+      shape: IndicatorShape.circle(size: 8),
+    );
+  }
+
+  Widget showTopPagerOffer(List<BannerModel> banners) {
+    return new PageIndicatorContainer(
+      pageView: new PageView.builder(
+        controller: _pageControllerOffers,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            child: Image.network(
+              banners[index].image,
+              fit: BoxFit.cover,
+            ),
+          );
+        },
+        // controller: controller,
+        itemCount: banners.length,
+      ),
+      align: IndicatorAlign.bottom,
+      length: banners.length,
+      indicatorSpace: 8.0,
+      padding: const EdgeInsets.all(8),
+      indicatorColor: Colors.grey,
+      indicatorSelectorColor: Colors.green,
+      shape: IndicatorShape.circle(size: 8),
+    );
+  }
+
+  showCategories(List<Category> categories) {
+    return Padding(
+        padding: EdgeInsets.only(top: 8),
+        child: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, position) {
+            return Padding(
+              padding: EdgeInsets.all(1),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) =>
+                                  CategoryDetails(selectedCategory: categories[position])))
+                      .then((value) {
+                    onCartUpdate();
+                    updateProducts();
+                  });
+                },
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(0.0),
+                  ),
+                  child: Container(
+                    width: 100,
+                    height: 100,
+
+                    //decoration: myBoxDecoration(),
+                    //       <--- BoxDecoration here
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Flexible(
+                          child: Image.network(
+                            categories[position].image,
+                            //list[position].image,
+                            height: 120,
+                            width: 120,
+                            fit: BoxFit.fill,
+                          ),
+                          flex: 3,
+                        ),
+                        Flexible(
+                          child: Center(
+                            child: position == 0
+                                ? Text(
+                                    categories[position].name,
+                                    style: TextStyle(fontSize: 14, color: Colors.colorlightgrey),
+                                    textAlign: TextAlign.center,
+                                  )
+                                : Text(
+                                    categories[position].name,
+                                    style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+                                    textAlign: TextAlign.center,
+                                  ),
+                          ),
+                          flex: 1,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+          itemCount: categories.length,
+        ));
+  }
+
+  showProductsCategories(List<Product> products) {
+    return Padding(
+        padding: EdgeInsets.only(top: 8),
+        child: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (context, position) {
+            var product = products[position];
+            return Material(
+              color: Colors.colorlightgreyback,
+              child: product == null
+                  ? Text('')
+                  : Padding(
+                      padding: EdgeInsets.all(4),
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(0.0),
+                        ),
+                        child: Container(
+                          child: Column(
+                            children: <Widget>[
+                              Padding(
+                                padding: EdgeInsets.only(right: 4, left: 0, top: 0),
+                                child: Container(
+                                  width: 168,
+                                  //color: Colors.green,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              if (profile == null) {
+                                                showAlertMessage(context);
+                                              } else {
+                                                if (product.fav == "1") {
+                                                  product.fav = "0";
+                                                } else {
+                                                  product.fav = "1";
+                                                }
+
+                                                blocFav.fetchData(
+                                                    product.fav, product.id.toString());
+                                              }
+                                            });
+                                          },
+                                          child: Container(
+                                            // color: Colors.mygrey,
+                                            padding: EdgeInsets.only(
+                                                bottom: 8, right: 30, top: 8, left: 8),
+                                            child: product != null && product.fav == "1"
+                                                ? Image.asset(
+                                                    'assets/fav_filled.png',
+                                                    width: 20.0,
+                                                    height: 20.0,
+                                                    fit: BoxFit.cover,
+                                                  )
+                                                : Image.asset(
+                                                    'assets/fav.png',
+                                                    width: 20.0,
+                                                    height: 20.0,
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                          )),
+                                      products[position].selectedPacking.displayPrice > 0
+                                          ? Text(
+                                              getOff(products[position]),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colororange,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            )
+                                          : Container(),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProductDetailPage(
+                                              product: product,
+                                            ),
+                                      )).then((value) {
+                                    onCartUpdate();
+                                    updateProducts();
+                                  });
+                                },
+                                child: Column(
+                                  children: <Widget>[
+                                    Image.network(
+                                      product != null ? product.image : "",
+                                      fit: BoxFit.cover,
+                                      height: 80,
+                                    ),
+                                    Text(
+                                      products[position].name,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.colorgreen,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      child: Text(
+                                        products[position].nameHindi,
+                                        style:
+                                            TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                      child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Text(
+                                              "₹" + product.selectedPacking.price.toString() + "  ",
+                                              style: TextStyle(
+                                                fontSize: 18,
+                                                color: Colors.colorlightgrey,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            products[position].selectedPacking.displayPrice > 0
+                                                ? Text(
+                                                    "₹" +
+                                                        products[position]
+                                                            .selectedPacking
+                                                            .displayPrice
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.colororange,
+                                                        decoration: TextDecoration.lineThrough),
+                                                    textAlign: TextAlign.center,
+                                                  )
+                                                : Container(),
+                                          ]),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    Container(
+                                      height: 35,
+                                      width: 120,
+                                      decoration: myBoxDecoration3(),
+                                      child: Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.only(right: 8, left: 8),
+                                          child: DropdownButtonFormField<Packing>(
+                                            decoration: InputDecoration.collapsed(
+                                                hintText: product.selectedPacking.unitQtyShow),
+                                            // value: product.selectedPacking,
+                                            value: null,
+                                            items: product.packing //getQtyList(products[position])
+                                                .map((Packing value) {
+                                              return new DropdownMenuItem<Packing>(
+                                                value: value,
+                                                child: new Text(
+                                                  value.unitQtyShow,
+                                                  style: TextStyle(color: Colors.grey),
+                                                ),
+                                              );
+                                            }).toList(),
+                                            onChanged: (newValue) {
+                                              setState(() {
+                                                products[position].selectedPacking = newValue;
+                                                product.count = 0;
+                                                product.selectedDisplayPrice =
+                                                    getCalculatedPrice(product);
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                                child: Container(
+                                  width: 150,
+                                  //color: Colors.grey,
+                                  child: Padding(
+                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                    child: IntrinsicHeight(
+                                      child: Center(
+                                        child: IntrinsicHeight(
+                                          child: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    decrementCount(products[position]);
+                                                  });
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.only(left: 20),
+                                                  // color: Colors.white,
+                                                  child: Container(
+                                                    decoration: myBoxDecoration2(),
+                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                    child: Image.asset(
+                                                      'assets/minus.png',
+                                                      height: 12,
+                                                      width: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                              Container(
+                                                margin: EdgeInsets.only(
+                                                    left: 8, right: 8, top: 4, bottom: 4),
+                                                child: Center(
+                                                  child: Text(
+                                                    product.count.toString(),
+                                                    style: TextStyle(
+                                                        color: Colors.colorgreen,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 20),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    incrementCount(products[position]);
+                                                  });
+                                                },
+                                                child: Container(
+                                                  //  color: Colors.white,
+                                                  padding: EdgeInsets.only(right: 20),
+                                                  child: Container(
+                                                    decoration: myBoxDecoration2(),
+                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                    child: Image.asset(
+                                                      'assets/plus.png',
+                                                      height: 12,
+                                                      width: 12,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+//                  ),
+                          ),
+                        ),
+                      ),
+                    ),
+            );
+          },
+          itemCount: products.length,
+        ));
+  }
+
+  Widget productsCategories(List<Section> sections) {
+    return Padding(
+        padding: EdgeInsets.only(top: 0),
+        child: ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemBuilder: (context, position) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(top: 8),
+                  child: Stack(
+                    children: <Widget>[
+                      Align(
+                        alignment: Alignment.center,
+                        child: Image.asset('assets/ribbon.png'),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 4),
+                        child: Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            sections[position].title,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                              color: Colors.black,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(height: 335, child: showProductsCategories(sections[position].products)),
+              ],
+//              ),
+            );
+          },
+          itemCount: sections.length,
+        ));
+  }
+
+  BoxDecoration myBoxDecoration() {
+    return BoxDecoration(
+      border: Border.all(color: Colors.colorlightgrey),
+    );
+  }
+
+  BoxDecoration myBoxDecoration2() {
+    return BoxDecoration(
+      border: Border.all(color: Colors.colorgreen, width: 1),
+      borderRadius: BorderRadius.all(Radius.circular(8)),
+    );
+  }
+
+  BoxDecoration myBoxDecoration3() {
+    return BoxDecoration(
+      border: Border.all(color: Colors.colorlightgrey),
+      borderRadius: BorderRadius.all(Radius.circular(8)),
+    );
+  }
+
+  void incrementCount(Product product) {
+    if (product.count < product.inventory) {
+      product.count = product.count + 1;
+      _database.update(product);
+      Future.delayed(const Duration(milliseconds: 500), () {
+        onCartUpdate();
+      });
+    } else {
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text("Available inventory : ${product.inventory}"),
+      ));
+    }
+  }
+
+  void decrementCount(Product product) {
+    if (product.count > 1) {
+      product.count = product.count - 1;
+      _database.update(product);
+    } else if (product.count == 1) {
+      product.count = product.count - 1;
+      _database.remove(product);
+    }
+    Future.delayed(const Duration(milliseconds: 500), () {
+      onCartUpdate();
+    });
+  }
+
+  List<String> getQtyList(Product product) {
+    List<String> qtyList = [];
+    for (int i = 0; i < product.packing.length; i++) {
+      qtyList.add(product.packing[i].unitQtyShow);
+    }
+    return qtyList;
+  }
+
+  String getProductCount(product) {
+    _database.queryConditionalProduct(product).then((onValue) {
+      setState(() {
+        product = onValue;
+      });
+    });
+    return "0";
+  }
+
+  void updateUI() {
+    Future.delayed(const Duration(milliseconds: 2000), () {
+      setState(() {});
+    });
+  }
+
+  // calculate the offer percentage
+  String getOff(Product product) {
+    var salePrice = product.selectedPacking.price;
+    var costPrice = product.selectedPacking.displayPrice;
+    var profit = costPrice - salePrice;
+    var offer = (profit / costPrice) * 100;
+    if (costPrice == 0) {
+      return "";
+    }
+    return "${offer.round()}% off";
+  }
+
+  double getCalculatedPrice(Product product) {
+    return (product.selectedPacking.displayPrice).toDouble();
+  }
+
+//**************************************************************
+// Methods for Wish List page
+//***************************************************************
+
+  Widget wishListWidget() {
+    return Container(
+        color: Colors.white,
+        child: showLoaderFav
+            ? Column(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[Center(child: CircularProgressIndicator())],
+              )
+            : bodyViewFav()
+
+        /*child: StreamBuilder(
+        stream: bloc.favList,
+        builder: (context, AsyncSnapshot<ResponseGetFav> snapshot) {
+          if (snapshot.hasData) {
+            return snapshot.data.products.length > 0 ? mainContent(snapshot) : noDataViewFav();
+          } else if (snapshot.hasError) {
+            return Text(snapshot.error.toString());
+          }
+          return Column(
+            mainAxisSize: MainAxisSize.max,
+            children: <Widget>[Center(child: CircularProgressIndicator())],
+          );
+        },
+      ),*/
+        );
+  }
+
+  Widget bodyViewFav() {
+    return favResponse.products != null && favResponse.products.length > 0
+        ? mainContent(favResponse.products)
+        : noDataViewFav();
+  }
+
+  Widget mainContent(List<Product> products) {
+    return Stack(children: <Widget>[
+      Container(
+        padding: EdgeInsets.only(bottom: 42),
+        child: ListView.builder(
+          shrinkWrap: true,
+          scrollDirection: Axis.vertical,
+          itemBuilder: (context, position) {
+            var product = products[position];
+            return getListItem(position, product, products);
+          },
+          itemCount: products.length,
+        ),
+      ),
+      Align(
+        alignment: Alignment.bottomCenter,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
+          child: GestureDetector(
+              onTap: () {
+                showMessageFav2(context, products);
+              },
+              child: Container(
+                height: 40.0,
+                width: double.infinity,
+                color: Colors.colorgreen,
+                child: Center(
+                  child: Text(
+                    "Clear WishList",
+                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              )),
+        ),
+      ),
+    ]);
+  }
+
+  Widget getListItem(position, Product product, List<Product> products) {
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          IntrinsicHeight(
+            child: Container(
+              padding: EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Flexible(
+                    child: IntrinsicHeight(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Flexible(
+                            child: Container(
+                              child: Stack(
+                                children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      // goToProductDetail(product);
+                                    },
+                                    child: Center(
+                                      child: Image.network(
+                                        product.image,
+                                        fit: BoxFit.contain,
+                                        height: 80,
+                                        width: 80,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            child: Container(
+                              padding: EdgeInsets.only(left: 0, right: 0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  // goToProductDetail(product);
+                                },
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      product.name,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Colors.colorgreen),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                        top: 0,
+                                        bottom: 0,
+                                      ),
+                                      child: Text(
+                                        product.nameHindi,
+                                        style:
+                                            TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                      child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              '₹ ${product.selectedPacking.price}  ',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.colorlightgrey,
+                                                  fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.start,
+                                            ),
+                                            product.selectedPacking.displayPrice > 0
+                                                ? Text(
+                                                    '₹${product.selectedPacking.displayPrice}',
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.colororange,
+                                                        decoration: TextDecoration.lineThrough),
+                                                    textAlign: TextAlign.start,
+                                                  )
+                                                : Container(),
+                                          ]),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Container(
+                                            height: 32,
+                                            width: 115,
+                                            decoration: myBoxDecoration3(),
+                                            child: Center(
+                                              child: Padding(
+                                                padding: EdgeInsets.only(right: 8, left: 8),
+                                                child: DropdownButtonFormField<Packing>(
+                                                  decoration: InputDecoration.collapsed(
+                                                      hintText:
+                                                          product.selectedPacking.unitQtyShow),
+                                                  value: null,
+                                                  items: product.packing.map((Packing value) {
+                                                    return new DropdownMenuItem<Packing>(
+                                                      value: value,
+                                                      child: new Text(
+                                                        value.unitQtyShow,
+                                                        style: TextStyle(color: Colors.grey),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      product.selectedPacking = newValue;
+                                                      product.count = 0;
+                                                      product.selectedDisplayPrice =
+                                                          getCalculatedPrice(product);
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    flex: 2,
+                  ),
+                  Flexible(
+                    child: Container(
+                      alignment: Alignment.topRight,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              showMessageFav(context, product, products, position);
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.only(left: 16, right: 8),
+                              child: Align(
+                                alignment: Alignment.topRight,
+                                child: Image.asset(
+                                  'assets/delete.png',
+                                  height: 20,
+                                  width: 20,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(right: 0, left: 0, top: 16),
+                            child: Container(
+                              // width: 120,
+                              alignment: Alignment.centerRight,
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(0, 0, 4, 0),
+                                child: IntrinsicHeight(
+                                  // child: Center(
+                                  child: IntrinsicHeight(
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: <Widget>[
+                                        GestureDetector(
+                                          onTap: () {
+                                            decrementCount(product);
+                                          },
+                                          child: Container(
+                                            // padding: EdgeInsets.only(left: 20),
+                                            // color: Colors.white,
+                                            child: Container(
+                                              decoration: myBoxDecoration2(),
+                                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                              child: Image.asset(
+                                                'assets/minus.png',
+                                                height: 10,
+                                                width: 10,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          margin:
+                                              EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                                          child: Center(
+                                            child: Text(
+                                              product.count.toString(),
+                                              style: TextStyle(
+                                                  color: Colors.colorgreen,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            incrementCount(product);
+                                          },
+                                          child: Container(
+                                            //  color: Colors.white,
+                                            // padding: EdgeInsets.only(right: 20),
+                                            child: Container(
+                                              decoration: myBoxDecoration2(),
+                                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                              child: Image.asset(
+                                                'assets/plus.png',
+                                                height: 10,
+                                                width: 10,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  //  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    flex: 1,
+                  )
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Divider(
+              height: 1,
+              color: Colors.black38,
+            ),
+          )
+        ]);
+  }
+
+  Widget noDataViewFav() {
+    return Container(
+      child: Column(
+        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Text(
+            "No product in your whishlist",
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showMessageFav(context, product, List<Product> products, int position) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text("Would you like to remove this product from your Wishlist?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                blocFav.fetchData("0", product.id.toString());
+                setState(() {
+                  products.removeAt(position);
+                });
+              },
+            ),
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showMessageFav2(context, List<Product> products) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text("Would you like to remove all product from your Wishlist?"),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Yes"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                for (int i = 0; i < products.length; i++) {
+                  blocFav.fetchData("0", products[i].id.toString());
+                }
+                setState(() {
+                  products.clear();
+                });
+              },
+            ),
+            new FlatButton(
+              child: new Text("No"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  //**************************************************************
+// Methods for Search page
+//***************************************************************
+  searchViewWidget() {
+    return Scaffold(
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                onChanged: (value) {
+                  //  filterSearchResults(value);
+                  Future.delayed(const Duration(milliseconds: 1000), () {
+                    blocSearch.fetchSearchData(value.trim());
+                  });
+                },
+                controller: editingController,
+                decoration: InputDecoration(
+//                    labelText: "Search",
+                    hintText: "Search",
+                    prefixIcon: Icon(Icons.search),
+                    border:
+                        OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(0.0)))),
+              ),
+            ),
+            showLoaderSearch
+                ? Center(
+                    child: Text("Search to display products"),
+                  )
+                : mainContentSearch(responseSearch)
+            /*StreamBuilder(
+              stream: bloc.searchedData,
+              builder: (context, AsyncSnapshot<ResponseSearch> snapshot) {
+                if (snapshot.hasData) {
+                  return mainContent(snapshot);
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+                return Center(
+                  child: Text("Search to display products"),
+                );
+              },
+            )*/
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget mainContentSearch(ResponseSearch responseSearch) {
+    return Expanded(
+      child: responseSearch.products.length > 0
+          ? Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(top: 8, bottom: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            viewGrid = true;
+                            viewList = false;
+                            gridImage = "assets/selected_grid.png";
+                            listImage = "assets/unselected_list.png";
+                          });
+                        },
+                        child: Image.asset(
+                          gridImage,
+                          height: 20,
+                          width: 20,
+                        ),
+                      ),
+                      Container(
+                        width: 1,
+                        height: 30,
+                        color: Colors.black,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            viewGrid = false;
+                            viewList = true;
+                            gridImage = "assets/unselected_grid.png";
+                            listImage = "assets/selected_list.png";
+                          });
+                        },
+                        child: Image.asset(listImage, height: 20, width: 20),
+                      ),
+                      Container(
+                        width: 1,
+                        height: 30,
+                        color: Colors.black,
+                      ),
+                      GestureDetector(
+                          onTap: () {},
+                          child: Image.asset('assets/sort.png', height: 20, width: 20)),
+                    ],
+                  ),
+                ),
+                viewList
+                    ? Expanded(
+                        child: showListView(responseSearch.products),
+                      )
+                    : Container(),
+                viewGrid ? showGridView(responseSearch.products) : Container(),
+              ],
+            )
+          : Container(
+              child: Center(
+                child: Text(
+                  "No Data",
+                  style: TextStyle(
+                      color: Colors.colorgreen, fontSize: 26, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+    );
+  }
+
+  showListView(List<Product> products) {
+    return ListView.builder(
+      shrinkWrap: true,
+      scrollDirection: Axis.vertical,
+      itemBuilder: (context, position) {
+        var product = products[position];
+        return Padding(
+          padding: EdgeInsets.only(top: 4),
+          child: getListItemSearch(position, product),
+        );
+      },
+      itemCount: products.length,
+    );
+  }
+
+  Widget getListItemSearch(position, Product product) {
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          IntrinsicHeight(
+            child: Container(
+              padding: EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Flexible(
+                    child: IntrinsicHeight(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          Flexible(
+                            child: Container(
+                              child: Stack(
+                                children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      goToProductDetail(product);
+                                    },
+                                    child: Center(
+                                      child: Image.network(
+                                        product.image,
+                                        fit: BoxFit.contain,
+                                        height: 80,
+                                        width: 80,
+                                      ),
+                                    ),
+                                  ),
+                                  Container(
+                                    // color: Colors.grey,
+                                    alignment: Alignment.topLeft,
+                                    child: GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            if (profile == null) {
+                                              showAlertMessage(context);
+                                            } else {
+                                              if (product.fav == "1") {
+                                                product.fav = "0";
+                                              } else {
+                                                product.fav = "1";
+                                              }
+                                              blocFav.fetchData(product.fav, product.id.toString());
+                                            }
+                                          });
+                                        },
+                                        child: Container(
+                                          //  color: Colors.grey,
+                                          padding: EdgeInsets.only(right: 15, bottom: 15),
+                                          child: product.fav == "1"
+                                              ? Image.asset(
+                                                  'assets/fav_filled.png',
+                                                  width: 20.0,
+                                                  height: 20.0,
+                                                  fit: BoxFit.cover,
+                                                )
+                                              : Image.asset(
+                                                  'assets/fav.png',
+                                                  width: 20.0,
+                                                  height: 20.0,
+                                                  fit: BoxFit.cover,
+                                                ),
+                                        )),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            child: Container(
+                              padding: EdgeInsets.only(left: 0, right: 0),
+                              child: GestureDetector(
+                                onTap: () {
+                                  goToProductDetail(product);
+                                },
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      product.name,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Colors.colorgreen),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                        top: 0,
+                                        bottom: 0,
+                                      ),
+                                      child: Text(
+                                        product.nameHindi,
+                                        style:
+                                            TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                      child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          children: <Widget>[
+                                            Text(
+                                              '₹ ${product.selectedPacking.price}  ',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.colorlightgrey,
+                                                  fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.start,
+                                            ),
+                                            product.selectedPacking.displayPrice > 0
+                                                ? Text(
+                                                    '₹${product.selectedPacking.displayPrice}',
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.colororange,
+                                                        decoration: TextDecoration.lineThrough),
+                                                    textAlign: TextAlign.start,
+                                                  )
+                                                : Container(),
+                                          ]),
+                                    ),
+                                    Padding(
+                                      padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          Container(
+                                            height: 32,
+                                            width: 115,
+                                            decoration: myBoxDecoration3(),
+                                            child: Center(
+                                              child: Padding(
+                                                padding: EdgeInsets.only(right: 8, left: 8),
+                                                child: DropdownButtonFormField<Packing>(
+                                                  decoration: InputDecoration.collapsed(
+                                                      hintText:
+                                                          product.selectedPacking.unitQtyShow),
+                                                  value: null,
+                                                  items: product.packing.map((Packing value) {
+                                                    return new DropdownMenuItem<Packing>(
+                                                      value: value,
+                                                      child: new Text(
+                                                        value.unitQtyShow,
+                                                        style: TextStyle(color: Colors.grey),
+                                                      ),
+                                                    );
+                                                  }).toList(),
+                                                  onChanged: (newValue) {
+                                                    setState(() {
+                                                      product.selectedPacking = newValue;
+                                                      product.count = 0;
+                                                      product.selectedDisplayPrice =
+                                                          getCalculatedPrice(product);
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    flex: 2,
+                  ),
+                  Flexible(
+                    child: Container(
+                      alignment: Alignment.topRight,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              goToProductDetail(product);
+                            },
+                            child: Container(
+                              child: Align(
+                                alignment: Alignment.bottomRight,
+                                child: Icon(
+                                  Icons.chevron_right,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(right: 0, left: 0, top: 16),
+                            child: Container(
+                              // width: 120,
+                              alignment: Alignment.centerRight,
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(0, 0, 4, 0),
+                                child: IntrinsicHeight(
+                                  // child: Center(
+                                  child: IntrinsicHeight(
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      children: <Widget>[
+                                        GestureDetector(
+                                          onTap: () {
+                                            decrementCount(product);
+                                          },
+                                          child: Container(
+                                            // padding: EdgeInsets.only(left: 20),
+                                            // color: Colors.white,
+                                            child: Container(
+                                              decoration: myBoxDecoration2(),
+                                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                              child: Image.asset(
+                                                'assets/minus.png',
+                                                height: 10,
+                                                width: 10,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        Container(
+                                          margin:
+                                              EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                                          child: Center(
+                                            child: Text(
+                                              product.count.toString(),
+                                              style: TextStyle(
+                                                  color: Colors.colorgreen,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 20),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {
+                                            incrementCount(product);
+                                          },
+                                          child: Container(
+                                            //  color: Colors.white,
+                                            // padding: EdgeInsets.only(right: 20),
+                                            child: Container(
+                                              decoration: myBoxDecoration2(),
+                                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                              child: Image.asset(
+                                                'assets/plus.png',
+                                                height: 10,
+                                                width: 10,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  //  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    flex: 1,
+                  )
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 4),
+            child: Divider(
+              height: 1,
+              color: Colors.black38,
+            ),
+          )
+        ]);
+  }
+
+  showGridView(List<Product> products) {
+    var size = MediaQuery.of(context).size;
+    double itemHeight = (size.height - kToolbarHeight - 24) / 2;
+    itemHeight = itemHeight;
+    double itemWidth = size.width / 2;
+    itemWidth = itemWidth;
+
+    return Expanded(
+      child: StaggeredGridView.countBuilder(
+        crossAxisCount: 2,
+        shrinkWrap: true,
+        primary: false,
+        itemCount: products.length,
+        itemBuilder: (BuildContext context, int index) => new Container(
+              child: girdViewItem(index, context, products),
+            ),
+        staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+        mainAxisSpacing: 2.0,
+        crossAxisSpacing: 2.0,
+      ),
+    );
+  }
+
+  girdViewItem(int index, BuildContext context, List<Product> products) {
+    var product = products[index];
+    return Material(
+      color: Colors.transparent,
+      child: Padding(
+        padding: EdgeInsets.all(0),
+        child: Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(0.0),
+          ),
+          child: Container(
+            //height: 330,
+            padding: EdgeInsets.only(bottom: 12),
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(right: 8, left: 8, top: 8),
+                  child: Container(
+                    width: 150,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              if (profile == null) {
+                                showAlertMessage(context);
+                              } else {
+                                if (product.fav == "1") {
+                                  product.fav = "0";
+                                } else {
+                                  product.fav = "1";
+                                }
+                                blocFav.fetchData(product.fav, product.id.toString());
+                              }
+                            });
+                          },
+                          child: product.fav == "1"
+                              ? Image.asset(
+                                  'assets/fav_filled.png',
+                                  width: 20.0,
+                                  height: 20.0,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.asset(
+                                  'assets/fav.png',
+                                  width: 20.0,
+                                  height: 20.0,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
+                        product.selectedPacking.displayPrice > 0
+                            ? Text(
+                                getOff(product),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.colororange,
+                                ),
+                                textAlign: TextAlign.center,
+                              )
+                            : Container(),
+                      ],
+                    ),
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    goToProductDetail(product);
+                  },
+                  child: Column(
+                    children: <Widget>[
+                      Image.network(
+                        product.image,
+                        fit: BoxFit.contain,
+                        height: 80,
+                      ),
+                      Text(
+                        product.name,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.colorgreen,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                        child: Text(
+                          product.nameHindi,
+                          style: TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                          Text(
+                            '₹${product.selectedPacking.price}  ',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.colorlightgrey,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          product.selectedPacking.displayPrice > 0
+                              ? Text(
+                                  '₹${product.selectedPacking.displayPrice}',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.colororange,
+                                      decoration: TextDecoration.lineThrough),
+                                  textAlign: TextAlign.center,
+                                )
+                              : Container(),
+                        ]),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 8, 20, 0),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: <Widget>[
+                      Container(
+                        height: 35,
+                        width: 120,
+                        decoration: myBoxDecoration3(),
+                        child: Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(right: 8, left: 8),
+                            child: DropdownButtonFormField<Packing>(
+                              decoration: InputDecoration.collapsed(
+                                  hintText: product.selectedPacking.unitQtyShow),
+                              value: null,
+                              //value: product.selectedPacking,
+                              items: product.packing.map((Packing value) {
+                                return new DropdownMenuItem<Packing>(
+                                  value: value,
+                                  child: new Text(
+                                    value.unitQtyShow,
+                                    style: TextStyle(color: Colors.grey),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (newValue) {
+                                setState(() {
+                                  product.selectedPacking = newValue;
+                                  product.count = 0;
+                                  product.selectedDisplayPrice = getCalculatedPrice(product);
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                  child: Container(
+                    width: 150,
+                    //color: Colors.grey,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      child: IntrinsicHeight(
+                        child: Center(
+                          child: IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                GestureDetector(
+                                  onTap: () {
+                                    decrementCount(products[index]);
+                                  },
+                                  child: Container(
+                                    padding: EdgeInsets.only(left: 20),
+                                    // color: Colors.white,
+                                    child: Container(
+                                      decoration: myBoxDecoration2(),
+                                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      child: Image.asset(
+                                        'assets/minus.png',
+                                        height: 12,
+                                        width: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  margin: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                                  child: Center(
+                                    child: Text(
+                                      product.count.toString(),
+                                      style: TextStyle(
+                                          color: Colors.colorgreen,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {
+                                    incrementCount(products[index]);
+                                  },
+                                  child: Container(
+                                    //  color: Colors.white,
+                                    padding: EdgeInsets.only(right: 20),
+                                    child: Container(
+                                      decoration: myBoxDecoration2(),
+                                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      child: Image.asset(
+                                        'assets/plus.png',
+                                        height: 12,
+                                        width: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+//                  ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void goToProductDetail(Product product) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProductDetailPage(
+              product: product,
+            ),
+      ),
+    ).then((value) {
+      getCartCount();
+      updateSearchProducts();
+    });
+  }
+
+  void showAlertMessage(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content:
+              new Text("You would need to login in order to proceed. Please click here to Login."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Login"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                goToLogin();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void goToLogin() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(
+                from: 1,
+              ),
+        )).then((value) {
+      getProfileDetail();
+    });
+  }
 }
 
 class DrawerList {

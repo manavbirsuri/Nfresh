@@ -55,13 +55,17 @@ class stateProfilePage extends State<stateProfile> {
     blocCity.cities.listen((res) {
       setState(() {
         this.cities = res.cities;
+        Map<String, dynamic> map = {'id': -1, 'name': "Select City"};
+        var model = CityModel(map);
+        this.cities.insert(0, model);
         selectedCity = cities[0];
         this.areas = res.areas;
       });
     });
+    userTypes.add(UserType("0", "Select Type"));
     userTypes.add(UserType("1", "Retailer"));
-    userTypes.add(UserType("2", "Customer - month"));
-    userTypes.add(UserType("3", "Customer - 3 months"));
+    userTypes.add(UserType("2", "Wholesaler"));
+    userTypes.add(UserType("3", "Marriage Palace"));
     selectedType = userTypes[0];
 
     bloc.signUp.listen((response) {
@@ -530,6 +534,9 @@ class stateProfilePage extends State<stateProfile> {
       }
     }
     if (cityAreas.length > 0) {
+      Map<String, dynamic> map = {'id': -1, 'name': "Select Area", 'city_id': -1};
+      var model = AreaModel(map);
+      cityAreas.insert(0, model);
       selectedArea = cityAreas[0];
     } else {
       selectedArea = null;
@@ -564,6 +571,20 @@ class stateProfilePage extends State<stateProfile> {
       showMessage("Enter valid password");
       return;
     }
+
+    if (selectedType.userTypeId == "0") {
+      showMessage("Select user type");
+      return;
+    }
+    if (selectedCity.id == -1) {
+      showMessage("Select City");
+      return;
+    }
+    if (selectedArea.id == -1) {
+      showMessage("Select Area");
+      return;
+    }
+
     if (aggreed == 0) {
       showMessage("Accept Terms and Conditions");
       return;
@@ -572,8 +593,16 @@ class stateProfilePage extends State<stateProfile> {
     setState(() {
       showLoader = true;
     });
-    var profile = ProfileSend(name, email, phone, password, selectedArea.name,
-        selectedType.userTypeId, selectedCity.id, selectedArea.id, referral);
+    var profile = ProfileSend(
+        name,
+        email,
+        phone,
+        password,
+        selectedArea.name,
+        selectedType.userTypeId,
+        selectedCity.id,
+        selectedArea.id,
+        refralController.text.toString());
     bloc.doSignUp(profile);
   }
 

@@ -12,6 +12,7 @@ import 'package:nfresh/models/responses/response_order_detail.dart';
 import 'package:nfresh/models/responses/response_otp.dart';
 import 'package:nfresh/models/responses/response_profile.dart';
 import 'package:nfresh/models/responses/response_related_products.dart';
+import 'package:nfresh/models/responses/response_reorder.dart';
 import 'package:nfresh/models/responses/response_search.dart';
 import 'package:nfresh/models/responses/response_signup.dart';
 import 'package:nfresh/models/responses/response_subcat.dart';
@@ -24,8 +25,11 @@ class ApiProvider {
       "http://cloudart.com.au/projects/nfresh//index.php/api/data_v1";
 
   // Webservice call to fetch home page data
-  Future<ResponseHome> fetchHomeData() async {
+  Future<ResponseHome> fetchHomeData(auth) async {
     Map map = {'device_id': '123456789'};
+    if (auth.length > 3) {
+      map = {'auth_code': auth};
+    }
     final response = await client.post("$baseUrl/homepage", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
@@ -158,7 +162,7 @@ class ApiProvider {
   // Webservice call to Register user
   Future<ResponseSignUp> getSignUp(auth, ProfileSend profile) async {
     print(
-        "DATA: ${profile.name}: ${profile.email}: ${profile.phone}: ${profile.password}: ${profile.address}: ${profile.city}: ${profile.area}: ${profile.type}");
+        "DATA: ${profile.name}: ${profile.email}: ${profile.phone}: ${profile.password}: ${profile.address}: ${profile.city}: ${profile.area}: ${profile.type}: ${profile.referal}");
     Map map = {
       'authcode': auth,
       'name': profile.name,
@@ -169,6 +173,7 @@ class ApiProvider {
       'city': profile.city.toString(),
       'area': profile.area.toString(),
       'type': profile.type,
+      'referred_by_code': profile.referal,
     };
     final response = await client.post("$baseUrl/signup", body: map);
     print(response.body.toString());
@@ -201,8 +206,8 @@ class ApiProvider {
   Future<ResponseOtp> verifyOtp(auth, userId, otp) async {
     Map map = {
       'authcode': auth,
-      'otp': otp,
-      'user_id': userId,
+      'otp': otp.toString(),
+      'user_id': userId.toString(),
     };
     final response = await client.post("$baseUrl/verifyOtp", body: map);
     print(response.body.toString());
@@ -305,7 +310,7 @@ class ApiProvider {
   }
 
   Future<String> placeOrder(
-      auth, List<Map<String, dynamic>> data, Map<String, dynamic> cart) async {
+      auth, List<Map<String, dynamic>> data, Map<String, dynamic> cart, paytmRes) async {
     Map map = {
       'auth_code': auth,
       'line_items': jsonEncode(data),
@@ -315,6 +320,7 @@ class ApiProvider {
       'area': cart['area'].toString(),
       'type': cart['type'].toString(),
       'discount': cart['discount'].toString(),
+      'paytm_response': paytmRes
     };
     final response = await client.post("$baseUrl/createorder", body: map);
     print(response.body.toString());
@@ -323,6 +329,170 @@ class ApiProvider {
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load createorder service');
+    }
+  }
+
+  Future<ResponseReorder> reOrder(auth, orderId) async {
+    Map map = {
+      'auth_code': auth,
+      'order_id': orderId.toString(),
+    };
+    final response = await client.post("$baseUrl/reorder", body: map);
+    print(response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseReorder.fromJson(jsonDecode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load reorder service');
+    }
+  }
+
+  Future<String> applyCoupon(auth, total, couponCode) async {
+    Map map = {
+      'auth_code': auth,
+      'total': total.toString(),
+      'coupon_code': couponCode,
+    };
+    final response = await client.post("$baseUrl/applycoupon", body: map);
+    print(response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load applycoupon service');
+    }
+  }
+
+  // Webservice call to get user profile
+  Future<ResponseProfile> updateWallet(auth, amount, resPayTm) async {
+    Map map = {
+      'auth_code': auth,
+      'amount': amount.toString(),
+      'paytm_response': resPayTm,
+    };
+    final response = await client.post("$baseUrl/update_wallet", body: map);
+    print("Wallet update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseProfile.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load update_wallet service');
+    }
+  }
+
+  // Webservice call to get user profile
+  Future<ResponseProfile> updateAddress(auth, address, city, area) async {
+    Map map = {
+      'auth_code': auth,
+      'address': address,
+      'city': city.toString(),
+      'area': area.toString(),
+    };
+    final response = await client.post("$baseUrl/addressupdate", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseProfile.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load addressupdate service');
+    }
+  }
+
+  // Webservice call to get user profile
+  Future<ResponseProfile> updateProfile(auth, name, email) async {
+    Map map = {
+      'auth_code': auth,
+      'name': name,
+      'email': email,
+    };
+    final response = await client.post("$baseUrl/profileupdate", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseProfile.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load profileupdate service');
+    }
+  }
+
+  // Webservice call to update password
+  Future<String> updatePassword(auth, oldPass, newPass) async {
+    Map map = {
+      'auth_code': auth,
+      'old_password': oldPass,
+      'new_password': newPass,
+    };
+    final response = await client.post("$baseUrl/updatepassword", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load updatepassword service');
+    }
+  }
+
+  // Webservice call to update phone
+  Future<String> updatePhone(auth, phone) async {
+    Map map = {
+      'auth_code': auth,
+      'phone_no': phone,
+    };
+    final response = await client.post("$baseUrl/updateresendotp", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load updateresendotp service');
+    }
+  }
+
+  // Webservice call to update phone after otp verification locally Step2
+  Future<ResponseProfile> updatePhone2(auth, phone) async {
+    Map map = {
+      'auth_code': auth,
+      'phone_no': phone,
+    };
+    final response = await client.post("$baseUrl/update_telephone_no", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseProfile.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load update_telephone_no service');
+    }
+  }
+
+  //Logout APi
+  Future<ResponseLogin> logout(auth) async {
+    Map map = {
+      'auth_code': auth,
+    };
+    final response = await client.post("$baseUrl/logout", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseLogin.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load update_telephone_no service');
+    }
+  }
+
+  // Webservice call for Forgot password
+  Future<String> forgotPassword(auth, phone, pass) async {
+    Map map = {
+      'auth_code': auth,
+      'phone_no': phone,
+      'password': pass,
+    };
+    final response = await client.post("$baseUrl/updateforgotpassword", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load updateforgotpassword service');
     }
   }
 }

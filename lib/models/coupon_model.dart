@@ -5,6 +5,7 @@ class Coupon {
   String endDate;
   int type;
   int discount;
+  int minValue = 0;
 
   Coupon(json) {
     name = json['name'];
@@ -13,5 +14,6 @@ class Coupon {
     endDate = json['end_date'];
     type = json['type'];
     discount = json['discount'];
+    minValue = json['minimum_cart_value'];
   }
 }

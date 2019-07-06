@@ -4,7 +4,13 @@ import 'package:nfresh/bloc/related_product_bloc.dart';
 import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
+import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_related_products.dart';
+import 'package:nfresh/resources/database.dart';
+import 'package:nfresh/resources/prefrences.dart';
+
+import 'cart.dart';
+import 'login.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final Product product;
@@ -21,27 +27,73 @@ class ProState extends State<ProductDetailPage> {
   int totalAmount = 0;
   var bloc = CartBloc();
   var blocRelated = RelatedProductBloc();
-
+  var _prefs = SharedPrefs();
   var blocFav = SetFavBloc();
+  var _database = DatabaseHelper.instance;
+  ProfileModel profile;
+  int cartCount = 0;
+
+  bool showLoader = true;
+  ResponseRelatedProducts productResponse;
 
   @override
   void initState() {
     super.initState();
     setState(() {});
-    bloc.fetchData();
-    bloc.catProductsList.listen((response) {
-      setState(() {
-        calculateTotal(response);
-      });
-    });
-
+    getCartTotal();
+    getCartCount();
     blocRelated.fetchRelatedProducts(widget.product.id.toString());
+    blocRelated.productsList.listen((res) {
+      setState(() {
+        showLoader = false;
+      });
+      productResponse = res;
+      updateProducts();
+      updateMainProduct();
+    });
+    getProfileDetail();
   }
 
-  calculateTotal(List<Product> products) async {
-    totalAmount = 0;
-    for (Product product in products) {
-      totalAmount += (product.selectedPacking.price * product.count);
+  getProfileDetail() {
+    _prefs.getProfile().then((modelProfile) {
+      setState(() {
+        profile = modelProfile;
+      });
+    });
+  }
+
+  Future updateMainProduct() async {
+    var product = await _database.queryConditionalProduct(widget.product);
+    if (product != null) {
+      product.selectedDisplayPrice = getCalculatedPrice(product);
+      setState(() {
+        widget.product.count = product.count;
+        widget.product.selectedPacking = product.selectedPacking;
+      });
+    } else {
+      setState(() {
+        widget.product.count = 0;
+      });
+    }
+  }
+
+  Future updateProducts() async {
+    if (productResponse != null &&
+        productResponse.products != null &&
+        productResponse.products.length > 0) {
+      for (int i = 0; i < productResponse.products.length; i++) {
+        var product = await _database.queryConditionalProduct(productResponse.products[i]);
+        if (product != null) {
+          product.selectedDisplayPrice = getCalculatedPrice(product);
+          setState(() {
+            productResponse.products[i] = product;
+          });
+        } else {
+          setState(() {
+            productResponse.products[i].count = 0;
+          });
+        }
+      }
     }
   }
 
@@ -94,10 +146,16 @@ class ProState extends State<ProductDetailPage> {
                                     child: GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          if (widget.product.fav == "1") {
-                                            widget.product.fav = "0";
+                                          if (profile == null) {
+                                            showAlertMessage(context);
                                           } else {
-                                            widget.product.fav = "1";
+                                            if (widget.product.fav == "1") {
+                                              widget.product.fav = "0";
+                                            } else {
+                                              widget.product.fav = "1";
+                                            }
+                                            blocFav.fetchData(
+                                                widget.product.fav, widget.product.id.toString());
                                           }
                                         });
                                       },
@@ -155,21 +213,25 @@ class ProState extends State<ProductDetailPage> {
                                                       fontWeight: FontWeight.bold),
                                                   textAlign: TextAlign.start,
                                                 ),
-                                                Text(
-                                                  '₹${widget.product.displayPrice}',
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      color: Colors.colororange,
-                                                      decoration: TextDecoration.lineThrough),
-                                                  textAlign: TextAlign.start,
-                                                ),
+                                                widget.product.selectedPacking.displayPrice > 0
+                                                    ? Text(
+                                                        '₹${widget.product.selectedPacking.displayPrice}',
+                                                        style: TextStyle(
+                                                            fontSize: 16,
+                                                            color: Colors.colororange,
+                                                            decoration: TextDecoration.lineThrough),
+                                                        textAlign: TextAlign.start,
+                                                      )
+                                                    : Container(),
                                               ]),
-                                          Text(
-                                            widget.product.off,
-                                            style:
-                                                TextStyle(fontSize: 14, color: Colors.colororange),
-                                            textAlign: TextAlign.center,
-                                          ),
+                                          widget.product.selectedPacking.displayPrice > 0
+                                              ? Text(
+                                                  getOff(widget.product),
+                                                  style: TextStyle(
+                                                      fontSize: 14, color: Colors.colororange),
+                                                  textAlign: TextAlign.center,
+                                                )
+                                              : Container(),
                                         ],
                                       )),
                                   Padding(
@@ -178,7 +240,7 @@ class ProState extends State<ProductDetailPage> {
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
                                           Container(
-                                            height: 35,
+                                            // height: 35,
                                             width: 120,
                                             decoration: myBoxDecoration3(),
                                             child: Center(
@@ -195,13 +257,17 @@ class ProState extends State<ProductDetailPage> {
                                                       value: value,
                                                       child: new Text(
                                                         value.unitQtyShow,
-                                                        style: TextStyle(color: Colors.grey),
+                                                        style: TextStyle(
+                                                            color: Colors.grey, fontSize: 12),
                                                       ),
                                                     );
                                                   }).toList(),
                                                   onChanged: (newValue) {
                                                     setState(() {
                                                       widget.product.selectedPacking = newValue;
+                                                      widget.product.count = 0;
+                                                      widget.product.selectedDisplayPrice =
+                                                          getCalculatedPrice(widget.product);
                                                     });
                                                   },
                                                 ),
@@ -275,9 +341,7 @@ class ProState extends State<ProductDetailPage> {
                                                         children: <Widget>[
                                                           GestureDetector(
                                                             onTap: () {
-                                                              setState(() {
-                                                                decrementCount(widget.product);
-                                                              });
+                                                              decrementCount(widget.product);
                                                             },
                                                             child: Container(
                                                               padding: EdgeInsets.only(left: 15),
@@ -313,9 +377,7 @@ class ProState extends State<ProductDetailPage> {
                                                           ),
                                                           GestureDetector(
                                                             onTap: () {
-                                                              setState(() {
-                                                                incrementCount(widget.product);
-                                                              });
+                                                              incrementCount(widget.product);
                                                             },
                                                             child: Container(
                                                               //  color: Colors.white,
@@ -373,7 +435,10 @@ class ProState extends State<ProductDetailPage> {
                                     height: 335,
                                     // child: showProductsCategories(),
                                     color: Colors.colorlightgreyback,
-                                    child: StreamBuilder(
+                                    child: showLoader
+                                        ? Center(child: CircularProgressIndicator())
+                                        : showProductsCategories(productResponse),
+                                    /*  child: StreamBuilder(
                                       stream: blocRelated.productsList,
                                       builder: (context,
                                           AsyncSnapshot<ResponseRelatedProducts> snapshot) {
@@ -384,7 +449,7 @@ class ProState extends State<ProductDetailPage> {
                                         }
                                         return Center(child: CircularProgressIndicator());
                                       },
-                                    ),
+                                    ),*/
                                   ),
                                 ],
                               ),
@@ -399,8 +464,8 @@ class ProState extends State<ProductDetailPage> {
                   Column(children: <Widget>[
                     Container(
                       color: Colors.colorlightgreyback,
-                      height: 65,
-                      padding: EdgeInsets.all(4),
+                      height: 55,
+                      // padding: EdgeInsets.all(0),
                       child: Row(
                         children: <Widget>[
                           Flexible(
@@ -415,13 +480,13 @@ class ProState extends State<ProductDetailPage> {
                                           '₹$totalAmount',
                                           style: TextStyle(
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 26,
+                                              fontSize: 21,
                                               color: Colors.colorgrey),
                                         ),
                                         Text(
                                           'Total amount',
                                           style: TextStyle(
-                                            // fontSize: 14,
+                                            fontSize: 12,
                                             color: Colors.colorPink,
                                           ),
                                         )
@@ -445,6 +510,7 @@ class ProState extends State<ProductDetailPage> {
                           Flexible(
                             child: GestureDetector(
                               child: Container(
+                                //  margin: EdgeInsets.only(top: 4, bottom: 4),
                                 color: Colors.colorgreen,
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -466,11 +532,17 @@ class ProState extends State<ProductDetailPage> {
                                 ),
                               ),
                               onTap: () {
-//                      Navigator.push(
-//                          context,
-//                          MaterialPageRoute(
-//                            builder: (context) => PlaceOrder(),
-//                          ));
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CartPage(),
+                                  ),
+                                ).then((value) {
+                                  getCartTotal();
+                                  getCartCount();
+                                  updateProducts();
+                                  updateMainProduct();
+                                });
                               },
                             ),
                             flex: 1,
@@ -506,8 +578,21 @@ class ProState extends State<ProductDetailPage> {
     );
   }
 
-  showProductsCategories(AsyncSnapshot<ResponseRelatedProducts> snapshot) {
-    var products = snapshot.data.products;
+  // calculate the offer percentage
+  String getOff(Product product) {
+    var salePrice = product.selectedPacking.price;
+    var costPrice = product.selectedPacking.displayPrice;
+    var profit = costPrice - salePrice;
+    var offer = (profit / costPrice) * 100;
+    return "${offer.round()}% off";
+  }
+
+  double getCalculatedPrice(Product product) {
+    return (product.selectedPacking.displayPrice).toDouble();
+  }
+
+  showProductsCategories(ResponseRelatedProducts snapshot) {
+    var products = snapshot.products;
     return Padding(
         padding: EdgeInsets.only(top: 16),
         child: ListView.builder(
@@ -539,13 +624,18 @@ class ProState extends State<ProductDetailPage> {
                                       GestureDetector(
                                           onTap: () {
                                             setState(() {
-                                              if (product.fav == "1") {
-                                                product.fav = "0";
+                                              if (profile == null) {
+                                                showAlertMessage(context);
                                               } else {
-                                                product.fav = "1";
-                                              }
+                                                if (product.fav == "1") {
+                                                  product.fav = "0";
+                                                } else {
+                                                  product.fav = "1";
+                                                }
 
-                                              blocFav.fetchData(product.fav, product.id.toString());
+                                                blocFav.fetchData(
+                                                    product.fav, product.id.toString());
+                                              }
                                             });
                                           },
                                           child: Container(
@@ -565,14 +655,16 @@ class ProState extends State<ProductDetailPage> {
                                                     fit: BoxFit.cover,
                                                   ),
                                           )),
-                                      Text(
-                                        '30%off',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: Colors.colororange,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      )
+                                      product.selectedPacking.displayPrice > 0
+                                          ? Text(
+                                              getOff(product),
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colororange,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            )
+                                          : Container(),
                                     ],
                                   ),
                                 ),
@@ -585,7 +677,12 @@ class ProState extends State<ProductDetailPage> {
                                         builder: (context) => ProductDetailPage(
                                               product: product,
                                             ),
-                                      ));
+                                      )).then((value) {
+                                    getCartTotal();
+                                    getCartCount();
+                                    updateProducts();
+                                    updateMainProduct();
+                                  });
                                 },
                                 child: Column(
                                   children: <Widget>[
@@ -626,14 +723,18 @@ class ProState extends State<ProductDetailPage> {
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
-                                            Text(
-                                              "₹" + products[position].displayPrice.toString(),
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  color: Colors.colororange,
-                                                  decoration: TextDecoration.lineThrough),
-                                              textAlign: TextAlign.center,
-                                            ),
+                                            product.selectedPacking.displayPrice > 0
+                                                ? Text(
+                                                    "₹" +
+                                                        product.selectedPacking.displayPrice
+                                                            .toString(),
+                                                    style: TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.colororange,
+                                                        decoration: TextDecoration.lineThrough),
+                                                    textAlign: TextAlign.center,
+                                                  )
+                                                : Container(),
                                           ]),
                                     ),
                                   ],
@@ -671,7 +772,8 @@ class ProState extends State<ProductDetailPage> {
                                               setState(() {
                                                 products[position].selectedPacking = newValue;
                                                 product.count = 0;
-                                                // product.selectedPrice =
+                                                product.selectedDisplayPrice =
+                                                    getCalculatedPrice(product);
                                               });
                                             },
                                           ),
@@ -697,9 +799,7 @@ class ProState extends State<ProductDetailPage> {
                                             children: <Widget>[
                                               GestureDetector(
                                                 onTap: () {
-                                                  setState(() {
-                                                    decrementCount(products[position]);
-                                                  });
+                                                  decrementCount(products[position]);
                                                 },
                                                 child: Container(
                                                   padding: EdgeInsets.only(left: 20),
@@ -731,9 +831,7 @@ class ProState extends State<ProductDetailPage> {
                                               ),
                                               GestureDetector(
                                                 onTap: () {
-                                                  setState(() {
-                                                    incrementCount(products[position]);
-                                                  });
+                                                  incrementCount(products[position]);
                                                 },
                                                 child: Container(
                                                   //  color: Colors.white,
@@ -757,77 +855,6 @@ class ProState extends State<ProductDetailPage> {
                                   ),
                                 ),
                               ),
-                              /* Padding(
-                                padding: EdgeInsets.only(right: 16, left: 16, top: 16),
-                                child: Container(
-                                  width: 120,
-                                  decoration: myBoxDecoration2(),
-                                  child: Padding(
-                                    padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                    child: IntrinsicHeight(
-                                      child: Center(
-                                        child: IntrinsicHeight(
-                                          child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    decrementCount(products[position]);
-                                                  });
-                                                },
-                                                child: Container(
-                                                  color: Colors.transparent,
-                                                  child: Center(
-                                                    child: Padding(
-                                                      padding: EdgeInsets.fromLTRB(18, 10, 18, 10),
-                                                      child: Image.asset(
-                                                        'assets/minus.png',
-                                                        height: 15,
-                                                        width: 15,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                              Container(
-                                                child: Center(
-                                                  child: Text(
-                                                    product.count.toString(),
-                                                    style: TextStyle(
-                                                        color: Colors.colorgreen,
-                                                        fontWeight: FontWeight.bold,
-                                                        fontSize: 20),
-                                                    textAlign: TextAlign.center,
-                                                  ),
-                                                ),
-                                              ),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setState(() {
-                                                    incrementCount(products[position]);
-                                                  });
-                                                },
-                                                child: Container(
-                                                  child: Padding(
-                                                    padding: EdgeInsets.fromLTRB(18, 10, 18, 10),
-                                                    child: Image.asset(
-                                                      'assets/plus.png',
-                                                      height: 15,
-                                                      width: 15,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),*/
                             ],
 //                  ),
                           ),
@@ -840,15 +867,99 @@ class ProState extends State<ProductDetailPage> {
         ));
   }
 
-  void incrementCount(Product product) {
+  void showAlertMessage(context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content:
+              new Text("You would need to login in order to proceed. Please click here to Login."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("Login"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                goToLogin();
+              },
+            ),
+            new FlatButton(
+              child: new Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void goToLogin() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginPage(
+                from: 1,
+              ),
+        )).then((value) {
+      getProfileDetail();
+    });
+  }
+
+  Future incrementCount(Product product) async {
     if (product.count < product.inventory) {
       product.count = product.count + 1;
+      await _database.update(product);
+
+      _database.getCartCount().then((count) {
+        setState(() {
+          cartCount = count;
+        });
+      });
+      getCartCount();
+      getCartTotal();
+      // Future.delayed(const Duration(milliseconds: 500), () async {});
+    } else {
+      Scaffold.of(context).showSnackBar(new SnackBar(
+        content: new Text("Available inventory : ${product.inventory}"),
+      ));
     }
   }
 
-  void decrementCount(Product product) {
-    if (product.count > 0) {
+  Future decrementCount(Product product) async {
+    if (product.count > 1) {
       product.count = product.count - 1;
+      await _database.update(product);
+    } else if (product.count == 1) {
+      product.count = product.count - 1;
+      _database.remove(product);
     }
+    getCartCount();
+    getCartTotal();
+    // Future.delayed(const Duration(milliseconds: 500), () async {});
+  }
+
+  getCartCount() {
+    _database.getCartCount().then((count) {
+      setState(() {
+        cartCount = count;
+      });
+    });
+  }
+
+  getCartTotal() {
+    _database.queryAllProducts().then((products) {
+      var amount = 0;
+      for (int i = 0; i < products.length; i++) {
+        var product = products[i];
+        amount += (product.selectedPacking.price * product.count);
+      }
+      setState(() {
+        totalAmount = amount;
+      });
+    });
   }
 }

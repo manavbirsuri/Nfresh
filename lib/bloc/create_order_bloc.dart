@@ -8,9 +8,9 @@ class CreateOrderBloc {
   final _orderFetcher = PublishSubject<String>();
   Observable<String> get createOrderResponse => _orderFetcher.stream;
 
-  fetchData(map, cart) async {
+  fetchData(map, cart, paytmRes) async {
     var auth = await _prefs.getAuthCode();
-    String itemModel = await _repository.placeOrder(auth, map, cart);
+    String itemModel = await _repository.placeOrder(auth, map, cart, paytmRes);
     _orderFetcher.sink.add(itemModel);
   }
 

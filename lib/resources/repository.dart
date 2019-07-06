@@ -9,6 +9,7 @@ import 'package:nfresh/models/responses/response_order_detail.dart';
 import 'package:nfresh/models/responses/response_otp.dart';
 import 'package:nfresh/models/responses/response_profile.dart';
 import 'package:nfresh/models/responses/response_related_products.dart';
+import 'package:nfresh/models/responses/response_reorder.dart';
 import 'package:nfresh/models/responses/response_search.dart';
 import 'package:nfresh/models/responses/response_signup.dart';
 import 'package:nfresh/models/responses/response_subcat.dart';
@@ -18,7 +19,7 @@ import 'api_provider.dart';
 
 class Repository {
   final apiProvider = ApiProvider();
-  Future<ResponseHome> fetchHomeData() => apiProvider.fetchHomeData();
+  Future<ResponseHome> fetchHomeData(auth) => apiProvider.fetchHomeData(auth);
 
   Future<ResponseSubCat> getSubCategories(auth, catId) => apiProvider.getSubCategories(auth, catId);
 
@@ -50,5 +51,22 @@ class Repository {
       apiProvider.getRelatedProducts(auth, proId);
   Future<String> getChecksum(auth, map) => apiProvider.getPayTmChecksum(auth, map);
   Future<String> checkInventory(auth, map) => apiProvider.checkInventory(auth, map);
-  Future<String> placeOrder(auth, map, cart) => apiProvider.placeOrder(auth, map, cart);
+  Future<String> placeOrder(auth, map, cart, paytmRes) =>
+      apiProvider.placeOrder(auth, map, cart, paytmRes);
+  Future<ResponseReorder> reorder(auth, orderId) => apiProvider.reOrder(auth, orderId);
+  Future<String> applyCoupon(auth, total, couponCode) =>
+      apiProvider.applyCoupon(auth, total, couponCode);
+
+  Future<ResponseProfile> updateWallet(auth, total, resPayTm) =>
+      apiProvider.updateWallet(auth, total, resPayTm);
+  Future<ResponseProfile> updateAddress(auth, address, city, area) =>
+      apiProvider.updateAddress(auth, address, city, area);
+  Future<ResponseProfile> updateProfile(auth, name, email) =>
+      apiProvider.updateProfile(auth, name, email);
+  Future<String> updatePassword(auth, oldPass, newPass) =>
+      apiProvider.updatePassword(auth, oldPass, newPass);
+  Future<String> updatePhone(auth, phone) => apiProvider.updatePhone(auth, phone);
+  Future<ResponseProfile> updatePhone2(auth, phone) => apiProvider.updatePhone2(auth, phone);
+  Future<ResponseLogin> logout(auth) => apiProvider.logout(auth);
+  Future<String> forgotPassword(auth, phone, pass) => apiProvider.forgotPassword(auth, phone, pass);
 }

@@ -18,30 +18,36 @@ class ResponseHome {
     msg = json['msg'];
 
     List<BannerModel> temp = [];
-    for (int i = 0; i < json['banners'].length; i++) {
-      var banner = BannerModel(json['banners'][i]);
-      temp.add(banner);
+    if (json['banners'] != null) {
+      for (int i = 0; i < json['banners'].length; i++) {
+        var banner = BannerModel(json['banners'][i]);
+        temp.add(banner);
+      }
+      banners = temp;
     }
-    banners = temp;
     List<BannerModel> temp2 = [];
-    for (int i = 0; i < json['offerbanners'].length; i++) {
-      var banner = BannerModel(json['offerbanners'][i]);
-      temp2.add(banner);
+    if (json['offerbanners'] != null) {
+      for (int i = 0; i < json['offerbanners'].length; i++) {
+        var banner = BannerModel(json['offerbanners'][i]);
+        temp2.add(banner);
+      }
+      offerBanners = temp2;
     }
-    offerBanners = temp2;
-
     List<Category> cat = [];
-    for (int i = 0; i < json['categories'].length; i++) {
-      var category = Category(json['categories'][i]);
-      cat.add(category);
+    if (json['categories'] != null) {
+      for (int i = 0; i < json['categories'].length; i++) {
+        var category = Category(json['categories'][i]);
+        cat.add(category);
+      }
+      categories = cat;
     }
-    categories = cat;
-
     List<Section> tempSection = [];
-    for (int i = 0; i < json['sections'].length; i++) {
-      var section = Section.fromJson(json['sections'][i]);
-      tempSection.add(section);
+    if (json['sections'] != null) {
+      for (int i = 0; i < json['sections'].length; i++) {
+        var section = Section(json['sections'][i]);
+        tempSection.add(section);
+      }
+      sections = tempSection;
     }
-    sections = tempSection;
   }
 }

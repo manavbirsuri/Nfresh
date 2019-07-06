@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class SharedPrefs {
   final String _auth = "auth_code";
   final String _profile = "profile";
+  final String _isFirst = "isFirst";
 
   /// ------------------------------------------------------------
   /// Method that returns the user authCode to hit web service
@@ -38,5 +39,16 @@ class SharedPrefs {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     String profile = prefs.getString(_profile) ?? "";
     return profile == "" ? null : ProfileModel(jsonDecode(profile));
+  }
+
+  Future<bool> isFirstTime() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_isFirst) ?? true;
+  }
+
+  /// ------------------------------------------------------------
+  Future<bool> saveFirstTime(bool value) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.setBool(_isFirst, value);
   }
 }

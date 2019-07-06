@@ -9,7 +9,7 @@ class ResponseRelatedProducts {
     status = decode['status'];
     msg = decode['msg'];
     for (int i = 0; i < decode['products'].length; i++) {
-      var product = Product(decode['products'][i]);
+      var product = Product(decode['products'][i], "order");
       products.add(product);
     }
   }

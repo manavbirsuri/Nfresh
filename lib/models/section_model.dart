@@ -11,11 +11,7 @@ class Section {
 
     List<Product> objList = [];
     for (int i = 0; i < json['products'].length; i++) {
-      var product = Product(json['products'][i]);
-//      _database.queryConditionalProduct(product).then((value) {
-//        product = value;
-//        objList.add(product);
-//      });
+      var product = Product(json['products'][i], "order");
       objList.add(product);
     }
     products = objList;
@@ -26,7 +22,7 @@ class Section {
 
     // List<Product> objList = [];
     for (int i = 0; i < json['products'].length; i++) {
-      var product = Product(json['products'][i]);
+      var product = Product(json['products'][i], "order");
       _database.queryConditionalProduct(product).then((value) {
         if (product.id == value.id) {
           product.count = value.count;
