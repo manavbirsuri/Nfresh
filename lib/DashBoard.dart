@@ -17,6 +17,7 @@ import 'package:nfresh/ui/cart.dart';
 import 'package:nfresh/ui/login.dart';
 import 'package:nfresh/ui/notifications.dart';
 import 'package:nfresh/ui/refers_earn.dart';
+import 'package:onesignal/onesignal.dart';
 import 'package:page_indicator/page_indicator.dart';
 
 import 'bloc/get_fav_bloc.dart';
@@ -113,6 +114,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 
   initState() {
     super.initState();
+
     bloc.fetchHomeData();
     bloc.homeData.listen((response) {
       homeResponse = response;
@@ -134,6 +136,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       responseSearch = data;
       updateSearchProducts();
     });
+    OneSignal.shared.init("fddecd6c-3940-472d-a65d-4200ae829891");
   }
 
   Future updateProducts() async {
