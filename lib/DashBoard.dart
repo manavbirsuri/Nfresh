@@ -19,7 +19,6 @@ import 'package:nfresh/ui/notifications.dart';
 import 'package:nfresh/ui/refers_earn.dart';
 import 'package:onesignal/onesignal.dart';
 import 'package:page_indicator/page_indicator.dart';
-
 import 'bloc/get_fav_bloc.dart';
 import 'bloc/home_bloc.dart';
 import 'bloc/logout_bloc.dart';
