@@ -1,34 +1,34 @@
 {
   "project_info": {
-    "project_number": "1027573515990",
-    "firebase_url": "https://nfresh-1095b.firebaseio.com",
-    "project_id": "nfresh-1095b",
-    "storage_bucket": "nfresh-1095b.appspot.com"
+    "project_number": "460702152084",
+    "firebase_url": "https://nfresh.firebaseio.com",
+    "project_id": "nfresh",
+    "storage_bucket": "nfresh.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1027573515990:android:474933f83bf2a4c2",
+        "mobilesdk_app_id": "1:460702152084:android:da1315d454d0960d",
         "android_client_info": {
-          "package_name": "com.nfresh"
+          "package_name": "com.ecomm.nfresh"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1027573515990-010dcsk92pv28uvhg5c63cfbkgr52gbd.apps.googleusercontent.com",
+          "client_id": "460702152084-trvk5h685sj4apmi843umt4opfqal09s.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDZmeV59SqOcuDaCFfqKvNotcmKRXFJq3Y"
+          "current_key": "AIzaSyArkoX2QnDDFKG4jVMA-v1DPVDBnkBf66g"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1027573515990-010dcsk92pv28uvhg5c63cfbkgr52gbd.apps.googleusercontent.com",
+              "client_id": "460702152084-trvk5h685sj4apmi843umt4opfqal09s.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

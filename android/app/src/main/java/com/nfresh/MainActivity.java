@@ -5,11 +5,17 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.paytm.pgsdk.PaytmOrder;
 import com.paytm.pgsdk.PaytmPGService;
 import com.paytm.pgsdk.PaytmPaymentTransactionCallback;
@@ -46,6 +52,22 @@ public class MainActivity extends FlutterActivity {
                 e.printStackTrace();
               }
              // result.success(greetings);
+            });
+
+    FirebaseInstanceId.getInstance().getInstanceId()
+            .addOnCompleteListener(task -> {
+              if (!task.isSuccessful()) {
+                Log.w("TAG", "getInstanceId failed", task.getException());
+                return;
+              }
+
+              // Get new Instance ID token
+              String token = task.getResult().getToken();
+
+              // Log and toast
+              String msg = "TOKEN: "+token;
+              Log.d("", msg);
+              Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
             });
   }
 
@@ -121,4 +143,6 @@ public class MainActivity extends FlutterActivity {
     paramMap.put( "CHECKSUMHASH" , checksum);
     return paramMap;
   }
+
+
 }
