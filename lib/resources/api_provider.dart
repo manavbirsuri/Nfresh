@@ -21,7 +21,8 @@ import 'package:nfresh/ui/SignUp.dart';
 
 class ApiProvider {
   Client client = Client();
-  final String baseUrl = "http://cloudart.com.au/projects/nfresh//index.php/api/data_v1";
+  final String baseUrl =
+      "http://cloudart.com.au/projects/nfresh//index.php/api/data_v1";
 
   // Webservice call to fetch home page data
   Future<ResponseHome> fetchHomeData(auth) async {
@@ -56,7 +57,11 @@ class ApiProvider {
 
   // Webservice call to add product in favorite list
   Future<bool> setFavorite(auth, isFav, productId) async {
-    Map map = {'auth_code': auth, 'product_id': productId, 'is_favourite': isFav};
+    Map map = {
+      'auth_code': auth,
+      'product_id': productId,
+      'is_favourite': isFav
+    };
     final response = await client.post("$baseUrl/setfavourite", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {

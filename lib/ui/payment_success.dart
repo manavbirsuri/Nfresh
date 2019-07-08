@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/create_order_bloc.dart';
 import 'package:nfresh/resources/database.dart';
 
-import '../DashBoard.dart';
+import '../main.dart';
 
 class PaymentSuccessPage extends StatefulWidget {
   final response;
   final cartExtra;
-  const PaymentSuccessPage({Key key, this.response, this.cartExtra}) : super(key: key);
+  const PaymentSuccessPage({Key key, this.response, this.cartExtra})
+      : super(key: key);
   @override
   State<StatefulWidget> createState() {
     return PaymentState();
@@ -111,7 +112,9 @@ class PaymentState extends State<PaymentSuccessPage> {
                             },
                             child: Text(
                               "Done",
-                              style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold),
                             ),
                           )
                   ],
