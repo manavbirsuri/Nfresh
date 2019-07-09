@@ -14,6 +14,8 @@ import 'package:nfresh/ui/pin_view_update.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:toast/toast.dart';
 
+import '../utils.dart';
+
 class Profile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -546,6 +548,7 @@ class StateProfilePage extends State<stateProfile> {
                           ),
                           textInputAction: TextInputAction.next,
                           keyboardType: TextInputType.phone,
+                          maxLength: 10,
                           controller: phoneController,
                         ),
                       ],
@@ -559,7 +562,14 @@ class StateProfilePage extends State<stateProfile> {
                       splashColor: Colors.black12,
                       color: Colors.colorgreen,
                       onPressed: () {
-                        updatePhoneWebservice(phoneController.text.toString());
+                        Utils.checkInternet().then((connected) {
+                          if (connected != null && connected) {
+                            updatePhoneWebservice(phoneController.text.toString());
+                          } else {
+                            Toast.show("Not connected to internet", context,
+                                duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                          }
+                        });
                       },
                       child: Text(
                         'Verify',
@@ -716,20 +726,27 @@ class StateProfilePage extends State<stateProfile> {
                       onPressed: () {
                         var localAddress = addressController.text.toString();
                         if (localAddress.length > 0) {
-                          dialog = new ProgressDialog(context, ProgressDialogType.Normal);
-                          dialog.setMessage("Please wait...");
-                          dialog.show();
+                          Utils.checkInternet().then((connected) {
+                            if (connected != null && connected) {
+                              dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+                              dialog.setMessage("Please wait...");
+                              dialog.show();
 
-                          blocAddress.fetchData(localAddress, selectedCity.id, selectedArea.id);
-                          blocAddress.profileData.listen((response) {
-                            dialog.hide();
-                            if (response.status == "true") {
-                              Navigator.of(context).pop();
-                              String data = jsonEncode(response.profile);
-                              _prefs.saveProfile(data);
+                              blocAddress.fetchData(localAddress, selectedCity.id, selectedArea.id);
+                              blocAddress.profileData.listen((response) {
+                                dialog.hide();
+                                if (response.status == "true") {
+                                  Navigator.of(context).pop();
+                                  String data = jsonEncode(response.profile);
+                                  _prefs.saveProfile(data);
+                                }
+                                Toast.show(response.msg, context,
+                                    duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                              });
+                            } else {
+                              Toast.show("Not connected to internet", context,
+                                  duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
                             }
-                            Toast.show(response.msg, context,
-                                duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
                           });
                         } else {
                           Toast.show("Address cannot be empty", context,

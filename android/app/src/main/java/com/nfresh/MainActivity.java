@@ -54,7 +54,7 @@ public class MainActivity extends FlutterActivity {
              // result.success(greetings);
             });
 
-    FirebaseInstanceId.getInstance().getInstanceId()
+   /* FirebaseInstanceId.getInstance().getInstanceId()
             .addOnCompleteListener(task -> {
               if (!task.isSuccessful()) {
                 Log.w("TAG", "getInstanceId failed", task.getException());
@@ -67,8 +67,8 @@ public class MainActivity extends FlutterActivity {
               // Log and toast
               String msg = "TOKEN: "+token;
               Log.d("", msg);
-              Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-            });
+             // Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+            });*/
   }
 
 

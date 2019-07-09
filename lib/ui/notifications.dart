@@ -16,7 +16,9 @@ class NotificationState extends State<NotificationPage> {
     super.initState();
     bloc.fetchNotifications();
     bloc.notificationData.listen((res) {
-      isLoading = false;
+      setState(() {
+        isLoading = false;
+      });
     });
   }
 

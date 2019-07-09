@@ -254,7 +254,7 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                                       duration: Toast.LENGTH_SHORT,
                                                       gravity: Toast.BOTTOM);
                                                 } else if (password != cPassword) {
-                                                  Toast.show("Passowrd not matched", context,
+                                                  Toast.show("Passoword not matched", context,
                                                       duration: Toast.LENGTH_SHORT,
                                                       gravity: Toast.BOTTOM);
                                                 } else {

@@ -183,8 +183,8 @@ class stateProfilePage extends State<referEarnProfile> {
                                   children: <Widget>[
                                     Image.asset(
                                       "assets/refer.png",
-                                      height: 130,
-                                      width: 130,
+                                      height: 150,
+                                      width: 150,
                                     ),
                                   ],
                                 ),
@@ -194,7 +194,7 @@ class stateProfilePage extends State<referEarnProfile> {
                                 child: Text(
                                   'You can refer your friends and earn bonus credits when they join using your referral code.',
                                   style: TextStyle(
-                                    fontSize: 24,
+                                    fontSize: 20,
                                     color: Colors.colorgreen,
                                   ),
                                 ),
@@ -231,7 +231,7 @@ class stateProfilePage extends State<referEarnProfile> {
                                                       child: Text(
                                                         code,
                                                         style: TextStyle(
-                                                            color: Colors.black,
+                                                            color: Colors.colorgreen,
                                                             fontWeight: FontWeight.bold,
                                                             fontSize: 35),
                                                       ),
@@ -242,34 +242,43 @@ class stateProfilePage extends State<referEarnProfile> {
                                             ],
                                           ),
                                         ),
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 62),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            children: <Widget>[
-                                              Image.asset(
-                                                "assets/fb.png",
-                                                height: 40,
-                                                width: 40,
-                                              ),
-                                              Image.asset(
-                                                "assets/wa.png",
-                                                height: 40,
-                                                width: 40,
-                                              ),
-                                              Image.asset(
-                                                "assets/message.png",
-                                                height: 40,
-                                                width: 40,
-                                              ),
-                                              Image.asset(
-                                                "assets/mail.png",
-                                                height: 40,
-                                                width: 40,
-                                              ),
-                                            ],
+                                        GestureDetector(
+                                          onTap: () {
+                                            Share.plainText(
+                                                    text:
+                                                        "You can refer your friends and earn bonus credits when they join using your referral code $code.",
+                                                    title: "Share")
+                                                .share();
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.only(top: 62),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              children: <Widget>[
+                                                Image.asset(
+                                                  "assets/fb.png",
+                                                  height: 40,
+                                                  width: 40,
+                                                ),
+                                                Image.asset(
+                                                  "assets/wa.png",
+                                                  height: 40,
+                                                  width: 40,
+                                                ),
+                                                Image.asset(
+                                                  "assets/message.png",
+                                                  height: 40,
+                                                  width: 40,
+                                                ),
+                                                Image.asset(
+                                                  "assets/mail.png",
+                                                  height: 40,
+                                                  width: 40,
+                                                ),
+                                              ],
+                                            ),
                                           ),
-                                        ),
+                                        )
                                       ],
                                     ),
                                   ),
@@ -287,7 +296,7 @@ class stateProfilePage extends State<referEarnProfile> {
                             onTap: () {
                               Share.plainText(
                                       text:
-                                          "You can refer your friends and earn bonus credits when they join using your referral code 040386aM.",
+                                          "You can refer your friends and earn bonus credits when they join using your referral code $code.",
                                       title: "Share")
                                   .share();
                             },
@@ -301,7 +310,7 @@ class stateProfilePage extends State<referEarnProfile> {
                                 child: new Text("Share Now",
                                     style: new TextStyle(
                                       color: Colors.white,
-                                      fontSize: 20,
+                                      fontSize: 16,
                                     )),
                               ),
                             ),
