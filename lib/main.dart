@@ -102,6 +102,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 
   ResponseSearch responseSearch;
 
+  String mToken;
+
   _MyHomePageState(String title) {
     this.title = title;
   }
@@ -117,8 +119,6 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 
   initState() {
     super.initState();
-
-    bloc.fetchHomeData();
     bloc.homeData.listen((response) {
       homeResponse = response;
       setState(() {
@@ -410,7 +410,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => NotificationsPage(),
+                          builder: (context) => NotificationPage(),
                         ));
                   },
                   child: Padding(
@@ -518,34 +518,36 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                 Container(
                                   margin: EdgeInsets.all(12),
                                   padding: EdgeInsets.all(5),
-                                  height: 80,
-                                  width: 80,
+                                  height: 75,
+                                  width: 75,
                                   color: Colors.white,
                                   child: Image.asset(
                                     'assets/logo.png',
                                   ),
                                 ),
-                                Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      profile == null ? "No name" : profile.name,
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        color: Colors.white,
+                                Expanded(
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text(
+                                        profile == null ? "No name" : profile.name,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: Colors.white,
+                                        ),
+                                        textAlign: TextAlign.start,
                                       ),
-                                      textAlign: TextAlign.start,
-                                    ),
-                                    Text(
-                                      profile == null ? "Please login" : profile.email,
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: profile == null ? Colors.grey : Colors.white,
+                                      Text(
+                                        profile == null ? "Please login" : profile.email,
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: profile == null ? Colors.grey : Colors.white,
+                                        ),
+                                        textAlign: TextAlign.start,
                                       ),
-                                      textAlign: TextAlign.start,
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 )
                               ],
                             ),
@@ -893,7 +895,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
             _curIndex = index;
             switch (_curIndex) {
               case 0:
-                bloc.fetchHomeData();
+                bloc.fetchHomeData(mToken);
                 bloc.homeData.listen((response) {
                   homeResponse = response;
                   setState(() {
@@ -2804,9 +2806,10 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 
   void firebaseCloudMessagingListeners() {
     if (Platform.isIOS) iosPermission();
-
     _firebaseMessaging.getToken().then((token) {
-      print("FBase Token: " + token);
+      print("FBase Token:  $token");
+      mToken = token;
+      bloc.fetchHomeData(token);
     });
 
     _firebaseMessaging.configure(

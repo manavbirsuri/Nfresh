@@ -10,9 +10,9 @@ class HomeBloc {
 
   Observable<ResponseHome> get homeData => _homeFetcher.stream;
 
-  fetchHomeData() async {
+  fetchHomeData(String firebaseToken) async {
     var auth = await _prefs.getAuthCode();
-    ResponseHome itemModel = await _repository.fetchHomeData(auth);
+    ResponseHome itemModel = await _repository.fetchHomeData(auth, firebaseToken);
     var status = itemModel.status;
     if (status == "true") {
       _prefs.setAuthCode(itemModel.authCode);

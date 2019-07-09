@@ -19,7 +19,8 @@ import 'api_provider.dart';
 
 class Repository {
   final apiProvider = ApiProvider();
-  Future<ResponseHome> fetchHomeData(auth) => apiProvider.fetchHomeData(auth);
+  Future<ResponseHome> fetchHomeData(auth, String firebaseToken) =>
+      apiProvider.fetchHomeData(auth, firebaseToken);
 
   Future<ResponseSubCat> getSubCategories(auth, catId) => apiProvider.getSubCategories(auth, catId);
 
@@ -69,4 +70,5 @@ class Repository {
   Future<ResponseProfile> updatePhone2(auth, phone) => apiProvider.updatePhone2(auth, phone);
   Future<ResponseLogin> logout(auth) => apiProvider.logout(auth);
   Future<String> forgotPassword(auth, phone, pass) => apiProvider.forgotPassword(auth, phone, pass);
+  Future<String> getNotifications(auth, dateTime) => apiProvider.getNotifications(auth, dateTime);
 }

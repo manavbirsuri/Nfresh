@@ -21,12 +21,11 @@ import 'package:nfresh/ui/SignUp.dart';
 
 class ApiProvider {
   Client client = Client();
-  final String baseUrl =
-      "http://cloudart.com.au/projects/nfresh//index.php/api/data_v1";
+  final String baseUrl = "http://cloudart.com.au/projects/nfresh//index.php/api/data_v1";
 
   // Webservice call to fetch home page data
-  Future<ResponseHome> fetchHomeData(auth) async {
-    Map map = {'device_id': '123456789'};
+  Future<ResponseHome> fetchHomeData(auth, String firebaseToken) async {
+    Map map = {'device_id': firebaseToken};
     if (auth.length > 3) {
       map = {'auth_code': auth};
     }
@@ -57,11 +56,7 @@ class ApiProvider {
 
   // Webservice call to add product in favorite list
   Future<bool> setFavorite(auth, isFav, productId) async {
-    Map map = {
-      'auth_code': auth,
-      'product_id': productId,
-      'is_favourite': isFav
-    };
+    Map map = {'auth_code': auth, 'product_id': productId, 'is_favourite': isFav};
     final response = await client.post("$baseUrl/setfavourite", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
@@ -493,6 +488,22 @@ class ApiProvider {
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load updateforgotpassword service');
+    }
+  }
+
+  // Webservice call for Forgot password
+  Future<String> getNotifications(auth, dateTime) async {
+    Map map = {
+      'auth_code': auth,
+      'datetime': dateTime,
+    };
+    final response = await client.post("$baseUrl/get_notifications", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load get_notifications service');
     }
   }
 }

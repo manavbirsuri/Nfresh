@@ -1,6 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/notifications_bloc.dart';
 
-class NotificationsPage extends StatelessWidget {
+class NotificationPage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return NotificationState();
+  }
+}
+
+class NotificationState extends State<NotificationPage> {
+  var bloc = NotificationsBloc();
+  var isLoading = true;
+  @override
+  void initState() {
+    super.initState();
+    bloc.fetchNotifications();
+    bloc.notificationData.listen((res) {
+      isLoading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -24,9 +43,16 @@ class NotificationsPage extends StatelessWidget {
           ),
           body: Container(
             color: Colors.colorlightgreyback,
-            child: ListView.builder(itemBuilder: (context, position) {
-              return notificationListItem(context, position);
-            }),
+            child: isLoading
+                ? Center(
+                    child: CircularProgressIndicator(),
+                  )
+                : ListView.builder(
+                    itemBuilder: (context, position) {
+                      return notificationListItem(context, position);
+                    },
+                    itemCount: 20,
+                  ),
           ),
         )
       ],

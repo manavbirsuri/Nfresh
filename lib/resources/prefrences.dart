@@ -7,6 +7,7 @@ class SharedPrefs {
   final String _auth = "auth_code";
   final String _profile = "profile";
   final String _isFirst = "isFirst";
+  final String _dateTime = "datetime";
 
   /// ------------------------------------------------------------
   /// Method that returns the user authCode to hit web service
@@ -50,5 +51,10 @@ class SharedPrefs {
   Future<bool> saveFirstTime(bool value) async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setBool(_isFirst, value);
+  }
+
+  Future<String> getDateTime() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_dateTime) ?? "0";
   }
 }
