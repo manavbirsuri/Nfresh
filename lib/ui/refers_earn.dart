@@ -221,20 +221,40 @@ class stateProfilePage extends State<referEarnProfile> {
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: <Widget>[
                                               Center(
-                                                child: DottedBorder(
-                                                  color: Colors.black,
-                                                  gap: 3,
-                                                  strokeWidth: 1,
-                                                  child: Container(
-                                                    // height: 40,
-                                                    child: Center(
-                                                      child: Text(
-                                                        code,
-                                                        style: TextStyle(
-                                                            color: Colors.colorgreen,
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: 35),
-                                                      ),
+                                                child: GestureDetector(
+                                                  onLongPress: () {
+                                                    // code to copy refer code
+                                                    Clipboard.setData(
+                                                        new ClipboardData(text: code));
+                                                    Scaffold.of(context).showSnackBar(new SnackBar(
+                                                      content: new Text("Copied to Clipboard"),
+                                                    ));
+                                                  },
+                                                  child: DottedBorder(
+                                                    color: Colors.black,
+                                                    gap: 3,
+                                                    strokeWidth: 1,
+                                                    child: Stack(
+                                                      fit: StackFit.passthrough,
+                                                      alignment: Alignment.centerLeft,
+                                                      children: <Widget>[
+                                                        Center(
+                                                          child: Text(
+                                                            code,
+                                                            style: TextStyle(
+                                                                color: Colors.colorgreen,
+                                                                fontWeight: FontWeight.bold,
+                                                                fontSize: 35),
+                                                          ),
+                                                        ),
+                                                        Container(
+                                                          //color: Colors.green,
+                                                          width: 30,
+                                                          child: Center(
+                                                            child: Icon(Icons.content_copy),
+                                                          ),
+                                                        )
+                                                      ],
                                                     ),
                                                   ),
                                                 ),
