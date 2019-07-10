@@ -66,26 +66,28 @@ class PromoCodeState extends State<PromoCodePage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: <Widget>[
                                     Flexible(
                                       child: TextField(
                                         controller: couponController,
-                                        decoration: new InputDecoration.collapsed(
-                                            hintText: 'Enter promo code'),
+                                        decoration:
+                                            new InputDecoration.collapsed(
+                                                hintText: 'Enter promo code'),
                                       ),
                                       flex: 4,
                                     ),
                                     Flexible(
                                       child: GestureDetector(
                                         onTap: () {
-                                          dialog = new ProgressDialog(
-                                              context, ProgressDialogType.Normal);
+                                          dialog = new ProgressDialog(context,
+                                              ProgressDialogType.Normal);
                                           dialog.setMessage("Please wait...");
                                           dialog.setCancelable(false);
                                           dialog.show();
-                                          blocApply.fetchData(
-                                              widget.total, couponController.text.toString());
+                                          blocApply.fetchData(widget.total,
+                                              couponController.text.toString());
                                           observeResponse(context);
                                         },
                                         child: Text(
@@ -104,7 +106,9 @@ class PromoCodeState extends State<PromoCodePage> {
                                     padding: EdgeInsets.fromLTRB(0, 24, 0, 0),
                                     child: Text(
                                       "AVAILABLE COUPONS",
-                                      style: TextStyle(color: Colors.colorgreen, fontSize: 16),
+                                      style: TextStyle(
+                                          color: Colors.colorgreen,
+                                          fontSize: 16),
                                       textAlign: TextAlign.start,
                                     )),
                                 Padding(
@@ -118,7 +122,8 @@ class PromoCodeState extends State<PromoCodePage> {
                         Expanded(
                           child: StreamBuilder(
                             stream: bloc.couponsList,
-                            builder: (context, AsyncSnapshot<ResponseCoupons> snapshot) {
+                            builder: (context,
+                                AsyncSnapshot<ResponseCoupons> snapshot) {
                               if (snapshot.hasData) {
                                 return snapshot.data.coupons.length > 0
                                     ? mainContent(snapshot)
@@ -159,7 +164,8 @@ class PromoCodeState extends State<PromoCodePage> {
                   strokeWidth: 1,
                   child: Text(
                     coupon.couponCode,
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.black, fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -168,7 +174,8 @@ class PromoCodeState extends State<PromoCodePage> {
                   if (widget.total < coupon.minValue) {
                     showMessage(context, coupon);
                   } else {
-                    dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+                    dialog =
+                        new ProgressDialog(context, ProgressDialogType.Normal);
                     dialog.setMessage("Please wait...");
                     // dialog.setCancelable(false);
                     dialog.show();
@@ -179,7 +186,9 @@ class PromoCodeState extends State<PromoCodePage> {
                 child: Text(
                   'Apply',
                   style: TextStyle(
-                      color: Colors.colorgreen, fontSize: 16, fontWeight: FontWeight.bold),
+                      color: Colors.colorgreen,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ],
@@ -217,8 +226,15 @@ class PromoCodeState extends State<PromoCodePage> {
 
   Widget noDataView() {
     return Container(
+      //color: Colors.green,
       child: Column(
-        children: <Widget>[Text("No coupons available")],
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Center(
+            child: Text("No coupons available"),
+          )
+        ],
       ),
     );
   }
@@ -241,8 +257,8 @@ class PromoCodeState extends State<PromoCodePage> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Alert!"),
-          content:
-              new Text("Your minimum cart value should be ₹${coupon.minValue} to use this offer."),
+          content: new Text(
+              "Your minimum cart value should be ₹${coupon.minValue} to use this offer."),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -333,7 +349,10 @@ class _DynamicDialogState extends State<DynamicDialog> {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: Text(
             "Promo code succefully applied.",
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.colorgrey, fontSize: 22),
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.colorgrey,
+                fontSize: 22),
           ),
         ),
         Padding(
@@ -346,7 +365,8 @@ class _DynamicDialogState extends State<DynamicDialog> {
               height: 40,
               width: 150,
               decoration: new BoxDecoration(
-                  borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                  borderRadius:
+                      new BorderRadius.all(new Radius.circular(100.0)),
                   color: Colors.colorgreen),
               child: Center(
                 child: new Text("Ok",

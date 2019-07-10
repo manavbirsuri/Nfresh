@@ -106,7 +106,6 @@ class PinState extends State<PinViewUpdatePage> {
                   onTap: () {
                     var bloc = UpdatePhoneBloc();
                     bloc.fetchData(widget.phone);
-
                   },
                   child: Center(
                     child: Text(

@@ -67,7 +67,9 @@ class OrderHistoryState extends State<OrderState> {
               stream: bloc.ordersList,
               builder: (context, AsyncSnapshot<ResponseOrderHistory> snapshot) {
                 if (snapshot.hasData) {
-                  return snapshot.data.orders.length > 0 ? mainContent(snapshot) : noDataView();
+                  return snapshot.data.orders.length > 0
+                      ? mainContent(snapshot)
+                      : noDataView();
                 } else if (snapshot.hasError) {
                   return Text(snapshot.error.toString());
                 }
@@ -151,7 +153,8 @@ class OrderHistoryState extends State<OrderState> {
                         Text("Total  "),
                         Text(
                           "₹${order.orderTotal}",
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                       ],
                     ),
@@ -184,13 +187,15 @@ class OrderHistoryState extends State<OrderState> {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
-        ListView.builder(
-          itemBuilder: (context, position) {
-            return getListItem(position, snapshot.data.orders);
-          },
-          itemCount: snapshot.data.orders.length,
-          shrinkWrap: true,
-          scrollDirection: Axis.vertical,
+        Expanded(
+          child: ListView.builder(
+            itemBuilder: (context, position) {
+              return getListItem(position, snapshot.data.orders);
+            },
+            itemCount: snapshot.data.orders.length,
+            shrinkWrap: true,
+            scrollDirection: Axis.vertical,
+          ),
         )
       ],
     );

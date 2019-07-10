@@ -216,8 +216,7 @@ class PinState extends State<PinViewPage> {
       });
       if (response.status == "true") {
         if (response.activate == 0) {
-          Toast.show(response.msg, context,
-              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+          showAlertMessage(context, response.msg);
         } else {
           Navigator.of(context).pop();
           Navigator.pushReplacement(
@@ -230,5 +229,31 @@ class PinState extends State<PinViewPage> {
             duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       }
     });
+  }
+
+  void showAlertMessage(context, message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text(message),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.pushReplacement(
+                  context,
+                  new MaterialPageRoute(builder: (context) => DashBoard()),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 }

@@ -39,7 +39,9 @@ class WishPage extends State<WishListPage> {
         stream: bloc.favList,
         builder: (context, AsyncSnapshot<ResponseGetFav> snapshot) {
           if (snapshot.hasData) {
-            return snapshot.data.products.length > 0 ? mainContent(snapshot) : noDataView();
+            return snapshot.data.products.length > 0
+                ? mainContent(snapshot)
+                : noDataView();
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
@@ -463,8 +465,9 @@ class WishPage extends State<WishListPage> {
                                       ),
                                       child: Text(
                                         product.nameHindi,
-                                        style:
-                                            TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.colorlightgrey),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -472,7 +475,8 @@ class WishPage extends State<WishListPage> {
                                     Padding(
                                       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                       child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: <Widget>[
                                             Text(
                                               '₹ ${product.selectedPacking.price}  ',
@@ -482,13 +486,18 @@ class WishPage extends State<WishListPage> {
                                                   fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.start,
                                             ),
-                                            product.selectedPacking.displayPrice > 0
+                                            product.selectedPacking
+                                                        .displayPrice >
+                                                    0
                                                 ? Text(
                                                     '₹${product.selectedPacking.displayPrice}',
                                                     style: TextStyle(
                                                         fontSize: 16,
-                                                        color: Colors.colororange,
-                                                        decoration: TextDecoration.lineThrough),
+                                                        color:
+                                                            Colors.colororange,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .lineThrough),
                                                     textAlign: TextAlign.start,
                                                   )
                                                 : Container(),
@@ -498,7 +507,8 @@ class WishPage extends State<WishListPage> {
                                       padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         children: <Widget>[
                                           Container(
                                             height: 32,
@@ -506,27 +516,36 @@ class WishPage extends State<WishListPage> {
                                             decoration: myBoxDecoration3(),
                                             child: Center(
                                               child: Padding(
-                                                padding: EdgeInsets.only(right: 8, left: 8),
-                                                child: DropdownButtonFormField<Packing>(
-                                                  decoration: InputDecoration.collapsed(
-                                                      hintText:
-                                                          product.selectedPacking.unitQtyShow),
+                                                padding: EdgeInsets.only(
+                                                    right: 8, left: 8),
+                                                child: DropdownButtonFormField<
+                                                    Packing>(
+                                                  decoration:
+                                                      InputDecoration.collapsed(
+                                                          hintText: product
+                                                              .selectedPacking
+                                                              .unitQtyShow),
                                                   value: null,
-                                                  items: product.packing.map((Packing value) {
-                                                    return new DropdownMenuItem<Packing>(
+                                                  items: product.packing
+                                                      .map((Packing value) {
+                                                    return new DropdownMenuItem<
+                                                        Packing>(
                                                       value: value,
                                                       child: new Text(
                                                         value.unitQtyShow,
-                                                        style: TextStyle(color: Colors.grey),
+                                                        style: TextStyle(
+                                                            color: Colors.grey),
                                                       ),
                                                     );
                                                   }).toList(),
                                                   onChanged: (newValue) {
                                                     setState(() {
-                                                      product.selectedPacking = newValue;
+                                                      product.selectedPacking =
+                                                          newValue;
                                                       product.count = 0;
                                                       product.selectedDisplayPrice =
-                                                          getCalculatedPrice(product);
+                                                          getCalculatedPrice(
+                                                              product);
                                                     });
                                                   },
                                                 ),
@@ -618,7 +637,8 @@ class WishPage extends State<WishListPage> {
                             ),
                           ),*/
                           Padding(
-                            padding: EdgeInsets.only(right: 0, left: 0, top: 16),
+                            padding:
+                                EdgeInsets.only(right: 0, left: 0, top: 16),
                             child: Container(
                               // width: 120,
                               alignment: Alignment.centerRight,
@@ -628,7 +648,8 @@ class WishPage extends State<WishListPage> {
                                   // child: Center(
                                   child: IntrinsicHeight(
                                     child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: <Widget>[
                                         GestureDetector(
@@ -640,7 +661,8 @@ class WishPage extends State<WishListPage> {
                                             // color: Colors.white,
                                             child: Container(
                                               decoration: myBoxDecoration2(),
-                                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                              padding: EdgeInsets.fromLTRB(
+                                                  10, 0, 10, 0),
                                               child: Image.asset(
                                                 'assets/minus.png',
                                                 height: 10,
@@ -650,8 +672,11 @@ class WishPage extends State<WishListPage> {
                                           ),
                                         ),
                                         Container(
-                                          margin:
-                                              EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                                          margin: EdgeInsets.only(
+                                              left: 8,
+                                              right: 8,
+                                              top: 4,
+                                              bottom: 4),
                                           child: Center(
                                             child: Text(
                                               product.count.toString(),
@@ -672,7 +697,8 @@ class WishPage extends State<WishListPage> {
                                             // padding: EdgeInsets.only(right: 20),
                                             child: Container(
                                               decoration: myBoxDecoration2(),
-                                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                              padding: EdgeInsets.fromLTRB(
+                                                  10, 0, 10, 0),
                                               child: Image.asset(
                                                 'assets/plus.png',
                                                 height: 10,
@@ -720,7 +746,7 @@ class WishPage extends State<WishListPage> {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Text(
-            "No product in your whishlist",
+            "No products in your whishlist",
             textAlign: TextAlign.center,
           ),
         ],
@@ -762,7 +788,8 @@ class WishPage extends State<WishListPage> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Alert!"),
-          content: new Text("Would you like to remove this product from your Wishlist?"),
+          content: new Text(
+              "Would you like to remove this product from your Wishlist?"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(

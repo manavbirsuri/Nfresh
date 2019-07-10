@@ -206,7 +206,8 @@ class _MyCustomFormState extends State<CartPage> {
                                               Text(
                                                 '₹$checkoutTotal',
                                                 style: TextStyle(
-                                                    fontWeight: FontWeight.bold, fontSize: 21),
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 21),
                                               ),
                                               Text(
                                                 'Total amount',
@@ -216,13 +217,16 @@ class _MyCustomFormState extends State<CartPage> {
                                                 ),
                                               )
                                             ],
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                           ),
                                           //flex: 1,
                                           // ),
                                         ],
-                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                       ),
                                     ),
                                     onTap: () {
@@ -239,19 +243,23 @@ class _MyCustomFormState extends State<CartPage> {
                                     child: Container(
                                       color: Colors.colorgreen,
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: <Widget>[
                                           Flexible(
                                             child: Row(
                                               children: <Widget>[
                                                 Text(
                                                   'Place Order',
-                                                  style:
-                                                      TextStyle(fontSize: 18, color: Colors.white),
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      color: Colors.white),
                                                 ),
                                               ],
-                                              mainAxisAlignment: MainAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
                                             ),
                                             flex: 1,
                                           ),
@@ -275,7 +283,8 @@ class _MyCustomFormState extends State<CartPage> {
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) => PaymentSuccessPage(
+                                                builder: (context) =>
+                                                    PaymentSuccessPage(
                                                       response: response,
                                                       cartExtra: data,
                                                     ),
@@ -362,7 +371,8 @@ class _MyCustomFormState extends State<CartPage> {
                               padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                               child: Text(
                                 product.nameHindi,
-                                style: TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.colorlightgrey),
                                 textAlign: TextAlign.start,
                               ),
                             ),
@@ -385,7 +395,8 @@ class _MyCustomFormState extends State<CartPage> {
                                             style: TextStyle(
                                                 fontSize: 16,
                                                 color: Colors.colororange,
-                                                decoration: TextDecoration.lineThrough),
+                                                decoration:
+                                                    TextDecoration.lineThrough),
                                             textAlign: TextAlign.start,
                                           )
                                         : Container(),
@@ -403,7 +414,8 @@ class _MyCustomFormState extends State<CartPage> {
                                     decoration: myBoxDecoration3(),
                                     child: Center(
                                       child: Padding(
-                                        padding: EdgeInsets.only(right: 8, left: 8),
+                                        padding:
+                                            EdgeInsets.only(right: 8, left: 8),
                                         child: Text(
                                           product.selectedPacking.unitQtyShow,
                                           style: TextStyle(color: Colors.grey),
@@ -453,10 +465,12 @@ class _MyCustomFormState extends State<CartPage> {
                           children: <Widget>[
                             GestureDetector(
                               onTap: () {
-                                showMessage(context, product, products, position);
+                                showMessage(
+                                    context, product, products, position);
                               },
                               child: Padding(
-                                padding: EdgeInsets.only(right: 8, left: 16, bottom: 16),
+                                padding: EdgeInsets.only(
+                                    right: 8, left: 16, bottom: 16),
                                 child: Align(
                                   alignment: Alignment.topRight,
                                   child: Image.asset(
@@ -542,7 +556,8 @@ class _MyCustomFormState extends State<CartPage> {
                               ),
                             ),*/
                             Padding(
-                              padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                              padding:
+                                  EdgeInsets.only(right: 8, left: 8, top: 16),
                               child: Container(
                                 width: 104,
                                 //color: Colors.grey,
@@ -552,23 +567,31 @@ class _MyCustomFormState extends State<CartPage> {
                                     child: Center(
                                       child: IntrinsicHeight(
                                         child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.stretch,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: <Widget>[
                                             GestureDetector(
                                               onTap: () {
-                                                decrementCount(product, products, position);
-                                                Future.delayed(const Duration(milliseconds: 2000),
+                                                decrementCount(product,
+                                                    products, position);
+                                                Future.delayed(
+                                                    const Duration(
+                                                        milliseconds: 2000),
                                                     () {
                                                   calculateTotal(products);
                                                 });
                                               },
                                               child: Container(
-                                                padding: EdgeInsets.only(left: 0),
+                                                padding:
+                                                    EdgeInsets.only(left: 0),
                                                 // color: Colors.white,
                                                 child: Container(
-                                                  decoration: myBoxDecoration2(),
-                                                  padding: EdgeInsets.fromLTRB(9, 0, 9, 0),
+                                                  decoration:
+                                                      myBoxDecoration2(),
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      9, 0, 9, 0),
                                                   child: Image.asset(
                                                     'assets/minus.png',
                                                     height: 10,
@@ -579,13 +602,17 @@ class _MyCustomFormState extends State<CartPage> {
                                             ),
                                             Container(
                                               margin: EdgeInsets.only(
-                                                  left: 8, right: 8, top: 4, bottom: 4),
+                                                  left: 8,
+                                                  right: 8,
+                                                  top: 4,
+                                                  bottom: 4),
                                               child: Center(
                                                 child: Text(
                                                   product.count.toString(),
                                                   style: TextStyle(
                                                       color: Colors.colorgreen,
-                                                      fontWeight: FontWeight.bold,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                       fontSize: 20),
                                                   textAlign: TextAlign.center,
                                                 ),
@@ -594,22 +621,29 @@ class _MyCustomFormState extends State<CartPage> {
                                             GestureDetector(
                                               onTap: () {
                                                 setState(() {
-                                                  if (walletDiscount > totalAmount) {
+                                                  if (walletDiscount >
+                                                      totalAmount) {
                                                     setState(() {
                                                       walletDiscount = 0;
                                                       checkoutTotal =
-                                                          totalAmount - discount - walletDiscount;
+                                                          totalAmount -
+                                                              discount -
+                                                              walletDiscount;
                                                     });
                                                   }
-                                                  incrementCount(products[position]);
+                                                  incrementCount(
+                                                      products[position]);
                                                 });
                                               },
                                               child: Container(
                                                 //  color: Colors.white,
-                                                padding: EdgeInsets.only(right: 0),
+                                                padding:
+                                                    EdgeInsets.only(right: 0),
                                                 child: Container(
-                                                  decoration: myBoxDecoration2(),
-                                                  padding: EdgeInsets.fromLTRB(9, 0, 9, 0),
+                                                  decoration:
+                                                      myBoxDecoration2(),
+                                                  padding: EdgeInsets.fromLTRB(
+                                                      9, 0, 9, 0),
                                                   child: Image.asset(
                                                     'assets/plus.png',
                                                     height: 10,
@@ -774,7 +808,8 @@ class _MyCustomFormState extends State<CartPage> {
                   children: <Widget>[
                     Text(
                       'Wallet Balance',
-                      style: TextStyle(fontSize: 18, color: Colors.colorlightgrey),
+                      style:
+                          TextStyle(fontSize: 18, color: Colors.colorlightgrey),
                     ),
                     Text(
                       walletBalance > 0 ? walletBalance.toString() : "Add",
@@ -840,7 +875,8 @@ class _MyCustomFormState extends State<CartPage> {
                       children: <Widget>[
                         Text(
                           'Item Total',
-                          style: TextStyle(fontSize: 18, color: Colors.colorlightgrey),
+                          style: TextStyle(
+                              fontSize: 18, color: Colors.colorlightgrey),
                         ),
                         Text(
                           '₹$totalAmount',
@@ -857,11 +893,13 @@ class _MyCustomFormState extends State<CartPage> {
                             children: <Widget>[
                               Text(
                                 'Coupon Discount',
-                                style: TextStyle(fontSize: 18, color: Colors.colorlightgrey),
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.colorlightgrey),
                               ),
                               Text(
                                 '-₹$discount',
-                                style: TextStyle(fontSize: 16, color: Colors.black),
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black),
                               ),
                             ],
                           ),
@@ -875,11 +913,13 @@ class _MyCustomFormState extends State<CartPage> {
                             children: <Widget>[
                               Text(
                                 'Wallet Discount',
-                                style: TextStyle(fontSize: 18, color: Colors.colorlightgrey),
+                                style: TextStyle(
+                                    fontSize: 18, color: Colors.colorlightgrey),
                               ),
                               Text(
                                 '-₹$walletDiscount',
-                                style: TextStyle(fontSize: 16, color: Colors.black),
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.black),
                               ),
                             ],
                           ),
@@ -893,12 +933,16 @@ class _MyCustomFormState extends State<CartPage> {
                         Text(
                           'Total',
                           style: TextStyle(
-                              fontSize: 18, color: Colors.black, fontWeight: FontWeight.bold),
+                              fontSize: 18,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
                         ),
                         Text(
                           '₹$checkoutTotal',
                           style: TextStyle(
-                              fontSize: 16, color: Colors.black, fontWeight: FontWeight.bold),
+                              fontSize: 16,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -1100,7 +1144,8 @@ class _MyCustomFormState extends State<CartPage> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Alert!"),
-          content: new Text("Are you sure you want to clear this product from the cart?"),
+          content: new Text(
+              "Are you sure you want to clear this product from the cart?"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -1342,7 +1387,9 @@ class _MyCustomFormState extends State<CartPage> {
                     child: Text(
                       "Update Address",
                       style: TextStyle(
-                          color: Colors.colorgreen, fontWeight: FontWeight.bold, fontSize: 18.0),
+                          color: Colors.colorgreen,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0),
                     ),
                   ),
                   Flexible(
@@ -1354,7 +1401,8 @@ class _MyCustomFormState extends State<CartPage> {
                           decoration: InputDecoration(
                             labelText: 'Address',
                             border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.colorgreen)),
+                                borderSide:
+                                    BorderSide(color: Colors.colorgreen)),
                             hasFloatingPlaceholder: true,
                           ),
                           textInputAction: TextInputAction.done,
@@ -1381,7 +1429,8 @@ class _MyCustomFormState extends State<CartPage> {
                           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                           child: Center(
                             child: DropdownButtonFormField<CityModel>(
-                              decoration: InputDecoration.collapsed(hintText: selectedCity.name),
+                              decoration: InputDecoration.collapsed(
+                                  hintText: selectedCity.name),
                               value: null,
                               items: cities.map((CityModel value) {
                                 return new DropdownMenuItem<CityModel>(
@@ -1423,7 +1472,8 @@ class _MyCustomFormState extends State<CartPage> {
                           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                           child: Center(
                             child: DropdownButtonFormField<AreaModel>(
-                              decoration: InputDecoration.collapsed(hintText: selectedArea.name),
+                              decoration: InputDecoration.collapsed(
+                                  hintText: selectedArea.name),
                               value: null,
                               items: cityAreas.map((AreaModel value) {
                                 return new DropdownMenuItem<AreaModel>(
@@ -1458,13 +1508,14 @@ class _MyCustomFormState extends State<CartPage> {
                       onPressed: () {
                         var localAddress = addressController.text.toString();
                         if (localAddress.length > 0) {
-                          var dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+                          var dialog = new ProgressDialog(
+                              context, ProgressDialogType.Normal);
                           dialog.setMessage("Please wait...");
                           dialog.show();
 
-                          blocAddress.fetchData(localAddress, selectedCity.id, selectedArea.id);
+                          blocAddress.fetchData(
+                              localAddress, selectedCity.id, selectedArea.id);
                           blocAddress.profileData.listen((response) {
-                            dialog.hide();
                             if (response.status == "true") {
                               Navigator.of(context).pop();
                               String data = jsonEncode(response.profile);
@@ -1472,16 +1523,20 @@ class _MyCustomFormState extends State<CartPage> {
                               getProfileDetail();
                             }
                             Toast.show(response.msg, context,
-                                duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                                duration: Toast.LENGTH_SHORT,
+                                gravity: Toast.BOTTOM);
+                            dialog.hide();
                           });
                         } else {
                           Toast.show("Address cannot be empty", context,
-                              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                              duration: Toast.LENGTH_SHORT,
+                              gravity: Toast.BOTTOM);
                         }
                       },
                       child: Text(
                         'Submit',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -1502,8 +1557,8 @@ class _MyCustomFormState extends State<CartPage> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Alert!"),
-          content:
-              new Text("You would need to login in order to proceed. Please click here to Login."),
+          content: new Text(
+              "You would need to login in order to proceed. Please click here to Login."),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -1581,7 +1636,8 @@ class LogoutOverlay extends StatefulWidget {
   State<StatefulWidget> createState() => LogoutOverlayState();
 }
 
-class LogoutOverlayState extends State<LogoutOverlay> with SingleTickerProviderStateMixin {
+class LogoutOverlayState extends State<LogoutOverlay>
+    with SingleTickerProviderStateMixin {
   AnimationController controller;
   Animation<double> scaleAnimation;
   final myController = TextEditingController();
@@ -1590,8 +1646,10 @@ class LogoutOverlayState extends State<LogoutOverlay> with SingleTickerProviderS
   void initState() {
     super.initState();
     setState(() {});
-    controller = AnimationController(vsync: this, duration: Duration(milliseconds: 450));
-    scaleAnimation = CurvedAnimation(parent: controller, curve: Curves.elasticInOut);
+    controller =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 450));
+    scaleAnimation =
+        CurvedAnimation(parent: controller, curve: Curves.elasticInOut);
 
     controller.addListener(() {
       setState(() {});
@@ -1613,12 +1671,14 @@ class LogoutOverlayState extends State<LogoutOverlay> with SingleTickerProviderS
               height: 180.0,
               decoration: ShapeDecoration(
                   color: Color.fromRGBO(41, 167, 77, 10),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0))),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15.0))),
               child: Column(
                 children: <Widget>[
                   Expanded(
                       child: Padding(
-                    padding: const EdgeInsets.only(top: 30.0, left: 20.0, right: 20.0),
+                    padding: const EdgeInsets.only(
+                        top: 30.0, left: 20.0, right: 20.0),
                     child: Text(
                       "Please Enter Promo code",
                       style: TextStyle(color: Colors.white, fontSize: 16.0),
@@ -1626,7 +1686,8 @@ class LogoutOverlayState extends State<LogoutOverlay> with SingleTickerProviderS
                   )),
                   Expanded(
                       child: Padding(
-                          padding: const EdgeInsets.only(top: 8, left: 20.0, right: 20.0),
+                          padding: const EdgeInsets.only(
+                              top: 8, left: 20.0, right: 20.0),
                           child: Container(
                             decoration: new BoxDecoration(
                               shape: BoxShape.rectangle,
@@ -1657,8 +1718,8 @@ class LogoutOverlayState extends State<LogoutOverlay> with SingleTickerProviderS
                             minWidth: 110.0,
                             child: RaisedButton(
                               color: Colors.white,
-                              shape:
-                                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(5.0)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(5.0)),
                               splashColor: Colors.white.withAlpha(40),
                               child: Text(
                                 'Ok',
@@ -1771,7 +1832,8 @@ class _DynamicDialogState extends State<DynamicDialog> {
             alignment: Alignment.center,
             child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
               Card(
-                  child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                  child:
+                      Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
                 Padding(
                   padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                   child: Container(
@@ -1791,11 +1853,13 @@ class _DynamicDialogState extends State<DynamicDialog> {
                             children: <Widget>[
                               Text(
                                 waletb.walletCredits.toString(),
-                                style: TextStyle(color: Colors.white, fontSize: 26),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 26),
                               ),
                               Text(
                                 "credits",
-                                style: TextStyle(color: Colors.white, fontSize: 20),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 20),
                               ),
                             ],
                           ),
@@ -1834,7 +1898,8 @@ class _DynamicDialogState extends State<DynamicDialog> {
                       height: 40,
                       width: 150,
                       decoration: new BoxDecoration(
-                          borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                          borderRadius:
+                              new BorderRadius.all(new Radius.circular(100.0)),
                           color: Colors.colorgreen),
                       child: Center(
                         child: new Text("Apply",
