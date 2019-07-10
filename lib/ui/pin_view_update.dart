@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/forgot_password_bloc.dart';
 import 'package:nfresh/bloc/update_phone2_bloc.dart';
+import 'package:nfresh/bloc/update_phone_bloc.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:pin_view/pin_view.dart';
 import 'package:toast/toast.dart';
@@ -11,7 +12,9 @@ class PinViewUpdatePage extends StatefulWidget {
   final String otp;
   final String phone;
   final String password;
-  const PinViewUpdatePage({Key key, this.otp, this.phone, this.password}) : super(key: key);
+
+  const PinViewUpdatePage({Key key, this.otp, this.phone, this.password})
+      : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -60,8 +63,10 @@ class PinState extends State<PinViewUpdatePage> {
                 child: Center(
                   child: Text(
                     "OTP Verification",
-                    style:
-                        TextStyle(color: Colors.black, fontSize: 26, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -97,11 +102,19 @@ class PinState extends State<PinViewUpdatePage> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 16),
-                child: Center(
-                  child: Text(
-                    "RESEND",
-                    style: TextStyle(
-                        color: Colors.colorgreen, fontSize: 18, fontWeight: FontWeight.bold),
+                child: GestureDetector(
+                  onTap: () {
+                    var bloc = UpdatePhoneBloc();
+                    bloc.fetchData(widget.phone);
+                  },
+                  child: Center(
+                    child: Text(
+                      "RESEND",
+                      style: TextStyle(
+                          color: Colors.colorgreen,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ),
               ),
@@ -114,7 +127,8 @@ class PinState extends State<PinViewUpdatePage> {
               child: GestureDetector(
                 onTap: () {
                   if (enteredPin.length == 4) {
-                    verifyOtpWebservice(enteredPin, widget.otp, widget.phone, widget.password);
+                    verifyOtpWebservice(
+                        enteredPin, widget.otp, widget.phone, widget.password);
                   } else {
                     Toast.show("Enter valid OTP", context,
                         duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
@@ -123,7 +137,8 @@ class PinState extends State<PinViewUpdatePage> {
                 child: showLoader
                     ? Container(
                         decoration: new BoxDecoration(
-                            borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                            borderRadius: new BorderRadius.all(
+                                new Radius.circular(100.0)),
                             color: Colors.colorgreen),
                         child: SizedBox(
                           width: double.infinity,
@@ -149,7 +164,8 @@ class PinState extends State<PinViewUpdatePage> {
                       )
                     : Container(
                         decoration: new BoxDecoration(
-                            borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                            borderRadius: new BorderRadius.all(
+                                new Radius.circular(100.0)),
                             color: Colors.colorgreen),
                         child: SizedBox(
                           width: double.infinity,
@@ -185,7 +201,8 @@ class PinState extends State<PinViewUpdatePage> {
     );
   }
 
-  void verifyOtpWebservice(String pin, String otp, String phone, String password) {
+  void verifyOtpWebservice(
+      String pin, String otp, String phone, String password) {
     if (pin != otp) {
       Toast.show("You entered wrong OTP", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
@@ -205,7 +222,8 @@ class PinState extends State<PinViewUpdatePage> {
         if (obj['status'] == "true") {
           Navigator.of(context).pop();
         }
-        Toast.show(obj['msg'], context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        Toast.show(obj['msg'], context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       });
     } else {
       bloc.fetchData(phone);
@@ -218,7 +236,8 @@ class PinState extends State<PinViewUpdatePage> {
           _prefs.saveProfile(data);
           Navigator.of(context).pop();
         } //else {
-        Toast.show(res.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        Toast.show(res.msg, context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
         // }
       });
     }

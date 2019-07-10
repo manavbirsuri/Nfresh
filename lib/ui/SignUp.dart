@@ -76,7 +76,9 @@ class stateProfilePage extends State<stateProfile> {
         // Navigator.of(context).pop();
         Navigator.pushReplacement(
           context,
-          new MaterialPageRoute(builder: (context) => PinViewPage(id: response.userId)),
+          new MaterialPageRoute(
+              builder: (context) => PinViewPage(
+                  response.userId, mobileController.text.toString())),
         );
       } else {
         Scaffold.of(context).showSnackBar(
@@ -144,47 +146,59 @@ class stateProfilePage extends State<stateProfile> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
                                           "Name",
-                                          style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
                                       child: TextFormField(
                                         controller: nameController,
                                         keyboardType: TextInputType.text,
                                         textInputAction: TextInputAction.next,
                                         onFieldSubmitted: (term) {
-                                          FocusScope.of(context).requestFocus(focus);
+                                          FocusScope.of(context)
+                                              .requestFocus(focus);
                                         },
                                         decoration:
-                                            new InputDecoration.collapsed(hintText: 'Enter Name'),
+                                            new InputDecoration.collapsed(
+                                                hintText: 'Enter Name'),
                                       ),
                                     ),
                                   ),
                                   Divider(height: 1, color: Colors.black),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
                                           "Email",
-                                          style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
                                       child: TextFormField(
                                         focusNode: focus,
@@ -192,28 +206,35 @@ class stateProfilePage extends State<stateProfile> {
                                         keyboardType: TextInputType.text,
                                         textInputAction: TextInputAction.next,
                                         onFieldSubmitted: (term) {
-                                          FocusScope.of(context).requestFocus(focus1);
+                                          FocusScope.of(context)
+                                              .requestFocus(focus1);
                                         },
                                         decoration:
-                                            new InputDecoration.collapsed(hintText: 'Enter Email'),
+                                            new InputDecoration.collapsed(
+                                                hintText: 'Enter Email'),
                                       ),
                                     ),
                                   ),
                                   Divider(height: 1, color: Colors.black),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
                                           "Mobile Number",
-                                          style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
                                       child: TextFormField(
                                         focusNode: focus1,
@@ -221,28 +242,36 @@ class stateProfilePage extends State<stateProfile> {
                                         keyboardType: TextInputType.phone,
                                         textInputAction: TextInputAction.next,
                                         onFieldSubmitted: (term) {
-                                          FocusScope.of(context).requestFocus(focus2);
+                                          FocusScope.of(context)
+                                              .requestFocus(focus2);
                                         },
-                                        decoration: new InputDecoration.collapsed(
-                                            hintText: 'Enter Mobile Number'),
+                                        decoration:
+                                            new InputDecoration.collapsed(
+                                                hintText:
+                                                    'Enter Mobile Number'),
                                       ),
                                     ),
                                   ),
                                   Divider(height: 1, color: Colors.black),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
                                           "Password",
-                                          style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                       child: Row(children: <Widget>[
                                         Flexible(
                                           child: Container(
@@ -251,10 +280,13 @@ class stateProfilePage extends State<stateProfile> {
                                                 focusNode: focus2,
                                                 obscureText: showText,
                                                 controller: passwordController,
-                                                keyboardType: TextInputType.text,
-                                                textInputAction: TextInputAction.next,
+                                                keyboardType:
+                                                    TextInputType.text,
+                                                textInputAction:
+                                                    TextInputAction.next,
                                                 onFieldSubmitted: (term) {},
-                                                decoration: new InputDecoration.collapsed(
+                                                decoration: new InputDecoration
+                                                        .collapsed(
                                                     hintText: 'Enter Password'),
                                               ),
                                             ),
@@ -265,7 +297,10 @@ class stateProfilePage extends State<stateProfile> {
                                           child: GestureDetector(
                                             onTap: () {
                                               setState(() {
-                                                if (passwordController.text.toString().length > 0) {
+                                                if (passwordController.text
+                                                        .toString()
+                                                        .length >
+                                                    0) {
                                                   if (showText) {
                                                     showText = false;
                                                     valueShow = "Hide";
@@ -278,11 +313,13 @@ class stateProfilePage extends State<stateProfile> {
                                             },
                                             child: Container(
                                               child: Padding(
-                                                padding: EdgeInsets.only(bottom: 8, left: 0),
+                                                padding: EdgeInsets.only(
+                                                    bottom: 8, left: 0),
                                                 child: Text(
                                                   valueShow,
                                                   style: TextStyle(
-                                                      fontSize: 18, color: Colors.colorgreen),
+                                                      fontSize: 18,
+                                                      color: Colors.colorgreen),
                                                 ),
                                               ),
                                             ),
@@ -292,22 +329,28 @@ class stateProfilePage extends State<stateProfile> {
                                       ])),
                                   Divider(height: 1, color: Colors.black),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
                                           "Type of User",
-                                          style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
                                       child: DropdownButtonFormField<UserType>(
-                                        decoration: InputDecoration.collapsed(hintText: ''),
+                                        decoration: InputDecoration.collapsed(
+                                            hintText: ''),
                                         value: selectedType,
                                         items: userTypes.map((UserType value) {
                                           return new DropdownMenuItem<UserType>(
@@ -325,25 +368,32 @@ class stateProfilePage extends State<stateProfile> {
                                   ),
                                   Divider(height: 1, color: Colors.black),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
                                           "City",
-                                          style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
                                       child: DropdownButtonFormField<CityModel>(
-                                        decoration: InputDecoration.collapsed(hintText: ''),
+                                        decoration: InputDecoration.collapsed(
+                                            hintText: ''),
                                         value: selectedCity,
                                         items: cities.map((CityModel value) {
-                                          return new DropdownMenuItem<CityModel>(
+                                          return new DropdownMenuItem<
+                                              CityModel>(
                                             value: value,
                                             child: new Text(value.name),
                                           );
@@ -359,25 +409,32 @@ class stateProfilePage extends State<stateProfile> {
                                   ),
                                   Divider(height: 1, color: Colors.black),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
                                           "Area",
-                                          style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
                                       child: DropdownButtonFormField<AreaModel>(
-                                        decoration: InputDecoration.collapsed(hintText: ''),
+                                        decoration: InputDecoration.collapsed(
+                                            hintText: ''),
                                         value: selectedArea,
                                         items: cityAreas.map((AreaModel value) {
-                                          return new DropdownMenuItem<AreaModel>(
+                                          return new DropdownMenuItem<
+                                              AreaModel>(
                                             value: value,
                                             child: new Text(value.name),
                                           );
@@ -392,19 +449,24 @@ class stateProfilePage extends State<stateProfile> {
                                   ),
                                   Divider(height: 1, color: Colors.black),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
                                           "Referral code",
-                                          style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
                                       child: TextFormField(
 //                                        focusNode: focus1,
@@ -415,16 +477,20 @@ class stateProfilePage extends State<stateProfile> {
 //                                          FocusScope.of(context)
 //                                              .requestFocus(focus2);
 //                                        },
-                                        decoration: new InputDecoration.collapsed(
-                                            hintText: 'Enter your referral code'),
+                                        decoration:
+                                            new InputDecoration.collapsed(
+                                                hintText:
+                                                    'Enter your referral code'),
                                       ),
                                     ),
                                   ),
                                   Divider(height: 1, color: Colors.black),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: <Widget>[
                                         GestureDetector(
                                           onTap: () {
@@ -455,53 +521,62 @@ class stateProfilePage extends State<stateProfile> {
                                         new Text(
                                           'terms & conditions ',
                                           style: new TextStyle(
-                                              fontSize: 16.0, color: Colors.colorgreen),
+                                              fontSize: 16.0,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   showLoader
                                       ? Padding(
-                                          padding: const EdgeInsets.fromLTRB(32, 8, 32, 16),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              32, 8, 32, 16),
                                           child: GestureDetector(
                                             onTap: () {
                                               createAccountWebservice();
                                             },
                                             child: Container(
                                               decoration: new BoxDecoration(
-                                                  borderRadius: new BorderRadius.all(
-                                                      new Radius.circular(100.0)),
+                                                  borderRadius:
+                                                      new BorderRadius.all(
+                                                          new Radius.circular(
+                                                              100.0)),
                                                   color: Colors.colorgreen),
                                               child: SizedBox(
                                                 width: double.infinity,
                                                 height: 60,
                                                 child: Center(
-                                                  child: CircularProgressIndicator(),
+                                                  child:
+                                                      CircularProgressIndicator(),
                                                 ),
                                               ),
                                             ),
                                           ),
                                         )
                                       : Padding(
-                                          padding: const EdgeInsets.fromLTRB(32, 8, 32, 16),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              32, 8, 32, 16),
                                           child: GestureDetector(
                                             onTap: () {
                                               createAccountWebservice();
                                             },
                                             child: Container(
                                               decoration: new BoxDecoration(
-                                                  borderRadius: new BorderRadius.all(
-                                                      new Radius.circular(100.0)),
+                                                  borderRadius:
+                                                      new BorderRadius.all(
+                                                          new Radius.circular(
+                                                              100.0)),
                                                   color: Colors.colorgreen),
                                               child: SizedBox(
                                                 width: double.infinity,
                                                 height: 60,
                                                 child: Center(
-                                                  child: new Text("Create Account",
-                                                      style: new TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 20,
-                                                      )),
+                                                  child:
+                                                      new Text("Create Account",
+                                                          style: new TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 20,
+                                                          )),
                                                 ),
                                               ),
                                             ),
@@ -534,7 +609,11 @@ class stateProfilePage extends State<stateProfile> {
       }
     }
     if (cityAreas.length > 0) {
-      Map<String, dynamic> map = {'id': -1, 'name': "Select Area", 'city_id': -1};
+      Map<String, dynamic> map = {
+        'id': -1,
+        'name': "Select Area",
+        'city_id': -1
+      };
       var model = AreaModel(map);
       cityAreas.insert(0, model);
       selectedArea = cityAreas[0];
@@ -632,7 +711,8 @@ class ProfileSend {
   int city;
   int area;
   String referal = "";
-  ProfileSend(name, email, phone, password, address, type, city, area, referal) {
+  ProfileSend(
+      name, email, phone, password, address, type, city, area, referal) {
     this.name = name;
     this.email = email;
     this.phone = phone;

@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/otp_bloc.dart';
+import 'package:nfresh/bloc/resend_otp_bloc.dart';
 import 'package:nfresh/main.dart';
 import 'package:pin_view/pin_view.dart';
 import 'package:toast/toast.dart';
 
+// ignore: must_be_immutable
 class PinViewPage extends StatefulWidget {
-  final id;
-  const PinViewPage({Key key, this.id}) : super(key: key);
+  var id;
+  String phoneNo;
+  PinViewPage(int userId, String phoneNo) {
+    this.id = userId;
+    this.phoneNo = phoneNo;
+  }
+
   @override
   State<StatefulWidget> createState() {
     return PinState();
@@ -61,8 +68,10 @@ class PinState extends State<PinViewPage> {
                 child: Center(
                   child: Text(
                     "OTP Verification",
-                    style:
-                        TextStyle(color: Colors.black, fontSize: 26, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -99,12 +108,17 @@ class PinState extends State<PinViewPage> {
               Padding(
                 padding: EdgeInsets.only(top: 16),
                 child: GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    var bloc = ResendOtpBloc();
+                    bloc.resendOtp(widget.phoneNo);
+                  },
                   child: Center(
                     child: Text(
                       "RESEND",
                       style: TextStyle(
-                          color: Colors.colorgreen, fontSize: 18, fontWeight: FontWeight.bold),
+                          color: Colors.colorgreen,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -127,7 +141,8 @@ class PinState extends State<PinViewPage> {
                 child: showLoader
                     ? Container(
                         decoration: new BoxDecoration(
-                            borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                            borderRadius: new BorderRadius.all(
+                                new Radius.circular(100.0)),
                             color: Colors.colorgreen),
                         child: SizedBox(
                           width: double.infinity,
@@ -153,7 +168,8 @@ class PinState extends State<PinViewPage> {
                       )
                     : Container(
                         decoration: new BoxDecoration(
-                            borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                            borderRadius: new BorderRadius.all(
+                                new Radius.circular(100.0)),
                             color: Colors.colorgreen),
                         child: SizedBox(
                           width: double.infinity,
@@ -200,7 +216,8 @@ class PinState extends State<PinViewPage> {
       });
       if (response.status == "true") {
         if (response.activate == 0) {
-          Toast.show(response.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+          Toast.show(response.msg, context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
         } else {
           Navigator.of(context).pop();
           Navigator.pushReplacement(
@@ -209,7 +226,8 @@ class PinState extends State<PinViewPage> {
           );
         }
       } else {
-        Toast.show(response.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        Toast.show(response.msg, context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       }
     });
   }

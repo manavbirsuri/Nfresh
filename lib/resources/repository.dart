@@ -22,39 +22,49 @@ class Repository {
   Future<ResponseHome> fetchHomeData(auth, String firebaseToken) =>
       apiProvider.fetchHomeData(auth, firebaseToken);
 
-  Future<ResponseSubCat> getSubCategories(auth, catId) => apiProvider.getSubCategories(auth, catId);
+  Future<ResponseSubCat> getSubCategories(auth, catId) =>
+      apiProvider.getSubCategories(auth, catId);
 
   Future<bool> setFavorite(auth, isFav, productId) =>
       apiProvider.setFavorite(auth, isFav, productId);
 
-  Future<ResponseGetFav> getFavoriteList(auth) => apiProvider.getFavoriteList(auth);
+  Future<ResponseGetFav> getFavoriteList(auth) =>
+      apiProvider.getFavoriteList(auth);
 
   Future<ResponseCatProducts> getCategoryProducts(auth, catId) =>
       apiProvider.getCatProducts(auth, catId);
 
   Future<ResponseCoupons> getCoupons(auth) => apiProvider.getCoupons(auth);
-  Future<ResponseWallet> getWalletOffers(auth) => apiProvider.getWalletOffers(auth);
+  Future<ResponseWallet> getWalletOffers(auth) =>
+      apiProvider.getWalletOffers(auth);
   Future<ResponseProfile> getProfile(auth) => apiProvider.getProfile(auth);
 
-  Future<ResponseSearch> getSearch(auth, search) => apiProvider.getSearch(auth, search);
-  Future<ResponseSignUp> getSignUp(auth, profile) => apiProvider.getSignUp(auth, profile);
+  Future<ResponseSearch> getSearch(auth, search) =>
+      apiProvider.getSearch(auth, search);
+  Future<ResponseSignUp> getSignUp(auth, profile) =>
+      apiProvider.getSignUp(auth, profile);
 
   Future<ResponseLogin> getLogin(auth, phone, password) =>
       apiProvider.getLogin(auth, phone, password);
 
-  Future<ResponseOtp> verifyOtp(auth, userId, otp) => apiProvider.verifyOtp(auth, userId, otp);
+  Future<ResponseOtp> verifyOtp(auth, userId, otp) =>
+      apiProvider.verifyOtp(auth, userId, otp);
 
   Future<ResponseCities> getCities(auth) => apiProvider.getCities(auth);
-  Future<ResponseOrderHistory> getOrders(auth) => apiProvider.getOrdersHistory(auth);
+  Future<ResponseOrderHistory> getOrders(auth) =>
+      apiProvider.getOrdersHistory(auth);
   Future<ResponseOrderDetail> getOrderDetail(auth, orderId) =>
       apiProvider.getOrderDetail(auth, orderId);
   Future<ResponseRelatedProducts> getRelatedProducts(auth, proId) =>
       apiProvider.getRelatedProducts(auth, proId);
-  Future<String> getChecksum(auth, map) => apiProvider.getPayTmChecksum(auth, map);
-  Future<String> checkInventory(auth, map) => apiProvider.checkInventory(auth, map);
+  Future<String> getChecksum(auth, map) =>
+      apiProvider.getPayTmChecksum(auth, map);
+  Future<String> checkInventory(auth, map) =>
+      apiProvider.checkInventory(auth, map);
   Future<String> placeOrder(auth, map, cart, paytmRes) =>
       apiProvider.placeOrder(auth, map, cart, paytmRes);
-  Future<ResponseReorder> reorder(auth, orderId) => apiProvider.reOrder(auth, orderId);
+  Future<ResponseReorder> reorder(auth, orderId) =>
+      apiProvider.reOrder(auth, orderId);
   Future<String> applyCoupon(auth, total, couponCode) =>
       apiProvider.applyCoupon(auth, total, couponCode);
 
@@ -66,9 +76,15 @@ class Repository {
       apiProvider.updateProfile(auth, name, email);
   Future<String> updatePassword(auth, oldPass, newPass) =>
       apiProvider.updatePassword(auth, oldPass, newPass);
-  Future<String> updatePhone(auth, phone) => apiProvider.updatePhone(auth, phone);
-  Future<ResponseProfile> updatePhone2(auth, phone) => apiProvider.updatePhone2(auth, phone);
+  Future<String> updatePhone(auth, phone) =>
+      apiProvider.updatePhone(auth, phone);
+  Future<ResponseProfile> updatePhone2(auth, phone) =>
+      apiProvider.updatePhone2(auth, phone);
   Future<ResponseLogin> logout(auth) => apiProvider.logout(auth);
-  Future<String> forgotPassword(auth, phone, pass) => apiProvider.forgotPassword(auth, phone, pass);
-  Future<String> getNotifications(auth, dateTime) => apiProvider.getNotifications(auth, dateTime);
+  Future<String> forgotPassword(auth, phone, pass) =>
+      apiProvider.forgotPassword(auth, phone, pass);
+  Future<String> getNotifications(auth, dateTime) =>
+      apiProvider.getNotifications(auth, dateTime);
+  Future<String> resendOtp(auth, phoneNo) =>
+      apiProvider.resendOtp(auth, phoneNo);
 }

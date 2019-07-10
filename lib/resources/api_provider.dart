@@ -21,7 +21,8 @@ import 'package:nfresh/ui/SignUp.dart';
 
 class ApiProvider {
   Client client = Client();
-  final String baseUrl = "http://cloudart.com.au/projects/nfresh//index.php/api/data_v1";
+  final String baseUrl =
+      "http://cloudart.com.au/projects/nfresh//index.php/api/data_v1";
 
   // Webservice call to fetch home page data
   Future<ResponseHome> fetchHomeData(auth, String firebaseToken) async {
@@ -56,7 +57,11 @@ class ApiProvider {
 
   // Webservice call to add product in favorite list
   Future<bool> setFavorite(auth, isFav, productId) async {
-    Map map = {'auth_code': auth, 'product_id': productId, 'is_favourite': isFav};
+    Map map = {
+      'auth_code': auth,
+      'product_id': productId,
+      'is_favourite': isFav
+    };
     final response = await client.post("$baseUrl/setfavourite", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
@@ -264,7 +269,8 @@ class ApiProvider {
       'auth_code': auth,
       'product_id': productId,
     };
-    final response = await client.post("$baseUrl/getrelatedproducts", body: map);
+    final response =
+        await client.post("$baseUrl/getrelatedproducts", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       return ResponseRelatedProducts.fromJson(json.decode(response.body));
@@ -294,7 +300,8 @@ class ApiProvider {
       'auth_code': auth,
       'line_items': jsonEncode(data),
     };
-    final response = await client.post("$baseUrl/checkprodinventory", body: map);
+    final response =
+        await client.post("$baseUrl/checkprodinventory", body: map);
     print(response.body.toString());
     if (response.statusCode == 200) {
       return response.body;
@@ -304,8 +311,8 @@ class ApiProvider {
     }
   }
 
-  Future<String> placeOrder(
-      auth, List<Map<String, dynamic>> data, Map<String, dynamic> cart, paytmRes) async {
+  Future<String> placeOrder(auth, List<Map<String, dynamic>> data,
+      Map<String, dynamic> cart, paytmRes) async {
     Map map = {
       'auth_code': auth,
       'line_items': jsonEncode(data),
@@ -449,7 +456,8 @@ class ApiProvider {
       'auth_code': auth,
       'phone_no': phone,
     };
-    final response = await client.post("$baseUrl/update_telephone_no", body: map);
+    final response =
+        await client.post("$baseUrl/update_telephone_no", body: map);
     print("Address Update: " + response.body.toString());
     if (response.statusCode == 200) {
       return ResponseProfile.fromJson(json.decode(response.body));
@@ -481,7 +489,8 @@ class ApiProvider {
       'phone_no': phone,
       'password': pass,
     };
-    final response = await client.post("$baseUrl/updateforgotpassword", body: map);
+    final response =
+        await client.post("$baseUrl/updateforgotpassword", body: map);
     print("Address Update: " + response.body.toString());
     if (response.statusCode == 200) {
       return response.body;
@@ -498,6 +507,22 @@ class ApiProvider {
       'datetime': dateTime,
     };
     final response = await client.post("$baseUrl/get_notifications", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load get_notifications service');
+    }
+  }
+
+  // Webservice call for Forgot password
+  Future<String> resendOtp(auth, phoneNo) async {
+    Map map = {
+      'auth_code': auth,
+      'phone_no': phoneNo,
+    };
+    final response = await client.post("$baseUrl/resendotp", body: map);
     print("Address Update: " + response.body.toString());
     if (response.statusCode == 200) {
       return response.body;
