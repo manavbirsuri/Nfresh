@@ -7,6 +7,7 @@ import 'package:nfresh/models/responses/response_coupons.dart';
 import 'package:nfresh/models/responses/response_getFavorite.dart';
 import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/models/responses/response_login.dart';
+import 'package:nfresh/models/responses/response_notifications.dart';
 import 'package:nfresh/models/responses/response_order.dart';
 import 'package:nfresh/models/responses/response_order_detail.dart';
 import 'package:nfresh/models/responses/response_otp.dart';
@@ -501,15 +502,15 @@ class ApiProvider {
   }
 
   // Webservice call for Forgot password
-  Future<String> getNotifications(auth, dateTime) async {
+  Future<ResponseNotifications> getNotifications(auth, dateTime) async {
     Map map = {
       'auth_code': auth,
       'datetime': dateTime,
     };
     final response = await client.post("$baseUrl/get_notifications", body: map);
-    print("Address Update: " + response.body.toString());
+    print("Notifications: " + response.body.toString());
     if (response.statusCode == 200) {
-      return response.body;
+      return ResponseNotifications.fromJson(json.decode(response.body));
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load get_notifications service');

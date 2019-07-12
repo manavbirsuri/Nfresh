@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/notifications_bloc.dart';
+import 'package:nfresh/models/notification.dart';
 
 class NotificationPage extends StatefulWidget {
   @override
@@ -11,6 +12,9 @@ class NotificationPage extends StatefulWidget {
 class NotificationState extends State<NotificationPage> {
   var bloc = NotificationsBloc();
   var isLoading = true;
+
+  List<NotificationModel> notifications;
+
   @override
   void initState() {
     super.initState();
@@ -19,6 +23,13 @@ class NotificationState extends State<NotificationPage> {
       setState(() {
         isLoading = false;
       });
+
+      if(res.status == "true") {
+        setState(() {
+          notifications = res.notifications;
+        });
+      }
+
     });
   }
 
@@ -53,7 +64,7 @@ class NotificationState extends State<NotificationPage> {
                     itemBuilder: (context, position) {
                       return notificationListItem(context, position);
                     },
-                    itemCount: 20,
+                    itemCount: notifications.length,
                   ),
           ),
         )

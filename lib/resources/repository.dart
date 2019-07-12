@@ -4,6 +4,7 @@ import 'package:nfresh/models/responses/response_coupons.dart';
 import 'package:nfresh/models/responses/response_getFavorite.dart';
 import 'package:nfresh/models/responses/response_home.dart';
 import 'package:nfresh/models/responses/response_login.dart';
+import 'package:nfresh/models/responses/response_notifications.dart';
 import 'package:nfresh/models/responses/response_order.dart';
 import 'package:nfresh/models/responses/response_order_detail.dart';
 import 'package:nfresh/models/responses/response_otp.dart';
@@ -83,7 +84,7 @@ class Repository {
   Future<ResponseLogin> logout(auth) => apiProvider.logout(auth);
   Future<String> forgotPassword(auth, phone, pass) =>
       apiProvider.forgotPassword(auth, phone, pass);
-  Future<String> getNotifications(auth, dateTime) =>
+  Future<ResponseNotifications> getNotifications(auth, dateTime) =>
       apiProvider.getNotifications(auth, dateTime);
   Future<String> resendOtp(auth, phoneNo) =>
       apiProvider.resendOtp(auth, phoneNo);
