@@ -24,12 +24,11 @@ class NotificationState extends State<NotificationPage> {
         isLoading = false;
       });
 
-      if(res.status == "true") {
+      if (res.status == "true") {
         setState(() {
           notifications = res.notifications;
         });
       }
-
     });
   }
 
@@ -73,10 +72,48 @@ class NotificationState extends State<NotificationPage> {
   }
 
   Widget notificationListItem(BuildContext context, int position) {
+    var notification = notifications[position];
     return Card(
       child: Container(
-        height: 120,
+        //  height: 120,
+        child: ListTile(
+          leading: setIcon(notification),
+          title: Text(notification.message),
+          subtitle: Text(notification.createdAt),
+        ),
       ),
     );
+  }
+
+  Widget setIcon(NotificationModel notification) {
+    switch (notification.sourceType) {
+      case 1:
+        return Container(
+          // alignment: Alignment.center,
+          child: Image.asset(
+            "assets/noti_order.png",
+            // width: 35,
+            // height: 35,
+          ),
+        );
+      case 2:
+        return Container(
+          // alignment: Alignment.center,
+          child: Image.asset(
+            "assets/noti_wallet.png",
+            // width: 35,
+            // height: 35,
+          ),
+        );
+      default:
+        return Container(
+          // alignment: Alignment.center,
+          child: Image.asset(
+            "assets/noti_admin.png",
+            //  width: 35,
+            //  height: 35,
+          ),
+        );
+    }
   }
 }
