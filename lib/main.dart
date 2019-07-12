@@ -895,7 +895,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
             _curIndex = index;
             switch (_curIndex) {
               case 0:
-                bloc.fetchHomeData(mToken);
+               /* bloc.fetchHomeData(mToken);
                 bloc.homeData.listen((response) {
                   homeResponse = response;
                   setState(() {
@@ -906,9 +906,10 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 
                   blocFavGet.fetchFavData();
                   favObserver();
-                });
-                //_getDrawerItemWidget(0, snapshot);
-                homeWidget(homeResponse);
+                });*/
+                _getDrawerItemWidget(0, snapshot);
+                updateProducts();
+               // homeWidget(homeResponse);
                 break;
               case 1:
                 _getDrawerItemWidget(1, snapshot);
