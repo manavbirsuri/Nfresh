@@ -55,7 +55,8 @@ class _MyCustomFormState extends State<CartPage> {
   var blocCity = CityBloc();
 
   Map<String, dynamic> mapPayTm = {
-    'MID': "apXePW28170154069075",
+    'MID': "zqpQeZ24755039419769",
+    //'MID': "apXePW28170154069075",
     'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
     'CUST_ID': "cust123",
     'MOBILE_NO': "7777777777",
@@ -285,9 +286,9 @@ class _MyCustomFormState extends State<CartPage> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     PaymentSuccessPage(
-                                                      response: response,
-                                                      cartExtra: data,
-                                                    ),
+                                                  response: response,
+                                                  cartExtra: data,
+                                                ),
                                               ));
                                         }
                                       } else {
@@ -1335,9 +1336,9 @@ class _MyCustomFormState extends State<CartPage> {
           context,
           MaterialPageRoute(
             builder: (context) => PaymentSuccessPage(
-                  response: response,
-                  cartExtra: data,
-                ),
+              response: response,
+              cartExtra: data,
+            ),
           ));
     }
   }
@@ -1622,8 +1623,8 @@ class _MyCustomFormState extends State<CartPage> {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-                from: 1,
-              ),
+            from: 1,
+          ),
         )).then((value) {
       getProfileDetail();
       blocCity.fetchData();

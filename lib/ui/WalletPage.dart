@@ -38,7 +38,8 @@ class stateProfilePage extends State<stateProfile> {
   String checksum = "";
   String orderId = "";
   Map<String, dynamic> mapPayTm = {
-    'MID': "apXePW28170154069075",
+    'MID': "zqpQeZ24755039419769",
+    //'MID': "apXePW28170154069075",
     'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
     'CUST_ID': "cust123",
     'MOBILE_NO': "7777777777",
@@ -144,8 +145,10 @@ class stateProfilePage extends State<stateProfile> {
                   children: <Widget>[
                     Text(
                       credits.toString(),
-                      style:
-                          TextStyle(color: Colors.white, fontSize: 52, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 52,
+                          fontWeight: FontWeight.bold),
                     ),
                     Text(
                       ' CREDITS',
@@ -188,11 +191,11 @@ class stateProfilePage extends State<stateProfile> {
           margin: EdgeInsets.only(top: 95, right: 20, left: 20),
           child: Material(
             elevation: 16.0,
-            borderRadius:
-                BorderRadius.only(topRight: Radius.circular(18), topLeft: Radius.circular(18)),
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(18), topLeft: Radius.circular(18)),
             child: ClipRRect(
-              borderRadius:
-                  BorderRadius.only(topRight: Radius.circular(18), topLeft: Radius.circular(18)),
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(18), topLeft: Radius.circular(18)),
               child: Container(
                 child: Padding(
                   padding: EdgeInsets.all(16),
@@ -205,14 +208,17 @@ class stateProfilePage extends State<stateProfile> {
                           Expanded(
                             child: snapshot.data.walletOffers.length > 0
                                 ? Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.start,
                                     children: <Widget>[
                                       Container(
                                         margin: EdgeInsets.only(top: 16),
                                         child: Text(
                                           'Select Amount to Add Credits',
-                                          style: TextStyle(fontSize: 16, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.colorgreen),
                                         ),
                                       ),
                                       Container(
@@ -231,7 +237,8 @@ class stateProfilePage extends State<stateProfile> {
 //                                    children: <Widget>[
                                             ListView.builder(
                                           scrollDirection: Axis.horizontal,
-                                          itemCount: snapshot.data.walletOffers.length,
+                                          itemCount:
+                                              snapshot.data.walletOffers.length,
                                           itemBuilder: (context, position) {
                                             return Padding(
                                               padding: EdgeInsets.only(left: 8),
@@ -240,39 +247,59 @@ class stateProfilePage extends State<stateProfile> {
                                                   setState(() {
                                                     valueChecked = position;
                                                     totalAmount = snapshot
-                                                        .data.walletOffers[position].moneyAdded;
+                                                        .data
+                                                        .walletOffers[position]
+                                                        .moneyAdded;
                                                   });
                                                 },
                                                 child: Container(
-                                                  child: valueChecked == position
+                                                  child: valueChecked ==
+                                                          position
                                                       ? Container(
                                                           height: 30,
                                                           width: 65,
-                                                          decoration: myBoxDecoration3(),
-                                                          margin: EdgeInsets.only(top: 16),
+                                                          decoration:
+                                                              myBoxDecoration3(),
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  top: 16),
                                                           child: Text(
-                                                            snapshot.data.walletOffers[position]
-                                                                .moneyAdded
-                                                                .toString(),
-                                                            style: TextStyle(
-                                                                fontSize: 16, color: Colors.white),
-                                                          ),
-                                                          alignment: Alignment.center,
-                                                        )
-                                                      : Container(
-                                                          height: 30,
-                                                          width: 65,
-                                                          decoration: myBoxDecoration2(),
-                                                          margin: EdgeInsets.only(top: 16),
-                                                          child: Text(
-                                                            snapshot.data.walletOffers[position]
+                                                            snapshot
+                                                                .data
+                                                                .walletOffers[
+                                                                    position]
                                                                 .moneyAdded
                                                                 .toString(),
                                                             style: TextStyle(
                                                                 fontSize: 16,
-                                                                color: Colors.colorgreen),
+                                                                color: Colors
+                                                                    .white),
                                                           ),
-                                                          alignment: Alignment.center,
+                                                          alignment:
+                                                              Alignment.center,
+                                                        )
+                                                      : Container(
+                                                          height: 30,
+                                                          width: 65,
+                                                          decoration:
+                                                              myBoxDecoration2(),
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  top: 16),
+                                                          child: Text(
+                                                            snapshot
+                                                                .data
+                                                                .walletOffers[
+                                                                    position]
+                                                                .moneyAdded
+                                                                .toString(),
+                                                            style: TextStyle(
+                                                                fontSize: 16,
+                                                                color: Colors
+                                                                    .colorgreen),
+                                                          ),
+                                                          alignment:
+                                                              Alignment.center,
                                                         ),
                                                 ),
                                               ),
@@ -293,13 +320,19 @@ class stateProfilePage extends State<stateProfile> {
                                           child: Center(
                                             child: Column(
                                               mainAxisSize: MainAxisSize.max,
-                                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.stretch,
                                               children: <Widget>[
                                                 Container(
-                                                  margin: EdgeInsets.only(top: 0),
+                                                  margin:
+                                                      EdgeInsets.only(top: 0),
                                                   child: Column(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
                                                     children: <Widget>[
                                                       Center(
                                                         child: Text(
@@ -314,29 +347,43 @@ class stateProfilePage extends State<stateProfile> {
                                                   ),
                                                 ),
                                                 Container(
-                                                  margin: EdgeInsets.only(top: 0),
+                                                  margin:
+                                                      EdgeInsets.only(top: 0),
                                                   child: Center(
                                                     child: Row(
-                                                      mainAxisAlignment: MainAxisAlignment.center,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
                                                       crossAxisAlignment:
-                                                          CrossAxisAlignment.baseline,
-                                                      textBaseline: TextBaseline.alphabetic,
+                                                          CrossAxisAlignment
+                                                              .baseline,
+                                                      textBaseline: TextBaseline
+                                                          .alphabetic,
                                                       children: <Widget>[
                                                         Text(
-                                                          snapshot.data.walletOffers[valueChecked]
+                                                          snapshot
+                                                              .data
+                                                              .walletOffers[
+                                                                  valueChecked]
                                                               .walletCredit
                                                               .toString(),
                                                           style: TextStyle(
-                                                              color: Colors.colorgreen,
+                                                              color: Colors
+                                                                  .colorgreen,
                                                               fontSize: 36,
-                                                              fontWeight: FontWeight.bold),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
                                                         ),
                                                         Text(
                                                           ' CREDITS',
                                                           style: TextStyle(
-                                                              color: Colors.colorgreen,
+                                                              color: Colors
+                                                                  .colorgreen,
                                                               fontSize: 16,
-                                                              fontWeight: FontWeight.bold),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold),
                                                         )
                                                       ],
                                                     ),
@@ -355,7 +402,8 @@ class stateProfilePage extends State<stateProfile> {
                                     child: Center(
                                       child: Text(
                                         "No credits Available",
-                                        style: TextStyle(fontSize: 18, fontFamily: 'Bold'),
+                                        style: TextStyle(
+                                            fontSize: 18, fontFamily: 'Bold'),
                                       ),
                                     ),
                                   ),
@@ -366,7 +414,8 @@ class stateProfilePage extends State<stateProfile> {
                           ? Align(
                               alignment: Alignment.bottomCenter,
                               child: Padding(
-                                padding: const EdgeInsets.fromLTRB(32, 8, 32, 16),
+                                padding:
+                                    const EdgeInsets.fromLTRB(32, 8, 32, 16),
                                 child: GestureDetector(
                                   onTap: () {
                                     if (profileModel != null) {
@@ -379,8 +428,8 @@ class stateProfilePage extends State<stateProfile> {
                                     height: 40,
                                     width: 120,
                                     decoration: new BoxDecoration(
-                                        borderRadius:
-                                            new BorderRadius.all(new Radius.circular(100.0)),
+                                        borderRadius: new BorderRadius.all(
+                                            new Radius.circular(100.0)),
                                         color: Colors.colorgreen),
                                     child: Center(
                                       child: new Text("Pay Now",
@@ -413,8 +462,8 @@ class stateProfilePage extends State<stateProfile> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Alert!"),
-          content:
-              new Text("You would need to login in order to proceed. Please click here to Login."),
+          content: new Text(
+              "You would need to login in order to proceed. Please click here to Login."),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -441,8 +490,8 @@ class stateProfilePage extends State<stateProfile> {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-                from: 1,
-              ),
+            from: 1,
+          ),
         )).then((value) {
       getProfileDetail();
     });
