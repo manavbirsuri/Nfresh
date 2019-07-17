@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' show Client;
+import 'package:nfresh/models/model_checkinventory.dart';
 import 'package:nfresh/models/responses/response_cat_products.dart';
 import 'package:nfresh/models/responses/response_cities.dart';
 import 'package:nfresh/models/responses/response_coupons.dart';
@@ -296,16 +297,17 @@ class ApiProvider {
     }
   }
 
-  Future<String> checkInventory(auth, List<Map<String, dynamic>> data) async {
+  Future<ModelInventory> checkInventory(
+      auth, List<Map<String, dynamic>> data) async {
     Map map = {
       'auth_code': auth,
       'line_items': jsonEncode(data),
     };
     final response =
         await client.post("$baseUrl/checkprodinventory", body: map);
-    print(response.body.toString());
+    print("INVEntory  ::::: " + response.body.toString());
     if (response.statusCode == 200) {
-      return response.body;
+      return ModelInventory.fromJson(json.decode(response.body));
     } else {
       // If that call was not successful, throw an error.
       throw Exception('NFresh: Failed to load checkprodinventory service');

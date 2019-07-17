@@ -1,3 +1,4 @@
+import 'package:nfresh/models/model_checkinventory.dart';
 import 'package:nfresh/models/responses/response_cat_products.dart';
 import 'package:nfresh/models/responses/response_cities.dart';
 import 'package:nfresh/models/responses/response_coupons.dart';
@@ -60,7 +61,7 @@ class Repository {
       apiProvider.getRelatedProducts(auth, proId);
   Future<String> getChecksum(auth, map) =>
       apiProvider.getPayTmChecksum(auth, map);
-  Future<String> checkInventory(auth, map) =>
+  Future<ModelInventory> checkInventory(auth, map) =>
       apiProvider.checkInventory(auth, map);
   Future<String> placeOrder(auth, map, cart, paytmRes) =>
       apiProvider.placeOrder(auth, map, cart, paytmRes);

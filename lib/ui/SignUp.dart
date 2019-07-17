@@ -518,11 +518,27 @@ class stateProfilePage extends State<stateProfile> {
                                           'Agree to the ',
                                           style: new TextStyle(fontSize: 16.0),
                                         ),
+                                        GestureDetector(
+                                          onTap: () {},
+                                          child: new Text(
+                                            'Terms of Use ',
+                                            style: new TextStyle(
+                                                fontSize: 16.0,
+                                                color: Colors.colorgreen),
+                                          ),
+                                        ),
                                         new Text(
-                                          'terms & conditions ',
-                                          style: new TextStyle(
-                                              fontSize: 16.0,
-                                              color: Colors.colorgreen),
+                                          'and ',
+                                          style: new TextStyle(fontSize: 16.0),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () {},
+                                          child: new Text(
+                                            'Privacy Policy',
+                                            style: new TextStyle(
+                                                fontSize: 16.0,
+                                                color: Colors.colorgreen),
+                                          ),
                                         ),
                                       ],
                                     ),

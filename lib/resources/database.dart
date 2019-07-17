@@ -47,7 +47,8 @@ class DatabaseHelper {
     Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, _databaseName);
     // Open the database. Can also add an onUpdate callback parameter.
-    return await openDatabase(path, version: _databaseVersion, onCreate: _onCreate);
+    return await openDatabase(path,
+        version: _databaseVersion, onCreate: _onCreate);
   }
 
   // SQL string to create the database
@@ -105,6 +106,25 @@ class DatabaseHelper {
     return id;
   }
 
+  Future<int> updateQuantity(Product product) async {
+    Database db = await database;
+    print("UPDATE: ${product.toJson()}");
+    int id;
+    try {
+      id = await db.update(tableCart, product.toJson(),
+          where: "id=? AND selected_packing=?",
+          whereArgs: [product.id, jsonEncode(product.selectedPacking)]);
+      print("ID: $id}");
+    } on DatabaseException catch (e) {
+      print("ERROR UPDATE: $e");
+    }
+
+    if (id == 0) {
+      id = await insert(product);
+    }
+    return id;
+  }
+
   Future<List<Product>> queryAllProducts() async {
     Database db = await database;
     List<Product> data = [];
@@ -121,7 +141,8 @@ class DatabaseHelper {
   Future<Product> queryConditionalProduct(Product product) async {
     Database db = await database;
     var _count = 0;
-    List<Map> maps = await db.query(tableCart, where: "id=?", whereArgs: [product.id]);
+    List<Map> maps =
+        await db.query(tableCart, where: "id=?", whereArgs: [product.id]);
     print("Product count : ${maps.length}");
     if (maps.length > 0) {
       return Product.fromJson(maps.first);

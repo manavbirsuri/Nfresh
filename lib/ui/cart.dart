@@ -9,6 +9,7 @@ import 'package:nfresh/bloc/cities_bloc.dart';
 import 'package:nfresh/bloc/update_address_bloc.dart';
 import 'package:nfresh/models/area_model.dart';
 import 'package:nfresh/models/city_model.dart';
+import 'package:nfresh/models/product_invent_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/resources/database.dart';
@@ -38,6 +39,7 @@ class _MyCustomFormState extends State<CartPage> {
   int walletBalance = 0;
   String appliedValue = "Apply promo code";
   var bloc = CartBloc();
+  var blocInvent = CheckInventoryBloc();
   int totalAmount = 0;
   int checkoutTotal = 0;
   num discount = 0;
@@ -45,7 +47,7 @@ class _MyCustomFormState extends State<CartPage> {
   ProfileModel profile;
   var blocInventory = CheckInventoryBloc();
   List<Map<String, dynamic>> lineItems = [];
-
+  List<Map<String, dynamic>> lineItems2 = [];
   List<CityModel> cities = [];
   List<AreaModel> areas = [];
   List<AreaModel> cityAreas = [];
@@ -79,10 +81,13 @@ class _MyCustomFormState extends State<CartPage> {
   var addressController = TextEditingController();
 
   ProgressDialog dialog;
+
   @override
   void initState() {
     super.initState();
     checkIfPromoSaved();
+    checkAvailableProducts();
+
 //      checkIfPromoSaved().then((value) {
 //        setState(() {
 //          check = value;
@@ -286,9 +291,9 @@ class _MyCustomFormState extends State<CartPage> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     PaymentSuccessPage(
-                                                  response: response,
-                                                  cartExtra: data,
-                                                ),
+                                                      response: response,
+                                                      cartExtra: data,
+                                                    ),
                                               ));
                                         }
                                       } else {
@@ -1336,9 +1341,9 @@ class _MyCustomFormState extends State<CartPage> {
           context,
           MaterialPageRoute(
             builder: (context) => PaymentSuccessPage(
-              response: response,
-              cartExtra: data,
-            ),
+                  response: response,
+                  cartExtra: data,
+                ),
           ));
     }
   }
@@ -1623,11 +1628,57 @@ class _MyCustomFormState extends State<CartPage> {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-            from: 1,
-          ),
+                from: 1,
+              ),
         )).then((value) {
       getProfileDetail();
       blocCity.fetchData();
+    });
+  }
+
+  void checkAvailableProducts() {
+    List<Product> productss = List();
+    List<Product> productsnew = List();
+    _database.queryAllProducts().then((products) {
+      productss = products;
+      products.forEach((product) {
+        Map<String, dynamic> map = {
+          'product_id': product.id,
+          'unitqty': product.selectedPacking.unitQty,
+          'qty': product.count,
+        };
+        lineItems2.add(map);
+      });
+      blocInvent.fetchData(lineItems2);
+    });
+    blocInvent.inventory.listen((responsee) {
+      if (responsee.status == "true") {
+        List<ProductInvent> array = responsee.products;
+
+        for (int i = 0; i < productss.length; i++) {
+          var exists = 0;
+          for (int j = 0; j < array.length; j++) {
+            if (array[j].product_id == productss[i].id &&
+                array[j].unitQty == productss[i].packing[0].unitQty) {
+              exists = 1;
+
+              productss[i].packing[0].unitQtyShow = array[j].qty.toString();
+              _database.update(productss[i]);
+            }
+          }
+          if (exists == 0) {
+            productsnew.add(productss[i]);
+          }
+        }
+        for (int k = 0; k < productsnew.length; k++) {
+          _database.remove(productsnew[k]);
+        }
+        _database.queryAllProducts().then((products) {
+          setState(() {
+            mProducts = products;
+          });
+        });
+      }
     });
   }
 }
@@ -1733,9 +1784,7 @@ class LogoutOverlayState extends State<LogoutOverlay>
                               onPressed: () {
                                 setState(() {
                                   Navigator.pop(context);
-//                                      Route route = MaterialPageRoute(
-//                                          builder: (context) => LoginScreen());
-//                                      Navigator.pushReplacement(context, route);
+
                                 });
                               },
                             )),
@@ -1794,7 +1843,7 @@ class DynamicDialog extends StatefulWidget {
 }
 
 class _DynamicDialogState extends State<DynamicDialog> {
-  String _title;
+
   var liked = false;
   String image1 = "assets/fav_filled.png";
   String image2 = "assets/ic_fav.png";

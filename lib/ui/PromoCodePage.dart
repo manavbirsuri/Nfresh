@@ -348,7 +348,7 @@ class _DynamicDialogState extends State<DynamicDialog> {
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
           child: Text(
-            "Promo code succefully applied.",
+            "Promo code successfully applied.",
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.colorgrey,
@@ -363,7 +363,7 @@ class _DynamicDialogState extends State<DynamicDialog> {
             },
             child: Container(
               height: 40,
-              width: 150,
+              width: 80,
               decoration: new BoxDecoration(
                   borderRadius:
                       new BorderRadius.all(new Radius.circular(100.0)),
