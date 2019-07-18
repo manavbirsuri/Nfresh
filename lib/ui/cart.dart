@@ -1784,7 +1784,6 @@ class LogoutOverlayState extends State<LogoutOverlay>
                               onPressed: () {
                                 setState(() {
                                   Navigator.pop(context);
-
                                 });
                               },
                             )),
@@ -1843,7 +1842,6 @@ class DynamicDialog extends StatefulWidget {
 }
 
 class _DynamicDialogState extends State<DynamicDialog> {
-
   var liked = false;
   String image1 = "assets/fav_filled.png";
   String image2 = "assets/ic_fav.png";
