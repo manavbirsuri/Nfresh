@@ -88,7 +88,8 @@ class PromoCodeState extends State<PromoCodePage> {
                                           dialog.show();
                                           blocApply.fetchData(widget.total,
                                               couponController.text.toString());
-                                          observeResponse(context);
+                                          observeResponse(context,
+                                              couponController.text.toString());
                                         },
                                         child: Text(
                                           'Apply',
@@ -180,7 +181,7 @@ class PromoCodeState extends State<PromoCodePage> {
                     // dialog.setCancelable(false);
                     dialog.show();
                     blocApply.fetchData(widget.total, coupon.couponCode);
-                    observeResponse(context);
+                    observeResponse(context, coupon.couponCode);
                   }
                 },
                 child: Text(
@@ -218,8 +219,10 @@ class PromoCodeState extends State<PromoCodePage> {
     );
   }
 
-  saveToPrefs(int discount) async {
+  saveToPrefs(int discount, String couponCode) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    var dd = couponController.text.toString();
+    await prefs.setString('couponCode', couponCode);
     await prefs.setString('promoApplies', "yes");
     await prefs.setInt("discount", discount);
   }
@@ -273,7 +276,7 @@ class PromoCodeState extends State<PromoCodePage> {
     );
   }
 
-  void observeResponse(BuildContext context) {
+  void observeResponse(BuildContext context, String couponCode) {
     blocApply.getResponse.listen((response) {
       var json = jsonDecode(response);
       String status = json['status'];
@@ -283,7 +286,7 @@ class PromoCodeState extends State<PromoCodePage> {
       if (status == "true") {
         Navigator.pop(context);
         int discount = json['discount'];
-        saveToPrefs(discount);
+        saveToPrefs(discount, couponCode);
         showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -352,7 +355,7 @@ class _DynamicDialogState extends State<DynamicDialog> {
             style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Colors.colorgrey,
-                fontSize: 22),
+                fontSize: 18),
           ),
         ),
         Padding(

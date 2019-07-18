@@ -99,14 +99,14 @@ class OfferOrderPage extends State<OfferOrder> {
                                   child: Row(
                                     children: <Widget>[
                                       Text(
-                                        "Coupon Name: ",
+                                        "Discount: ",
                                         style: TextStyle(
                                           color: Colors.colorlightgrey,
                                           // fontWeight: FontWeight.bold,
                                         ),
                                       ),
                                       Text(
-                                        coupon.name,
+                                        coupon.discount.toString(),
                                         style: TextStyle(
                                           color: Colors.black,
                                           fontWeight: FontWeight.bold,
@@ -144,12 +144,14 @@ class OfferOrderPage extends State<OfferOrder> {
                               ),
                               Text(
                                 coupon.endDate,
-                                style: TextStyle(color: Colors.colorlightgrey),
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
                             ]),
                             GestureDetector(
                               onTap: () {
-                                print("DDDD");
                                 Share.plainText(
                                         text: "Hi! share my app",
                                         title: "Share")

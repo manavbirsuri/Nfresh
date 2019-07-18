@@ -34,6 +34,7 @@ class _MyCustomFormState extends State<CartPage> {
   String response = "";
   Text totalText;
   String code;
+  String couponCode;
   var pos = 0;
   String check = "";
   int walletBalance = 0;
@@ -57,8 +58,8 @@ class _MyCustomFormState extends State<CartPage> {
   var blocCity = CityBloc();
 
   Map<String, dynamic> mapPayTm = {
-    'MID': "zqpQeZ24755039419769",
-    //'MID': "apXePW28170154069075",
+    //'MID': "zqpQeZ24755039419769",
+    'MID': "Nfresh39378019817673",
     'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
     'CUST_ID': "cust123",
     'MOBILE_NO': "7777777777",
@@ -273,6 +274,7 @@ class _MyCustomFormState extends State<CartPage> {
                                       ),
                                     ),
                                     onTap: () async {
+                                      getCouponCode();
                                       if (profile != null) {
                                         if (totalAmount > 0) {
                                           getCheckSum(context);
@@ -285,6 +287,7 @@ class _MyCustomFormState extends State<CartPage> {
                                             'type': profile.type,
                                             'discount': discount,
                                             'wallet_use_amount': walletDiscount,
+                                            'coupon_code': couponCode,
                                           };
                                           Navigator.push(
                                               context,
@@ -1186,12 +1189,14 @@ class _MyCustomFormState extends State<CartPage> {
   saveToPrefs(int discount) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('promoApplies', "");
+    await prefs.setString('couponCode', "");
     await prefs.setInt("discount", discount);
   }
 
   Future removePromoFromPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('promoApplies', "");
+    await prefs.setString('couponCode', "");
     await prefs.setInt('discount', 0);
     setState(() {
       check = "";
@@ -1324,6 +1329,7 @@ class _MyCustomFormState extends State<CartPage> {
   }
 
   void handlePayTmResponse(String response, BuildContext context) {
+    getCouponCode();
     if (response.contains("KITKAT")) {
       print(response);
     } else {
@@ -1336,6 +1342,7 @@ class _MyCustomFormState extends State<CartPage> {
         'type': profile.type,
         'discount': discount,
         'wallet_use_amount': walletDiscount,
+        'coupon_code': couponCode,
       };
       Navigator.push(
           context,
@@ -1679,6 +1686,15 @@ class _MyCustomFormState extends State<CartPage> {
           });
         });
       }
+    });
+  }
+
+  getCouponCode() async {
+//    int counter = (prefs.getInt('counter') ?? 0) + 1;
+//    print('Pressed $counter times.');
+    setState(() async {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      couponCode = await prefs.getString('couponCode');
     });
   }
 }

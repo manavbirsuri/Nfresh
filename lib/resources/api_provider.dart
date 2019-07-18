@@ -325,7 +325,9 @@ class ApiProvider {
       'area': cart['area'].toString(),
       'type': cart['type'].toString(),
       'discount': cart['discount'].toString(),
-      'paytm_response': paytmRes
+      'paytm_response': paytmRes,
+      'wallet_use_amount': cart['wallet_use_amount'].toString(),
+      'coupon_code': cart['coupon_code'].toString()
     };
     final response = await client.post("$baseUrl/createorder", body: map);
     print(response.body.toString());
