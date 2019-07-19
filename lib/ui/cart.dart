@@ -6,6 +6,7 @@ import 'package:nfresh/bloc/cart_bloc.dart';
 import 'package:nfresh/bloc/check_inventory_bloc.dart';
 import 'package:nfresh/bloc/checksum_bloc.dart';
 import 'package:nfresh/bloc/cities_bloc.dart';
+import 'package:nfresh/bloc/create_order_bloc.dart';
 import 'package:nfresh/bloc/update_address_bloc.dart';
 import 'package:nfresh/models/area_model.dart';
 import 'package:nfresh/models/city_model.dart';
@@ -276,11 +277,20 @@ class _MyCustomFormState extends State<CartPage> {
                                       ),
                                     ),
                                     onTap: () async {
-                                      getCouponCode();
-                                      if (profile != null) {
-                                        if (totalAmount > 0) {
-                                          getCheckSum(context);
-                                        } else {
+                                      final _prefs = SharedPrefs();
+
+                                      _prefs.getCouponCode().then((value) {
+                                        setState(() {
+                                          couponCode = value;
+                                        });
+                                      });
+                                      if (selectedMethod ==
+                                          "Cash on delivery") {
+                                        if (profile != null) {
+                                          dialog = new ProgressDialog(context,
+                                              ProgressDialogType.Normal);
+                                          dialog.setMessage("Please wait...");
+                                          dialog.show();
                                           Map<String, dynamic> data = {
                                             'total': checkoutTotal,
                                             'address': address,
@@ -291,30 +301,89 @@ class _MyCustomFormState extends State<CartPage> {
                                             'wallet_use_amount': walletDiscount,
                                             'coupon_code': couponCode,
                                           };
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PaymentSuccessPage(
+                                          placeOrder(
+                                              response: response,
+                                              cartExtra: data,
+                                              contexte: context);
+//                                          Navigator.push(
+//                                              context,
+//                                              MaterialPageRoute(
+//                                                builder: (context) =>
+//                                                    PaymentSuccessPage(
+//                                                      response: response,
+//                                                      cartExtra: data,
+//                                                    ),
+//                                              ));
+                                        } else {
+                                          showAlertMessage(context);
+                                        }
+//                                        Map<String, dynamic> data = {
+//                                          'total': checkoutTotal,
+//                                          'address': address,
+//                                          'city': profile.city,
+//                                          'area': profile.area,
+//                                          'type': profile.type,
+//                                          'discount': discount,
+//                                          'wallet_use_amount':
+//                                          walletDiscount,
+//                                          'coupon_code': couponCode,
+//                                        };
+
+                                      } else {
+                                        if (profile != null) {
+                                          if (totalAmount > 0) {
+                                            getCheckSum(context);
+                                          }
+                                          else if(walletBalance>0&&totalAmount==0){
+                                            if (profile != null) {
+                                              dialog = new ProgressDialog(context,
+                                                  ProgressDialogType.Normal);
+                                              dialog.setMessage("Please wait...");
+                                              dialog.show();
+                                              Map<String, dynamic> data = {
+                                                'total': checkoutTotal,
+                                                'address': address,
+                                                'city': profile.city,
+                                                'area': profile.area,
+                                                'type': profile.type,
+                                                'discount': discount,
+                                                'wallet_use_amount': walletDiscount,
+                                                'coupon_code': couponCode,
+                                              };
+                                              placeOrder(
                                                   response: response,
                                                   cartExtra: data,
-                                                ),
-                                              ));
+                                                  contexte: context);
+
+                                            } else {
+                                              showAlertMessage(context);
+                                            }
+                                          } else {
+                                            Map<String, dynamic> data = {
+                                              'total': checkoutTotal,
+                                              'address': address,
+                                              'city': profile.city,
+                                              'area': profile.area,
+                                              'type': profile.type,
+                                              'discount': discount,
+                                              'wallet_use_amount':
+                                                  walletDiscount,
+                                              'coupon_code': couponCode,
+                                            };
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      PaymentSuccessPage(
+                                                        response: response,
+                                                        cartExtra: data,
+                                                      ),
+                                                ));
+                                          }
+                                        } else {
+                                          showAlertMessage(context);
                                         }
-                                      } else {
-                                        showAlertMessage(context);
                                       }
-//                                try {
-//
-//                                  final String result = await platform
-//                                      .invokeMethod('$checksum::${jsonEncode(mapPayTm)}');
-//                                  response = result;
-//                                } on PlatformException catch (e) {
-//                                  response = "Failed to Invoke: '${e.message}'.";
-//                                }
-//
-//                                print("RES: $response");
-//                                handlePayTmResponse(response, context);
                                     },
                                   ),
                                   flex: 1,
@@ -700,24 +769,33 @@ class _MyCustomFormState extends State<CartPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          DropdownButton<String>(
-            value: selectedMethod,
-            onChanged: (String newValue) {
-              setState(() {
-                selectedMethod = newValue;
-              });
-            },
-            items: <String>['Pay online', 'Cash on delivery']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
+          Container(
+            padding: EdgeInsets.only(left: 16, top: 0, right: 16),
+            child: DropdownButton<String>(
+              isExpanded: true,
+              value: selectedMethod,
+              onChanged: (String newValue) {
+                setState(() {
+                  selectedMethod = newValue;
+                  if (newValue == "Cash on delivery") {
+                    setState(() {
+                      walletDiscount = 0;
+                    });
+                  }
+                });
+              },
+              items: <String>['Pay online', 'Cash on delivery']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
           ),
           Padding(
             padding: EdgeInsets.only(
-              top: 8,
+              top: 0,
             ),
             child: Divider(
               color: Colors.grey,
@@ -813,7 +891,7 @@ class _MyCustomFormState extends State<CartPage> {
                             setState(() {
                               //  walletDiscount = value;
                               getBalance().then((onValue) {
-                                print("LLLLLLLLLLLL: " + onValue);
+                                //print("LLLLLLLLLLLL: " + onValue);
 //                        walletDiscount = onValue as int;
                               });
                             });
@@ -1361,7 +1439,14 @@ class _MyCustomFormState extends State<CartPage> {
   }
 
   void handlePayTmResponse(String response, BuildContext context) {
-    getCouponCode();
+    final _prefs = SharedPrefs();
+
+    _prefs.getCouponCode().then((value) {
+      setState(() {
+        couponCode = value;
+      });
+    });
+
     if (response.contains("KITKAT")) {
       print(response);
     } else {
@@ -1380,9 +1465,9 @@ class _MyCustomFormState extends State<CartPage> {
           context,
           MaterialPageRoute(
             builder: (context) => PaymentSuccessPage(
-              response: response,
-              cartExtra: data,
-            ),
+                  response: response,
+                  cartExtra: data,
+                ),
           ));
     }
   }
@@ -1667,8 +1752,8 @@ class _MyCustomFormState extends State<CartPage> {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-            from: 1,
-          ),
+                from: 1,
+              ),
         )).then((value) {
       getProfileDetail();
       blocCity.fetchData();
@@ -1721,12 +1806,41 @@ class _MyCustomFormState extends State<CartPage> {
     });
   }
 
-  getCouponCode() async {
-//    int counter = (prefs.getInt('counter') ?? 0) + 1;
-//    print('Pressed $counter times.');
-    setState(() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      couponCode = await prefs.getString('couponCode');
+  void placeOrder(
+      {String response,
+      Map<String, dynamic> cartExtra,
+      BuildContext context1,
+      BuildContext contexte}) {
+    List<Map<String, dynamic>> lineItems1 = [];
+    var bloc2 = CreateOrderBloc();
+    setState(() {
+//      message = "Placing your order. Please wait...";
+//      showLoader = true;
+    });
+
+    _database.queryAllProducts().then((products) {
+      products.forEach((product) {
+        Map<String, dynamic> map = {
+          'product_id': product.id,
+          'unitqty': product.selectedPacking.unitQty,
+          'qty': product.count,
+        };
+        lineItems1.add(map);
+      });
+      bloc2.fetchData(lineItems1, cartExtra, response);
+    });
+    bloc2.createOrderResponse.listen((res) {
+      var obj = jsonDecode(res);
+      String status = obj['status'];
+      setState(() {
+        dialog.hide();
+//        showLoader = false;
+//        message = obj['msg'];
+      });
+      if (status == "true") {
+        _database.clearCart();
+        Navigator.pop(contexte);
+      }
     });
   }
 }

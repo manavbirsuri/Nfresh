@@ -57,4 +57,9 @@ class SharedPrefs {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(_dateTime) ?? "0";
   }
+
+  Future<String> getCouponCode() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('couponCode') ?? "";
+  }
 }
