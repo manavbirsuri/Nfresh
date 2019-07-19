@@ -147,7 +147,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     for (int i = 0; i < homeResponse.sections.length; i++) {
       // var products = snapshot.sections[i].products;
       for (int j = 0; j < homeResponse.sections[i].products.length; j++) {
-        var product = await _database.queryConditionalProduct(homeResponse.sections[i].products[j]);
+        var product = await _database
+            .queryConditionalProduct(homeResponse.sections[i].products[j]);
         if (product != null) {
           product.selectedDisplayPrice = getCalculatedPrice(product);
           setState(() {
@@ -163,9 +164,12 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   }
 
   Future updateFavProducts() async {
-    if (favResponse != null && favResponse.products != null && favResponse.products.length > 0) {
+    if (favResponse != null &&
+        favResponse.products != null &&
+        favResponse.products.length > 0) {
       for (int i = 0; i < favResponse.products.length; i++) {
-        var product = await _database.queryConditionalProduct(favResponse.products[i]);
+        var product =
+            await _database.queryConditionalProduct(favResponse.products[i]);
         if (product != null) {
           product.selectedDisplayPrice = getCalculatedPrice(product);
           setState(() {
@@ -185,7 +189,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         responseSearch.products != null &&
         responseSearch.products.length > 0) {
       for (int i = 0; i < responseSearch.products.length; i++) {
-        var product = await _database.queryConditionalProduct(responseSearch.products[i]);
+        var product =
+            await _database.queryConditionalProduct(responseSearch.products[i]);
         if (product != null) {
           product.selectedDisplayPrice = getCalculatedPrice(product);
           setState(() {
@@ -494,8 +499,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                       DrawerHeader(
                         decoration: BoxDecoration(
                           color: Colors.transparent.withOpacity(0.5),
-                          image:
-                              DecorationImage(image: AssetImage('assets/bg.jpg'), fit: BoxFit.fill),
+                          image: DecorationImage(
+                              image: AssetImage('assets/bg.jpg'),
+                              fit: BoxFit.fill),
                         ),
                         margin: EdgeInsets.all(0),
                         child: Container(
@@ -528,10 +534,13 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                 Expanded(
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
-                                        profile == null ? "No name" : profile.name,
+                                        profile == null
+                                            ? "No name"
+                                            : profile.name,
                                         style: TextStyle(
                                           fontSize: 18,
                                           color: Colors.white,
@@ -539,10 +548,14 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                         textAlign: TextAlign.start,
                                       ),
                                       Text(
-                                        profile == null ? "Please login" : profile.email,
+                                        profile == null
+                                            ? "Please login"
+                                            : profile.email,
                                         style: TextStyle(
                                           fontSize: 14,
-                                          color: profile == null ? Colors.grey : Colors.white,
+                                          color: profile == null
+                                              ? Colors.grey
+                                              : Colors.white,
                                         ),
                                         textAlign: TextAlign.start,
                                       ),
@@ -601,7 +614,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               onTap: () {
                                 Navigator.of(context).pop();
                                 Navigator.push(
-                                    context, MaterialPageRoute(builder: (context) => WalletPage()));
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => WalletPage()));
                               },
                             ),
                             Divider(
@@ -727,8 +742,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => LoginPage(
-                                            from: 0,
-                                          ),
+                                        from: 0,
+                                      ),
                                     ),
                                   );
                                 } else {
@@ -764,8 +779,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => LoginPage(
-                                                from: 0,
-                                              ),
+                                            from: 0,
+                                          ),
                                         ),
                                       );
                                     },
@@ -817,7 +832,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
             title: Text(
               "HOME",
               style: TextStyle(
-                  fontSize: 10, color: _curIndex == 0 ? Colors.colorgreen : Colors.black38),
+                  fontSize: 10,
+                  color: _curIndex == 0 ? Colors.colorgreen : Colors.black38),
             ),
             activeIcon: Image.asset(
               "assets/homel.png",
@@ -835,7 +851,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
             title: Text(
               "WISHLIST",
               style: TextStyle(
-                  fontSize: 10, color: _curIndex == 1 ? Colors.colorgreen : Colors.black38),
+                  fontSize: 10,
+                  color: _curIndex == 1 ? Colors.colorgreen : Colors.black38),
             ),
             activeIcon: Image.asset(
               "assets/fav.png",
@@ -854,7 +871,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
             title: Text(
               "OFFERS",
               style: TextStyle(
-                  fontSize: 10, color: _curIndex == 2 ? Colors.colorgreen : Colors.black38),
+                  fontSize: 10,
+                  color: _curIndex == 2 ? Colors.colorgreen : Colors.black38),
             ),
             activeIcon: Image.asset(
               "assets/settings.png",
@@ -873,7 +891,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
             title: Text(
               "SEARCH",
               style: TextStyle(
-                  fontSize: 10, color: _curIndex == 3 ? Colors.colorgreen : Colors.black38),
+                  fontSize: 10,
+                  color: _curIndex == 3 ? Colors.colorgreen : Colors.black38),
             ),
             activeIcon: Image.asset(
               "assets/search.png",
@@ -895,7 +914,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
             _curIndex = index;
             switch (_curIndex) {
               case 0:
-               /* bloc.fetchHomeData(mToken);
+                /* bloc.fetchHomeData(mToken);
                 bloc.homeData.listen((response) {
                   homeResponse = response;
                   setState(() {
@@ -909,7 +928,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                 });*/
                 _getDrawerItemWidget(0, snapshot);
                 updateProducts();
-               // homeWidget(homeResponse);
+                // homeWidget(homeResponse);
                 break;
               case 1:
                 _getDrawerItemWidget(1, snapshot);
@@ -1009,7 +1028,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                           ],
                         ),
                       ),
-                      Container(height: 122, child: showCategories(snapshot.categories)),
+                      Container(
+                          height: 122,
+                          child: showCategories(snapshot.categories)),
                       Padding(
                         padding: EdgeInsets.only(top: 8),
                         child: Stack(
@@ -1059,7 +1080,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     },
                                     child: Card(
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(0.0),
+                                        borderRadius:
+                                            BorderRadius.circular(0.0),
                                       ),
                                       child: Container(
                                         // height: 200,
@@ -1067,14 +1089,18 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                         //decoration: myBoxDecoration(),
                                         //       <--- BoxDecoration here
                                         child: Column(
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
                                           children: <Widget>[
                                             Flexible(
                                               child: AspectRatio(
                                                 aspectRatio: 1.7 / 1,
                                                 child: Image.network(
-                                                  snapshot.offerBanners[position].image,
+                                                  snapshot
+                                                      .offerBanners[position]
+                                                      .image,
                                                   fit: BoxFit.cover,
                                                 ),
                                               ),
@@ -1167,8 +1193,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                   Navigator.push(
                           context,
                           new MaterialPageRoute(
-                              builder: (context) =>
-                                  CategoryDetails(selectedCategory: categories[position])))
+                              builder: (context) => CategoryDetails(
+                                  selectedCategory: categories[position])))
                       .then((value) {
                     onCartUpdate();
                     updateProducts();
@@ -1203,12 +1229,15 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                             child: position == 0
                                 ? Text(
                                     categories[position].name,
-                                    style: TextStyle(fontSize: 14, color: Colors.colorlightgrey),
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.colorlightgrey),
                                     textAlign: TextAlign.center,
                                   )
                                 : Text(
                                     categories[position].name,
-                                    style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.colorgreen),
                                     textAlign: TextAlign.center,
                                   ),
                           ),
@@ -1247,12 +1276,14 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                           child: Column(
                             children: <Widget>[
                               Padding(
-                                padding: EdgeInsets.only(right: 4, left: 0, top: 0),
+                                padding:
+                                    EdgeInsets.only(right: 4, left: 0, top: 0),
                                 child: Container(
                                   width: 168,
                                   //color: Colors.green,
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                       GestureDetector(
                                           onTap: () {
@@ -1266,16 +1297,20 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                   product.fav = "1";
                                                 }
 
-                                                blocFav.fetchData(
-                                                    product.fav, product.id.toString());
+                                                blocFav.fetchData(product.fav,
+                                                    product.id.toString());
                                               }
                                             });
                                           },
                                           child: Container(
                                             // color: Colors.mygrey,
                                             padding: EdgeInsets.only(
-                                                bottom: 8, right: 30, top: 8, left: 8),
-                                            child: product != null && product.fav == "1"
+                                                bottom: 8,
+                                                right: 30,
+                                                top: 8,
+                                                left: 8),
+                                            child: product != null &&
+                                                    product.fav == "1"
                                                 ? Image.asset(
                                                     'assets/fav_filled.png',
                                                     width: 20.0,
@@ -1289,7 +1324,10 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                     fit: BoxFit.cover,
                                                   ),
                                           )),
-                                      products[position].selectedPacking.displayPrice > 0
+                                      products[position]
+                                                  .selectedPacking
+                                                  .displayPrice >
+                                              0
                                           ? Text(
                                               getOff(products[position]),
                                               style: TextStyle(
@@ -1309,8 +1347,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => ProductDetailPage(
-                                              product: product,
-                                            ),
+                                          product: product,
+                                        ),
                                       )).then((value) {
                                     onCartUpdate();
                                     updateProducts();
@@ -1336,18 +1374,23 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                                       child: Text(
                                         products[position].nameHindi,
-                                        style:
-                                            TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.colorlightgrey),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                       child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: <Widget>[
                                             Text(
-                                              "₹" + product.selectedPacking.price.toString() + "  ",
+                                              "₹" +
+                                                  product.selectedPacking.price
+                                                      .toString() +
+                                                  "  ",
                                               style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.colorlightgrey,
@@ -1355,7 +1398,10 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
-                                            products[position].selectedPacking.displayPrice > 0
+                                            products[position]
+                                                        .selectedPacking
+                                                        .displayPrice >
+                                                    0
                                                 ? Text(
                                                     "₹" +
                                                         products[position]
@@ -1364,8 +1410,11 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                             .toString(),
                                                     style: TextStyle(
                                                         fontSize: 16,
-                                                        color: Colors.colororange,
-                                                        decoration: TextDecoration.lineThrough),
+                                                        color:
+                                                            Colors.colororange,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .lineThrough),
                                                     textAlign: TextAlign.center,
                                                   )
                                                 : Container(),
@@ -1386,25 +1435,34 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       decoration: myBoxDecoration3(),
                                       child: Center(
                                         child: Padding(
-                                          padding: EdgeInsets.only(right: 8, left: 8),
-                                          child: DropdownButtonFormField<Packing>(
-                                            decoration: InputDecoration.collapsed(
-                                                hintText: product.selectedPacking.unitQtyShow),
+                                          padding: EdgeInsets.only(
+                                              right: 8, left: 8),
+                                          child:
+                                              DropdownButtonFormField<Packing>(
+                                            decoration:
+                                                InputDecoration.collapsed(
+                                                    hintText: product
+                                                        .selectedPacking
+                                                        .unitQtyShow),
                                             // value: product.selectedPacking,
                                             value: null,
-                                            items: product.packing //getQtyList(products[position])
+                                            items: product
+                                                .packing //getQtyList(products[position])
                                                 .map((Packing value) {
-                                              return new DropdownMenuItem<Packing>(
+                                              return new DropdownMenuItem<
+                                                  Packing>(
                                                 value: value,
                                                 child: new Text(
                                                   value.unitQtyShow,
-                                                  style: TextStyle(color: Colors.grey),
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
                                                 ),
                                               );
                                             }).toList(),
                                             onChanged: (newValue) {
                                               setState(() {
-                                                products[position].selectedPacking = newValue;
+                                                products[position]
+                                                    .selectedPacking = newValue;
                                                 product.count = 0;
                                                 product.selectedDisplayPrice =
                                                     getCalculatedPrice(product);
@@ -1418,7 +1476,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                                padding:
+                                    EdgeInsets.only(right: 8, left: 8, top: 16),
                                 child: Container(
                                   width: 150,
                                   //color: Colors.grey,
@@ -1428,21 +1487,28 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       child: Center(
                                         child: IntrinsicHeight(
                                           child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: <Widget>[
                                               GestureDetector(
                                                 onTap: () {
                                                   setState(() {
-                                                    decrementCount(products[position]);
+                                                    decrementCount(
+                                                        products[position]);
                                                   });
                                                 },
                                                 child: Container(
-                                                  padding: EdgeInsets.only(left: 20),
+                                                  padding:
+                                                      EdgeInsets.only(left: 20),
                                                   // color: Colors.white,
                                                   child: Container(
-                                                    decoration: myBoxDecoration2(),
-                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                    decoration:
+                                                        myBoxDecoration2(),
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            12, 0, 12, 0),
                                                     child: Image.asset(
                                                       'assets/minus.png',
                                                       height: 12,
@@ -1453,13 +1519,18 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                               ),
                                               Container(
                                                 margin: EdgeInsets.only(
-                                                    left: 8, right: 8, top: 4, bottom: 4),
+                                                    left: 8,
+                                                    right: 8,
+                                                    top: 4,
+                                                    bottom: 4),
                                                 child: Center(
                                                   child: Text(
                                                     product.count.toString(),
                                                     style: TextStyle(
-                                                        color: Colors.colorgreen,
-                                                        fontWeight: FontWeight.bold,
+                                                        color:
+                                                            Colors.colorgreen,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                         fontSize: 20),
                                                     textAlign: TextAlign.center,
                                                   ),
@@ -1468,15 +1539,20 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                               GestureDetector(
                                                 onTap: () {
                                                   setState(() {
-                                                    incrementCount(products[position]);
+                                                    incrementCount(
+                                                        products[position]);
                                                   });
                                                 },
                                                 child: Container(
                                                   //  color: Colors.white,
-                                                  padding: EdgeInsets.only(right: 20),
+                                                  padding: EdgeInsets.only(
+                                                      right: 20),
                                                   child: Container(
-                                                    decoration: myBoxDecoration2(),
-                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                    decoration:
+                                                        myBoxDecoration2(),
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            12, 0, 12, 0),
                                                     child: Image.asset(
                                                       'assets/plus.png',
                                                       height: 12,
@@ -1542,7 +1618,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                     ],
                   ),
                 ),
-                Container(height: 335, child: showProductsCategories(sections[position].products)),
+                Container(
+                    height: 335,
+                    child: showProductsCategories(sections[position].products)),
               ],
 //              ),
             );
@@ -1703,7 +1781,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                 child: Center(
                   child: Text(
                     "Clear WishList",
-                    style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold),
                   ),
                 ),
               )),
@@ -1775,8 +1854,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       ),
                                       child: Text(
                                         product.nameHindi,
-                                        style:
-                                            TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.colorlightgrey),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -1784,7 +1864,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     Padding(
                                       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                       child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: <Widget>[
                                             Text(
                                               '₹ ${product.selectedPacking.price}  ',
@@ -1794,13 +1875,18 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                   fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.start,
                                             ),
-                                            product.selectedPacking.displayPrice > 0
+                                            product.selectedPacking
+                                                        .displayPrice >
+                                                    0
                                                 ? Text(
                                                     '₹${product.selectedPacking.displayPrice}',
                                                     style: TextStyle(
                                                         fontSize: 16,
-                                                        color: Colors.colororange,
-                                                        decoration: TextDecoration.lineThrough),
+                                                        color:
+                                                            Colors.colororange,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .lineThrough),
                                                     textAlign: TextAlign.start,
                                                   )
                                                 : Container(),
@@ -1810,7 +1896,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         children: <Widget>[
                                           Container(
                                             height: 32,
@@ -1818,27 +1905,36 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                             decoration: myBoxDecoration3(),
                                             child: Center(
                                               child: Padding(
-                                                padding: EdgeInsets.only(right: 8, left: 8),
-                                                child: DropdownButtonFormField<Packing>(
-                                                  decoration: InputDecoration.collapsed(
-                                                      hintText:
-                                                          product.selectedPacking.unitQtyShow),
+                                                padding: EdgeInsets.only(
+                                                    right: 8, left: 8),
+                                                child: DropdownButtonFormField<
+                                                    Packing>(
+                                                  decoration:
+                                                      InputDecoration.collapsed(
+                                                          hintText: product
+                                                              .selectedPacking
+                                                              .unitQtyShow),
                                                   value: null,
-                                                  items: product.packing.map((Packing value) {
-                                                    return new DropdownMenuItem<Packing>(
+                                                  items: product.packing
+                                                      .map((Packing value) {
+                                                    return new DropdownMenuItem<
+                                                        Packing>(
                                                       value: value,
                                                       child: new Text(
                                                         value.unitQtyShow,
-                                                        style: TextStyle(color: Colors.grey),
+                                                        style: TextStyle(
+                                                            color: Colors.grey),
                                                       ),
                                                     );
                                                   }).toList(),
                                                   onChanged: (newValue) {
                                                     setState(() {
-                                                      product.selectedPacking = newValue;
+                                                      product.selectedPacking =
+                                                          newValue;
                                                       product.count = 0;
                                                       product.selectedDisplayPrice =
-                                                          getCalculatedPrice(product);
+                                                          getCalculatedPrice(
+                                                              product);
                                                     });
                                                   },
                                                 ),
@@ -1867,7 +1963,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                         children: <Widget>[
                           GestureDetector(
                             onTap: () {
-                              showMessageFav(context, product, products, position);
+                              showMessageFav(
+                                  context, product, products, position);
                             },
                             child: Padding(
                               padding: EdgeInsets.only(left: 16, right: 8),
@@ -1882,7 +1979,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(right: 0, left: 0, top: 16),
+                            padding:
+                                EdgeInsets.only(right: 0, left: 0, top: 16),
                             child: Container(
                               // width: 120,
                               alignment: Alignment.centerRight,
@@ -1892,7 +1990,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                   // child: Center(
                                   child: IntrinsicHeight(
                                     child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: <Widget>[
                                         GestureDetector(
@@ -1904,7 +2003,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                             // color: Colors.white,
                                             child: Container(
                                               decoration: myBoxDecoration2(),
-                                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                              padding: EdgeInsets.fromLTRB(
+                                                  10, 0, 10, 0),
                                               child: Image.asset(
                                                 'assets/minus.png',
                                                 height: 10,
@@ -1914,8 +2014,11 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                           ),
                                         ),
                                         Container(
-                                          margin:
-                                              EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                                          margin: EdgeInsets.only(
+                                              left: 8,
+                                              right: 8,
+                                              top: 4,
+                                              bottom: 4),
                                           child: Center(
                                             child: Text(
                                               product.count.toString(),
@@ -1936,7 +2039,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                             // padding: EdgeInsets.only(right: 20),
                                             child: Container(
                                               decoration: myBoxDecoration2(),
-                                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                              padding: EdgeInsets.fromLTRB(
+                                                  10, 0, 10, 0),
                                               child: Image.asset(
                                                 'assets/plus.png',
                                                 height: 10,
@@ -1995,7 +2099,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Alert!"),
-          content: new Text("Would you like to remove this product from your Wishlist?"),
+          content: new Text(
+              "Would you like to remove this product from your Wishlist?"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -2027,7 +2132,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Alert!"),
-          content: new Text("Would you like to remove all product from your Wishlist?"),
+          content: new Text(
+              "Would you like to remove all product from your Wishlist?"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -2076,8 +2182,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 //                    labelText: "Search",
                     hintText: "Search",
                     prefixIcon: Icon(Icons.search),
-                    border:
-                        OutlineInputBorder(borderRadius: BorderRadius.all(Radius.circular(0.0)))),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(0.0)))),
               ),
             ),
             showLoaderSearch
@@ -2153,7 +2259,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                       ),
                       GestureDetector(
                           onTap: () {},
-                          child: Image.asset('assets/sort.png', height: 20, width: 20)),
+                          child: Image.asset('assets/sort.png',
+                              height: 20, width: 20)),
                     ],
                   ),
                 ),
@@ -2170,7 +2277,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                 child: Text(
                   "No Data",
                   style: TextStyle(
-                      color: Colors.colorgreen, fontSize: 26, fontWeight: FontWeight.bold),
+                      color: Colors.colorgreen,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -2240,13 +2349,15 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                               } else {
                                                 product.fav = "1";
                                               }
-                                              blocFav.fetchData(product.fav, product.id.toString());
+                                              blocFav.fetchData(product.fav,
+                                                  product.id.toString());
                                             }
                                           });
                                         },
                                         child: Container(
                                           //  color: Colors.grey,
-                                          padding: EdgeInsets.only(right: 15, bottom: 15),
+                                          padding: EdgeInsets.only(
+                                              right: 15, bottom: 15),
                                           child: product.fav == "1"
                                               ? Image.asset(
                                                   'assets/fav_filled.png',
@@ -2291,8 +2402,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       ),
                                       child: Text(
                                         product.nameHindi,
-                                        style:
-                                            TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.colorlightgrey),
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -2300,7 +2412,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     Padding(
                                       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                       child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
                                           children: <Widget>[
                                             Text(
                                               '₹ ${product.selectedPacking.price}  ',
@@ -2310,13 +2423,18 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                   fontWeight: FontWeight.bold),
                                               textAlign: TextAlign.start,
                                             ),
-                                            product.selectedPacking.displayPrice > 0
+                                            product.selectedPacking
+                                                        .displayPrice >
+                                                    0
                                                 ? Text(
                                                     '₹${product.selectedPacking.displayPrice}',
                                                     style: TextStyle(
                                                         fontSize: 16,
-                                                        color: Colors.colororange,
-                                                        decoration: TextDecoration.lineThrough),
+                                                        color:
+                                                            Colors.colororange,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .lineThrough),
                                                     textAlign: TextAlign.start,
                                                   )
                                                 : Container(),
@@ -2326,7 +2444,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       padding: EdgeInsets.fromLTRB(0, 4, 0, 0),
                                       child: Column(
                                         mainAxisSize: MainAxisSize.min,
-                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         children: <Widget>[
                                           Container(
                                             height: 32,
@@ -2334,27 +2453,36 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                             decoration: myBoxDecoration3(),
                                             child: Center(
                                               child: Padding(
-                                                padding: EdgeInsets.only(right: 8, left: 8),
-                                                child: DropdownButtonFormField<Packing>(
-                                                  decoration: InputDecoration.collapsed(
-                                                      hintText:
-                                                          product.selectedPacking.unitQtyShow),
+                                                padding: EdgeInsets.only(
+                                                    right: 8, left: 8),
+                                                child: DropdownButtonFormField<
+                                                    Packing>(
+                                                  decoration:
+                                                      InputDecoration.collapsed(
+                                                          hintText: product
+                                                              .selectedPacking
+                                                              .unitQtyShow),
                                                   value: null,
-                                                  items: product.packing.map((Packing value) {
-                                                    return new DropdownMenuItem<Packing>(
+                                                  items: product.packing
+                                                      .map((Packing value) {
+                                                    return new DropdownMenuItem<
+                                                        Packing>(
                                                       value: value,
                                                       child: new Text(
                                                         value.unitQtyShow,
-                                                        style: TextStyle(color: Colors.grey),
+                                                        style: TextStyle(
+                                                            color: Colors.grey),
                                                       ),
                                                     );
                                                   }).toList(),
                                                   onChanged: (newValue) {
                                                     setState(() {
-                                                      product.selectedPacking = newValue;
+                                                      product.selectedPacking =
+                                                          newValue;
                                                       product.count = 0;
                                                       product.selectedDisplayPrice =
-                                                          getCalculatedPrice(product);
+                                                          getCalculatedPrice(
+                                                              product);
                                                     });
                                                   },
                                                 ),
@@ -2395,7 +2523,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(right: 0, left: 0, top: 16),
+                            padding:
+                                EdgeInsets.only(right: 0, left: 0, top: 16),
                             child: Container(
                               // width: 120,
                               alignment: Alignment.centerRight,
@@ -2405,7 +2534,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                   // child: Center(
                                   child: IntrinsicHeight(
                                     child: Row(
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: <Widget>[
                                         GestureDetector(
@@ -2417,7 +2547,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                             // color: Colors.white,
                                             child: Container(
                                               decoration: myBoxDecoration2(),
-                                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                              padding: EdgeInsets.fromLTRB(
+                                                  10, 0, 10, 0),
                                               child: Image.asset(
                                                 'assets/minus.png',
                                                 height: 10,
@@ -2427,8 +2558,11 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                           ),
                                         ),
                                         Container(
-                                          margin:
-                                              EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                                          margin: EdgeInsets.only(
+                                              left: 8,
+                                              right: 8,
+                                              top: 4,
+                                              bottom: 4),
                                           child: Center(
                                             child: Text(
                                               product.count.toString(),
@@ -2449,7 +2583,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                             // padding: EdgeInsets.only(right: 20),
                                             child: Container(
                                               decoration: myBoxDecoration2(),
-                                              padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                              padding: EdgeInsets.fromLTRB(
+                                                  10, 0, 10, 0),
                                               child: Image.asset(
                                                 'assets/plus.png',
                                                 height: 10,
@@ -2499,8 +2634,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         primary: false,
         itemCount: products.length,
         itemBuilder: (BuildContext context, int index) => new Container(
-              child: girdViewItem(index, context, products),
-            ),
+          child: girdViewItem(index, context, products),
+        ),
         staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
         mainAxisSpacing: 2.0,
         crossAxisSpacing: 2.0,
@@ -2541,7 +2676,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                 } else {
                                   product.fav = "1";
                                 }
-                                blocFav.fetchData(product.fav, product.id.toString());
+                                blocFav.fetchData(
+                                    product.fav, product.id.toString());
                               }
                             });
                           },
@@ -2597,33 +2733,37 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                         padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                         child: Text(
                           product.nameHindi,
-                          style: TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                          style: TextStyle(
+                              fontSize: 16, color: Colors.colorlightgrey),
                           textAlign: TextAlign.center,
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
-                        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                          Text(
-                            '₹${product.selectedPacking.price}  ',
-                            style: TextStyle(
-                              fontSize: 18,
-                              color: Colors.colorlightgrey,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                          product.selectedPacking.displayPrice > 0
-                              ? Text(
-                                  '₹${product.selectedPacking.displayPrice}',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      color: Colors.colororange,
-                                      decoration: TextDecoration.lineThrough),
-                                  textAlign: TextAlign.center,
-                                )
-                              : Container(),
-                        ]),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              Text(
+                                '₹${product.selectedPacking.price}  ',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.colorlightgrey,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              product.selectedPacking.displayPrice > 0
+                                  ? Text(
+                                      '₹${product.selectedPacking.displayPrice}',
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.colororange,
+                                          decoration:
+                                              TextDecoration.lineThrough),
+                                      textAlign: TextAlign.center,
+                                    )
+                                  : Container(),
+                            ]),
                       ),
                     ],
                   ),
@@ -2643,7 +2783,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                             padding: EdgeInsets.only(right: 8, left: 8),
                             child: DropdownButtonFormField<Packing>(
                               decoration: InputDecoration.collapsed(
-                                  hintText: product.selectedPacking.unitQtyShow),
+                                  hintText:
+                                      product.selectedPacking.unitQtyShow),
                               value: null,
                               //value: product.selectedPacking,
                               items: product.packing.map((Packing value) {
@@ -2659,7 +2800,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                 setState(() {
                                   product.selectedPacking = newValue;
                                   product.count = 0;
-                                  product.selectedDisplayPrice = getCalculatedPrice(product);
+                                  product.selectedDisplayPrice =
+                                      getCalculatedPrice(product);
                                 });
                               },
                             ),
@@ -2692,7 +2834,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     // color: Colors.white,
                                     child: Container(
                                       decoration: myBoxDecoration2(),
-                                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      padding:
+                                          EdgeInsets.fromLTRB(10, 0, 10, 0),
                                       child: Image.asset(
                                         'assets/minus.png',
                                         height: 12,
@@ -2702,7 +2845,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                   ),
                                 ),
                                 Container(
-                                  margin: EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 4),
+                                  margin: EdgeInsets.only(
+                                      left: 8, right: 8, top: 4, bottom: 4),
                                   child: Center(
                                     child: Text(
                                       product.count.toString(),
@@ -2723,7 +2867,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     padding: EdgeInsets.only(right: 20),
                                     child: Container(
                                       decoration: myBoxDecoration2(),
-                                      padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      padding:
+                                          EdgeInsets.fromLTRB(10, 0, 10, 0),
                                       child: Image.asset(
                                         'assets/plus.png',
                                         height: 12,
@@ -2754,8 +2899,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       context,
       MaterialPageRoute(
         builder: (context) => ProductDetailPage(
-              product: product,
-            ),
+          product: product,
+        ),
       ),
     ).then((value) {
       getCartCount();
@@ -2770,8 +2915,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Alert!"),
-          content:
-              new Text("You would need to login in order to proceed. Please click here to Login."),
+          content: new Text(
+              "You would need to login in order to proceed. Please click here to Login."),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -2798,8 +2943,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-                from: 1,
-              ),
+            from: 1,
+          ),
         )).then((value) {
       getProfileDetail();
     });
@@ -2824,12 +2969,15 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         print('on launch $message');
       },
     );
+
+    _firebaseMessaging.subscribeToTopic("admin");
   }
 
   void iosPermission() {
     _firebaseMessaging.requestNotificationPermissions(
         IosNotificationSettings(sound: true, badge: true, alert: true));
-    _firebaseMessaging.onIosSettingsRegistered.listen((IosNotificationSettings settings) {
+    _firebaseMessaging.onIosSettingsRegistered
+        .listen((IosNotificationSettings settings) {
       print("Settings registered: $settings");
     });
   }

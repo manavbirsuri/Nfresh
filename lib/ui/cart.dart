@@ -59,7 +59,7 @@ class _MyCustomFormState extends State<CartPage> {
 
   Map<String, dynamic> mapPayTm = {
     //'MID': "zqpQeZ24755039419769",
-    'MID': "Nfresh39378019817673",
+    'MID': "zqpQeZ24755039419769",
     'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
     'CUST_ID': "cust123",
     'MOBILE_NO': "7777777777",
@@ -82,6 +82,8 @@ class _MyCustomFormState extends State<CartPage> {
   var addressController = TextEditingController();
 
   ProgressDialog dialog;
+
+  var selectedMethod = "Pay online";
 
   @override
   void initState() {
@@ -294,9 +296,9 @@ class _MyCustomFormState extends State<CartPage> {
                                               MaterialPageRoute(
                                                 builder: (context) =>
                                                     PaymentSuccessPage(
-                                                      response: response,
-                                                      cartExtra: data,
-                                                    ),
+                                                  response: response,
+                                                  cartExtra: data,
+                                                ),
                                               ));
                                         }
                                       } else {
@@ -698,6 +700,30 @@ class _MyCustomFormState extends State<CartPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          DropdownButton<String>(
+            value: selectedMethod,
+            onChanged: (String newValue) {
+              setState(() {
+                selectedMethod = newValue;
+              });
+            },
+            items: <String>['Pay online', 'Cash on delivery']
+                .map<DropdownMenuItem<String>>((String value) {
+              return DropdownMenuItem<String>(
+                value: value,
+                child: Text(value),
+              );
+            }).toList(),
+          ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: 8,
+            ),
+            child: Divider(
+              color: Colors.grey,
+              height: 1,
+            ),
+          ),
           ListTile(
             title: Text(
               'COUPONS',
@@ -764,75 +790,81 @@ class _MyCustomFormState extends State<CartPage> {
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
-            child: GestureDetector(
-              onTap: () {
-                setState(() {
-                  if (walletBalance > 0) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Material(
-                            type: MaterialType.transparency,
-                            child: Container(
-                              child: DynamicDialog(profile),
-                              padding: EdgeInsets.only(top: 40, bottom: 40),
-                            ),
-                          );
-                        }).then((value) {
+          selectedMethod == "Pay online"
+              ? Padding(
+                  padding:
+                      EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
+                  child: GestureDetector(
+                    onTap: () {
                       setState(() {
-                        //  walletDiscount = value;
-                        getBalance().then((onValue) {
-                          print("LLLLLLLLLLLL: " + onValue);
+                        if (walletBalance > 0) {
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return Material(
+                                  type: MaterialType.transparency,
+                                  child: Container(
+                                    child: DynamicDialog(profile),
+                                    padding:
+                                        EdgeInsets.only(top: 40, bottom: 40),
+                                  ),
+                                );
+                              }).then((value) {
+                            setState(() {
+                              //  walletDiscount = value;
+                              getBalance().then((onValue) {
+                                print("LLLLLLLLLLLL: " + onValue);
 //                        walletDiscount = onValue as int;
-                        });
-                      });
+                              });
+                            });
 
-                      setState(() {
-                        walletDiscount = int.parse(value);
-                      });
-                    });
-                  } else {
+                            setState(() {
+                              walletDiscount = int.parse(value);
+                            });
+                          });
+                        } else {
 //                    Toast.show("Insufficiant Balance in Wallet.", context,
 //                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-                    if (profile == null) {
-                      showAlertMessage(context);
-                    } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => WalletPage(),
-                          )).then((value) {
-                        getProfileDetail();
+                          if (profile == null) {
+                            showAlertMessage(context);
+                          } else {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => WalletPage(),
+                                )).then((value) {
+                              getProfileDetail();
+                            });
+                          }
+                        }
                       });
-                    }
-                  }
-                });
-              },
-              child: Container(
-                color: Colors.white,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      'Wallet Balance',
-                      style:
-                          TextStyle(fontSize: 18, color: Colors.colorlightgrey),
-                    ),
-                    Text(
-                      walletBalance > 0 ? walletBalance.toString() : "Add",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.colorgreen,
-                        // decoration: TextDecoration.underline,
+                    },
+                    child: Container(
+                      color: Colors.white,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Text(
+                            'Wallet Balance',
+                            style: TextStyle(
+                                fontSize: 18, color: Colors.colorlightgrey),
+                          ),
+                          Text(
+                            walletBalance > 0
+                                ? walletBalance.toString()
+                                : "Add",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.colorgreen,
+                              // decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-          ),
+                  ),
+                )
+              : Container(),
           Padding(
             padding: EdgeInsets.only(
               top: 8,
@@ -1348,9 +1380,9 @@ class _MyCustomFormState extends State<CartPage> {
           context,
           MaterialPageRoute(
             builder: (context) => PaymentSuccessPage(
-                  response: response,
-                  cartExtra: data,
-                ),
+              response: response,
+              cartExtra: data,
+            ),
           ));
     }
   }
@@ -1635,8 +1667,8 @@ class _MyCustomFormState extends State<CartPage> {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-                from: 1,
-              ),
+            from: 1,
+          ),
         )).then((value) {
       getProfileDetail();
       blocCity.fetchData();
