@@ -52,7 +52,8 @@ class StateOrderPage extends State<OrderPage> {
               color: Colors.colorlightgreyback,
               child: StreamBuilder(
                 stream: bloc.orderDetail,
-                builder: (context, AsyncSnapshot<ResponseOrderDetail> snapshot) {
+                builder:
+                    (context, AsyncSnapshot<ResponseOrderDetail> snapshot) {
                   if (snapshot.hasData) {
                     return mainContent(snapshot);
                   } else if (snapshot.hasError) {
@@ -84,7 +85,8 @@ class StateOrderPage extends State<OrderPage> {
               contentPadding: EdgeInsets.all(0),
               trailing: Text(
                 orderDetail.status,
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
               ),
             ),
             ListTile(
@@ -205,7 +207,7 @@ class StateOrderPage extends State<OrderPage> {
       children: <Widget>[
         Expanded(child: getMainCardItem(context, snapshot.data)),
         Container(
-          color: Colors.green,
+          color: Colors.colorgreen,
           height: 65,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -218,13 +220,16 @@ class StateOrderPage extends State<OrderPage> {
                         setState(() {
                           showLoader = true;
                         });
-                        blocReorder.fetchSearchData(snapshot.data.order.orderId);
+                        blocReorder
+                            .fetchSearchData(snapshot.data.order.orderId);
                         observeReorder(context);
                       },
                       child: Text(
                         "REORDER",
                         style: TextStyle(
-                            color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold),
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold),
                       ),
                     )
             ],
@@ -280,7 +285,8 @@ class StateOrderPage extends State<OrderPage> {
           insertIntoCart(response.products, context);
         }
       } else {
-        Toast.show(response.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        Toast.show(response.msg, context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       }
     });
   }

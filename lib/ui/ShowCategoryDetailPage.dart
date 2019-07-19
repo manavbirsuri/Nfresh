@@ -1556,7 +1556,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
             borderRadius: BorderRadius.circular(0.0),
           ),
           child: Container(
-            height: 300,
+            height: 310,
             padding: EdgeInsets.only(bottom: 12),
             child: Column(
               children: <Widget>[
@@ -1624,6 +1624,8 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                       ),
                       Text(
                         product.name,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.colorgreen,

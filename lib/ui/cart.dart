@@ -60,7 +60,7 @@ class _MyCustomFormState extends State<CartPage> {
 
   Map<String, dynamic> mapPayTm = {
     //'MID': "zqpQeZ24755039419769",
-    'MID': "zqpQeZ24755039419769",
+    'MID': "Nfresh39378019817673",
     'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
     'CUST_ID': "cust123",
     'MOBILE_NO': "7777777777",
@@ -84,7 +84,7 @@ class _MyCustomFormState extends State<CartPage> {
 
   ProgressDialog dialog;
 
-  var selectedMethod = "Pay online";
+  var selectedMethod = "Select Payment method";
 
   @override
   void initState() {
@@ -285,6 +285,16 @@ class _MyCustomFormState extends State<CartPage> {
                                         });
                                       });
                                       if (selectedMethod ==
+                                          "Select Payment method") {
+                                        Toast.show(
+                                            "Please select payment method.",
+                                            context,
+                                            duration: Toast.LENGTH_SHORT,
+                                            gravity: Toast.BOTTOM);
+
+                                        return;
+                                      }
+                                      if (selectedMethod ==
                                           "Cash on delivery") {
                                         if (profile != null) {
                                           dialog = new ProgressDialog(context,
@@ -301,19 +311,19 @@ class _MyCustomFormState extends State<CartPage> {
                                             'wallet_use_amount': walletDiscount,
                                             'coupon_code': couponCode,
                                           };
-                                          placeOrder(
-                                              response: response,
-                                              cartExtra: data,
-                                              contexte: context);
-//                                          Navigator.push(
-//                                              context,
-//                                              MaterialPageRoute(
-//                                                builder: (context) =>
-//                                                    PaymentSuccessPage(
-//                                                      response: response,
-//                                                      cartExtra: data,
-//                                                    ),
-//                                              ));
+//                                          placeOrder(
+//                                              response: response,
+//                                              cartExtra: data,
+//                                              contexte: context);
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    PaymentSuccessPage(
+                                                        response: response,
+                                                        cartExtra: data,
+                                                        from: "0"),
+                                              ));
                                         } else {
                                           showAlertMessage(context);
                                         }
@@ -333,12 +343,14 @@ class _MyCustomFormState extends State<CartPage> {
                                         if (profile != null) {
                                           if (totalAmount > 0) {
                                             getCheckSum(context);
-                                          }
-                                          else if(walletBalance>0&&totalAmount==0){
+                                          } else if (walletDiscount > 0 &&
+                                              totalAmount == 0) {
                                             if (profile != null) {
-                                              dialog = new ProgressDialog(context,
+                                              dialog = new ProgressDialog(
+                                                  context,
                                                   ProgressDialogType.Normal);
-                                              dialog.setMessage("Please wait...");
+                                              dialog
+                                                  .setMessage("Please wait...");
                                               dialog.show();
                                               Map<String, dynamic> data = {
                                                 'total': checkoutTotal,
@@ -347,14 +359,23 @@ class _MyCustomFormState extends State<CartPage> {
                                                 'area': profile.area,
                                                 'type': profile.type,
                                                 'discount': discount,
-                                                'wallet_use_amount': walletDiscount,
+                                                'wallet_use_amount':
+                                                    walletDiscount,
                                                 'coupon_code': couponCode,
                                               };
-                                              placeOrder(
-                                                  response: response,
-                                                  cartExtra: data,
-                                                  contexte: context);
-
+//                                              placeOrder(
+//                                                  response: response,
+//                                                  cartExtra: data,
+//                                                  contexte: context);
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        PaymentSuccessPage(
+                                                            response: response,
+                                                            cartExtra: data,
+                                                            from: "0"),
+                                                  ));
                                             } else {
                                               showAlertMessage(context);
                                             }
@@ -375,9 +396,9 @@ class _MyCustomFormState extends State<CartPage> {
                                                 MaterialPageRoute(
                                                   builder: (context) =>
                                                       PaymentSuccessPage(
-                                                        response: response,
-                                                        cartExtra: data,
-                                                      ),
+                                                          response: response,
+                                                          cartExtra: data,
+                                                          from: "0"),
                                                 ));
                                           }
                                         } else {
@@ -777,15 +798,18 @@ class _MyCustomFormState extends State<CartPage> {
               onChanged: (String newValue) {
                 setState(() {
                   selectedMethod = newValue;
-                  if (newValue == "Cash on delivery") {
+                  if (newValue == "Cash on delivery"||newValue == "Select Payment method") {
                     setState(() {
                       walletDiscount = 0;
                     });
                   }
                 });
               },
-              items: <String>['Pay online', 'Cash on delivery']
-                  .map<DropdownMenuItem<String>>((String value) {
+              items: <String>[
+                'Select Payment method',
+                'Pay online',
+                'Cash on delivery'
+              ].map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -1465,9 +1489,7 @@ class _MyCustomFormState extends State<CartPage> {
           context,
           MaterialPageRoute(
             builder: (context) => PaymentSuccessPage(
-                  response: response,
-                  cartExtra: data,
-                ),
+                response: response, cartExtra: data, from: "1"),
           ));
     }
   }

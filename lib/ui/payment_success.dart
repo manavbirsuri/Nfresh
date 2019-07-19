@@ -9,7 +9,8 @@ import '../main.dart';
 class PaymentSuccessPage extends StatefulWidget {
   final response;
   final cartExtra;
-  const PaymentSuccessPage({Key key, this.response, this.cartExtra})
+  const PaymentSuccessPage(
+      {Key key, this.response, this.cartExtra, String from})
       : super(key: key);
   @override
   State<StatefulWidget> createState() {
@@ -30,24 +31,29 @@ class PaymentState extends State<PaymentSuccessPage> {
   @override
   void initState() {
     super.initState();
-
-    print("JSON: ${widget.response}");
-    var obj = jsonDecode(widget.response);
-    var status = obj['STATUS'];
-    if (status == 'TXN_SUCCESS') {
-      // payment success
+    if (widget.response != "") {
+      print("JSON: ${widget.response}");
+      var obj = jsonDecode(widget.response);
+      var status = obj['STATUS'];
+      if (status == 'TXN_SUCCESS') {
+        // payment success
+        setState(() {
+          isSuccess = true;
+          message = "Payment is successful";
+        });
+      } else {
+        // payment failure
+        setState(() {
+          isSuccess = false;
+          message = "Payment processing error.";
+        });
+      }
+    } else {
       setState(() {
         isSuccess = true;
         message = "Payment is successful";
       });
-    } else {
-      // payment failure
-      setState(() {
-        isSuccess = false;
-        message = "Payment processing error.";
-      });
     }
-
     Future.delayed(const Duration(milliseconds: 1000), () {
       if (isSuccess) {
         placeOrder(widget.cartExtra);

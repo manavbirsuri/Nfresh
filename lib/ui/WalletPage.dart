@@ -38,8 +38,9 @@ class stateProfilePage extends State<stateProfile> {
   String checksum = "";
   String orderId = "";
   Map<String, dynamic> mapPayTm = {
-    'MID': "zqpQeZ24755039419769",
+    // 'MID': "zqpQeZ24755039419769",
     //'MID': "apXePW28170154069075",
+    'MID': "Nfresh39378019817673",
     'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
     'CUST_ID': "cust123",
     'MOBILE_NO': "7777777777",
@@ -490,8 +491,8 @@ class stateProfilePage extends State<stateProfile> {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-            from: 1,
-          ),
+                from: 1,
+              ),
         )).then((value) {
       getProfileDetail();
     });

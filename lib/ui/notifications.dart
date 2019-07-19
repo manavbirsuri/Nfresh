@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/notifications_bloc.dart';
 import 'package:nfresh/models/notification.dart';
 
+import 'OrderPage.dart';
+import 'WalletPage.dart';
+
 class NotificationPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -73,13 +76,29 @@ class NotificationState extends State<NotificationPage> {
 
   Widget notificationListItem(BuildContext context, int position) {
     var notification = notifications[position];
-    return Card(
-      child: Container(
-        //  height: 120,
-        child: ListTile(
-          leading: setIcon(notification),
-          title: Text(notification.message),
-          subtitle: Text(notification.createdAt),
+    return GestureDetector(
+      onTap: () {
+        if (notification.sourceType == 2) {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => WalletPage()));
+        } else if (notification.sourceType == 1) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => new OrderPage(
+                      title: '${notifications[position].sourceId}',
+                    ),
+              ));
+        }
+      },
+      child: Card(
+        child: Container(
+          //  height: 120,
+          child: ListTile(
+            leading: setIcon(notification),
+            title: Text(notification.message),
+            subtitle: Text(notification.createdAt),
+          ),
         ),
       ),
     );

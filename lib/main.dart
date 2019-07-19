@@ -20,6 +20,7 @@ import 'package:nfresh/ui/login.dart';
 import 'package:nfresh/ui/notifications.dart';
 import 'package:nfresh/ui/refers_earn.dart';
 import 'package:page_indicator/page_indicator.dart';
+import 'package:toast/toast.dart';
 
 import 'bloc/get_fav_bloc.dart';
 import 'bloc/home_bloc.dart';
@@ -257,7 +258,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   }
 
   int _selectedDrawerIndex = 0;
-  void changeTabs(int tabIndex) {
+  void changeTabs(int tabIndex, ResponseHome snapshot) {
     setState(() {
       _curIndex = tabIndex;
       _selectedDrawerIndex = tabIndex;
@@ -592,7 +593,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                   builder: (context) => new OffersPage(),
                                 ));*/
                                 Navigator.pop(context);
-                                changeTabs(2);
+                                changeTabs(2, snapshot);
                               },
                             ),
                             Divider(
@@ -637,7 +638,10 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               ),
                               onTap: () {
                                 Navigator.pop(context);
-                                changeTabs(1);
+
+                                blocFavGet.fetchFavData();
+
+                                changeTabs(1, snapshot);
                               },
                             ),
                             Divider(
@@ -742,8 +746,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => LoginPage(
-                                        from: 0,
-                                      ),
+                                            from: 0,
+                                          ),
                                     ),
                                   );
                                 } else {
@@ -779,8 +783,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => LoginPage(
-                                            from: 0,
-                                          ),
+                                                from: 0,
+                                              ),
                                         ),
                                       );
                                     },
@@ -1347,8 +1351,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => ProductDetailPage(
-                                          product: product,
-                                        ),
+                                              product: product,
+                                            ),
                                       )).then((value) {
                                     onCartUpdate();
                                     updateProducts();
@@ -2634,8 +2638,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         primary: false,
         itemCount: products.length,
         itemBuilder: (BuildContext context, int index) => new Container(
-          child: girdViewItem(index, context, products),
-        ),
+              child: girdViewItem(index, context, products),
+            ),
         staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
         mainAxisSpacing: 2.0,
         crossAxisSpacing: 2.0,
@@ -2899,8 +2903,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       context,
       MaterialPageRoute(
         builder: (context) => ProductDetailPage(
-          product: product,
-        ),
+              product: product,
+            ),
       ),
     ).then((value) {
       getCartCount();
@@ -2943,8 +2947,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-            from: 1,
-          ),
+                from: 1,
+              ),
         )).then((value) {
       getProfileDetail();
     });
@@ -2961,6 +2965,10 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     _firebaseMessaging.configure(
       onMessage: (Map<String, dynamic> message) async {
         print('on message $message');
+        var json = message['notification']['body'];
+
+        Toast.show(json.toString(), context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       },
       onResume: (Map<String, dynamic> message) async {
         print('on resume $message');
