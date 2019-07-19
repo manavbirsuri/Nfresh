@@ -798,7 +798,8 @@ class _MyCustomFormState extends State<CartPage> {
               onChanged: (String newValue) {
                 setState(() {
                   selectedMethod = newValue;
-                  if (newValue == "Cash on delivery"||newValue == "Select Payment method") {
+                  if (newValue == "Cash on delivery" ||
+                      newValue == "Select Payment method") {
                     setState(() {
                       walletDiscount = 0;
                     });
