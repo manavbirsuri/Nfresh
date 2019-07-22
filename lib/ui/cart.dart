@@ -341,10 +341,10 @@ class _MyCustomFormState extends State<CartPage> {
 
                                       } else {
                                         if (profile != null) {
-                                          if (totalAmount > 0) {
+                                          if (checkoutTotal > 0) {
                                             getCheckSum(context);
                                           } else if (walletDiscount > 0 &&
-                                              totalAmount == 0) {
+                                              checkoutTotal == 0) {
                                             if (profile != null) {
                                               dialog = new ProgressDialog(
                                                   context,
@@ -2032,6 +2032,7 @@ class _DynamicDialogState extends State<DynamicDialog> {
   String image2 = "assets/ic_fav.png";
   String currentimage = "assets/ic_fav.png";
   var textFieldController = TextEditingController();
+
   ProfileModel waletb;
 
   _DynamicDialogState(ProfileModel waletb) {
@@ -2050,6 +2051,7 @@ class _DynamicDialogState extends State<DynamicDialog> {
   void initState() {
 //    _title = widget.title;
     super.initState();
+    saveToPrefs("0");
   }
 
   @override
@@ -2154,7 +2156,6 @@ class _DynamicDialogState extends State<DynamicDialog> {
     if (string.isEmpty) {
     } else {
       setState(() async {
-        print("GGGGGGGGGGGGG yyyyyy$string");
         SharedPreferences prefs = await SharedPreferences.getInstance();
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
 //    print('Pressed $counter times.');

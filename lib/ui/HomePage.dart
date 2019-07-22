@@ -62,7 +62,8 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
     for (int i = 0; i < snapshot.sections.length; i++) {
       // var products = snapshot.sections[i].products;
       for (int j = 0; j < snapshot.sections[i].products.length; j++) {
-        var product = await _database.queryConditionalProduct(snapshot.sections[i].products[j]);
+        var product = await _database
+            .queryConditionalProduct(snapshot.sections[i].products[j]);
         if (product != null) {
           product.selectedDisplayPrice = getCalculatedPrice(product);
           setState(() {
@@ -126,7 +127,9 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                           ],
                         ),
                       ),
-                      Container(height: 122, child: showCategories(snapshot.categories)),
+                      Container(
+                          height: 122,
+                          child: showCategories(snapshot.categories)),
                       Padding(
                         padding: EdgeInsets.only(top: 8),
                         child: Stack(
@@ -240,8 +243,8 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                   Navigator.push(
                           context,
                           new MaterialPageRoute(
-                              builder: (context) =>
-                                  CategoryDetails(selectedCategory: categories[position])))
+                              builder: (context) => CategoryDetails(
+                                  selectedCategory: categories[position])))
                       .then((value) {
                     widget.listener.onCartUpdate();
                     updateProducts();
@@ -276,12 +279,15 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                             child: position == 0
                                 ? Text(
                                     categories[position].name,
-                                    style: TextStyle(fontSize: 14, color: Colors.colorlightgrey),
+                                    style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.colorlightgrey),
                                     textAlign: TextAlign.center,
                                   )
                                 : Text(
                                     categories[position].name,
-                                    style: TextStyle(fontSize: 14, color: Colors.colorgreen),
+                                    style: TextStyle(
+                                        fontSize: 14, color: Colors.colorgreen),
                                     textAlign: TextAlign.center,
                                   ),
                           ),
@@ -320,12 +326,14 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                           child: Column(
                             children: <Widget>[
                               Padding(
-                                padding: EdgeInsets.only(right: 4, left: 0, top: 0),
+                                padding:
+                                    EdgeInsets.only(right: 4, left: 0, top: 0),
                                 child: Container(
                                   width: 168,
                                   //color: Colors.green,
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                       GestureDetector(
                                           onTap: () {
@@ -336,14 +344,19 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                                 product.fav = "1";
                                               }
 
-                                              blocFav.fetchData(product.fav, product.id.toString());
+                                              blocFav.fetchData(product.fav,
+                                                  product.id.toString());
                                             });
                                           },
                                           child: Container(
                                             // color: Colors.mygrey,
                                             padding: EdgeInsets.only(
-                                                bottom: 8, right: 30, top: 8, left: 8),
-                                            child: product != null && product.fav == "1"
+                                                bottom: 8,
+                                                right: 30,
+                                                top: 8,
+                                                left: 8),
+                                            child: product != null &&
+                                                    product.fav == "1"
                                                 ? Image.asset(
                                                     'assets/fav_filled.png',
                                                     width: 20.0,
@@ -404,18 +417,23 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                       padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                                       child: Text(
                                         products[position].nameHindi,
-                                        style:
-                                            TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.colorlightgrey),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                       child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: <Widget>[
                                             Text(
-                                              "₹" + product.selectedPacking.price.toString() + "  ",
+                                              "₹" +
+                                                  product.selectedPacking.price
+                                                      .toString() +
+                                                  "  ",
                                               style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.colorlightgrey,
@@ -423,15 +441,21 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
-                                            product.selectedPacking.displayPrice > 0
+                                            product.selectedPacking
+                                                        .displayPrice >
+                                                    0
                                                 ? Text(
                                                     "₹" +
-                                                        product.selectedPacking.displayPrice
+                                                        product.selectedPacking
+                                                            .displayPrice
                                                             .toString(),
                                                     style: TextStyle(
                                                         fontSize: 16,
-                                                        color: Colors.colororange,
-                                                        decoration: TextDecoration.lineThrough),
+                                                        color:
+                                                            Colors.colororange,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .lineThrough),
                                                     textAlign: TextAlign.center,
                                                   )
                                                 : Container(),
@@ -452,25 +476,34 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                       decoration: myBoxDecoration3(),
                                       child: Center(
                                         child: Padding(
-                                          padding: EdgeInsets.only(right: 8, left: 8),
-                                          child: DropdownButtonFormField<Packing>(
-                                            decoration: InputDecoration.collapsed(
-                                                hintText: product.selectedPacking.unitQtyShow),
+                                          padding: EdgeInsets.only(
+                                              right: 8, left: 8),
+                                          child:
+                                              DropdownButtonFormField<Packing>(
+                                            decoration:
+                                                InputDecoration.collapsed(
+                                                    hintText: product
+                                                        .selectedPacking
+                                                        .unitQtyShow),
                                             // value: product.selectedPacking,
                                             value: null,
-                                            items: product.packing //getQtyList(products[position])
+                                            items: product
+                                                .packing //getQtyList(products[position])
                                                 .map((Packing value) {
-                                              return new DropdownMenuItem<Packing>(
+                                              return new DropdownMenuItem<
+                                                  Packing>(
                                                 value: value,
                                                 child: new Text(
                                                   value.unitQtyShow,
-                                                  style: TextStyle(color: Colors.grey),
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
                                                 ),
                                               );
                                             }).toList(),
                                             onChanged: (newValue) {
                                               setState(() {
-                                                products[position].selectedPacking = newValue;
+                                                products[position]
+                                                    .selectedPacking = newValue;
                                                 product.count = 0;
                                                 product.selectedDisplayPrice =
                                                     getCalculatedPrice(product);
@@ -484,7 +517,8 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                                padding:
+                                    EdgeInsets.only(right: 8, left: 8, top: 16),
                                 child: Container(
                                   width: 150,
                                   //color: Colors.grey,
@@ -494,21 +528,28 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                       child: Center(
                                         child: IntrinsicHeight(
                                           child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: <Widget>[
                                               GestureDetector(
                                                 onTap: () {
                                                   setState(() {
-                                                    decrementCount(products[position]);
+                                                    decrementCount(
+                                                        products[position]);
                                                   });
                                                 },
                                                 child: Container(
-                                                  padding: EdgeInsets.only(left: 20),
+                                                  padding:
+                                                      EdgeInsets.only(left: 20),
                                                   // color: Colors.white,
                                                   child: Container(
-                                                    decoration: myBoxDecoration2(),
-                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                    decoration:
+                                                        myBoxDecoration2(),
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            12, 0, 12, 0),
                                                     child: Image.asset(
                                                       'assets/minus.png',
                                                       height: 12,
@@ -519,13 +560,18 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                               ),
                                               Container(
                                                 margin: EdgeInsets.only(
-                                                    left: 8, right: 8, top: 4, bottom: 4),
+                                                    left: 8,
+                                                    right: 8,
+                                                    top: 4,
+                                                    bottom: 4),
                                                 child: Center(
                                                   child: Text(
                                                     product.count.toString(),
                                                     style: TextStyle(
-                                                        color: Colors.colorgreen,
-                                                        fontWeight: FontWeight.bold,
+                                                        color:
+                                                            Colors.colorgreen,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                         fontSize: 20),
                                                     textAlign: TextAlign.center,
                                                   ),
@@ -534,15 +580,20 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                               GestureDetector(
                                                 onTap: () {
                                                   setState(() {
-                                                    incrementCount(products[position]);
+                                                    incrementCount(
+                                                        products[position]);
                                                   });
                                                 },
                                                 child: Container(
                                                   //  color: Colors.white,
-                                                  padding: EdgeInsets.only(right: 20),
+                                                  padding: EdgeInsets.only(
+                                                      right: 20),
                                                   child: Container(
-                                                    decoration: myBoxDecoration2(),
-                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                    decoration:
+                                                        myBoxDecoration2(),
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            12, 0, 12, 0),
                                                     child: Image.asset(
                                                       'assets/plus.png',
                                                       height: 12,
@@ -608,7 +659,9 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                     ],
                   ),
                 ),
-                Container(height: 335, child: showProductsCategories(sections[position].products)),
+                Container(
+                    height: 335,
+                    child: showProductsCategories(sections[position].products)),
               ],
 //              ),
             );

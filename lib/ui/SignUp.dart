@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/cities_bloc.dart';
 import 'package:nfresh/bloc/signup_bloc.dart';
 import 'package:nfresh/models/area_model.dart';
 import 'package:nfresh/models/city_model.dart';
 import 'package:nfresh/ui/PinView.dart';
+
+import 'TermAndPrivacy.dart';
 
 class SignUp extends StatelessWidget {
   @override
@@ -238,6 +241,9 @@ class stateProfilePage extends State<stateProfile> {
                                     child: Center(
                                       child: TextFormField(
                                         focusNode: focus1,
+                                        inputFormatters: [
+                                          LengthLimitingTextInputFormatter(10),
+                                        ],
                                         controller: mobileController,
                                         keyboardType: TextInputType.phone,
                                         textInputAction: TextInputAction.next,
@@ -247,8 +253,9 @@ class stateProfilePage extends State<stateProfile> {
                                         },
                                         decoration:
                                             new InputDecoration.collapsed(
-                                                hintText:
-                                                    'Enter Mobile Number'),
+                                          hintText: 'Enter Mobile Number',
+                                          border: InputBorder.none,
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -291,7 +298,7 @@ class stateProfilePage extends State<stateProfile> {
                                               ),
                                             ),
                                           ),
-                                          flex: 4,
+                                          flex: 6,
                                         ),
                                         Flexible(
                                           child: GestureDetector(
@@ -314,7 +321,7 @@ class stateProfilePage extends State<stateProfile> {
                                             child: Container(
                                               child: Padding(
                                                 padding: EdgeInsets.only(
-                                                    bottom: 8, left: 0),
+                                                    bottom: 0, left: 0),
                                                 child: Text(
                                                   valueShow,
                                                   style: TextStyle(
@@ -519,7 +526,16 @@ class stateProfilePage extends State<stateProfile> {
                                           style: new TextStyle(fontSize: 14.0),
                                         ),
                                         GestureDetector(
-                                          onTap: () {},
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    TermAndPrivacy(
+                                                        'Terms of Use'),
+                                              ),
+                                            );
+                                          },
                                           child: new Text(
                                             'Terms of Use ',
                                             style: new TextStyle(
@@ -532,7 +548,16 @@ class stateProfilePage extends State<stateProfile> {
                                           style: new TextStyle(fontSize: 14.0),
                                         ),
                                         GestureDetector(
-                                          onTap: () {},
+                                          onTap: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) =>
+                                                    TermAndPrivacy(
+                                                        'Privacy Policy'),
+                                              ),
+                                            );
+                                          },
                                           child: new Text(
                                             'Privacy Policy',
                                             style: new TextStyle(

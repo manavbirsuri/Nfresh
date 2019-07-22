@@ -130,6 +130,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 
       blocFavGet.fetchFavData();
       favObserver();
+      updateProducts();
     });
     getCartCount();
 
@@ -1289,57 +1290,67 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
-                                      GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              if (profile == null) {
-                                                showAlertMessage(context);
-                                              } else {
-                                                if (product.fav == "1") {
-                                                  product.fav = "0";
-                                                } else {
-                                                  product.fav = "1";
-                                                }
+                                      1 < 0
+                                          ? GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  if (profile == null) {
+                                                    showAlertMessage(context);
+                                                  } else {
+                                                    if (product.fav == "1") {
+                                                      product.fav = "0";
+                                                    } else {
+                                                      product.fav = "1";
+                                                    }
 
-                                                blocFav.fetchData(product.fav,
-                                                    product.id.toString());
-                                              }
-                                            });
-                                          },
-                                          child: Container(
-                                            // color: Colors.mygrey,
-                                            padding: EdgeInsets.only(
-                                                bottom: 8,
-                                                right: 30,
-                                                top: 8,
-                                                left: 8),
-                                            child: product != null &&
-                                                    product.fav == "1"
-                                                ? Image.asset(
-                                                    'assets/fav_filled.png',
-                                                    width: 20.0,
-                                                    height: 20.0,
-                                                    fit: BoxFit.cover,
-                                                  )
-                                                : Image.asset(
-                                                    'assets/fav.png',
-                                                    width: 20.0,
-                                                    height: 20.0,
-                                                    fit: BoxFit.cover,
-                                                  ),
-                                          )),
+                                                    blocFav.fetchData(
+                                                        product.fav,
+                                                        product.id.toString());
+                                                  }
+                                                });
+                                              },
+                                              child: Container(
+                                                // color: Colors.mygrey,
+                                                padding: EdgeInsets.only(
+                                                    bottom: 8,
+                                                    right: 30,
+                                                    top: 8,
+                                                    left: 8),
+                                                child: product != null &&
+                                                        product.fav == "1"
+                                                    ? Image.asset(
+                                                        'assets/fav_filled.png',
+                                                        width: 20.0,
+                                                        height: 20.0,
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : Image.asset(
+                                                        'assets/fav.png',
+                                                        width: 20.0,
+                                                        height: 20.0,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                              ))
+                                          : Container(
+                                              height: 30,
+                                            ),
                                       products[position]
                                                   .selectedPacking
                                                   .displayPrice >
                                               0
-                                          ? Text(
-                                              getOff(products[position]),
-                                              style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.colororange,
+                                          ? Container(
+                                              // color: Colors.mygrey,
+                                              padding: EdgeInsets.only(
+                                                right: 10,
                                               ),
-                                              textAlign: TextAlign.center,
-                                            )
+                                              child: Text(
+                                                getOff(products[position]),
+                                                style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Colors.colororange,
+                                                ),
+                                                textAlign: TextAlign.center,
+                                              ))
                                           : Container(),
                                     ],
                                   ),
@@ -2966,15 +2977,27 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       onMessage: (Map<String, dynamic> message) async {
         print('on message $message');
         var json = message['notification']['body'];
-
+//        Navigator.push(
+//          context,
+//          MaterialPageRoute(builder: (context) => NotificationPage()),
+//        );
         Toast.show(json.toString(), context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
       },
       onResume: (Map<String, dynamic> message) async {
         print('on resume $message');
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NotificationPage()),
+        );
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('on launch $message');
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => NotificationPage()),
+        );
       },
     );
 

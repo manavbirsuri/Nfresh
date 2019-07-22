@@ -244,7 +244,8 @@ class StateOrderPage extends State<OrderPage> {
       _database.update(products[i]);
     }
 
-    Toast.show('Your products added to cart.', context,
+    Toast.show(
+        'Your products has been added to the cart successfully.', context,
         duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
   }
 

@@ -173,7 +173,7 @@ class MyHomePage extends State<LoginPage> {
                                               ),
                                             ),
                                           ),
-                                          flex: 4,
+                                          flex: 6,
                                         ),
                                         Flexible(
                                           child: GestureDetector(
@@ -196,11 +196,11 @@ class MyHomePage extends State<LoginPage> {
                                             child: Container(
                                               child: Padding(
                                                 padding: EdgeInsets.only(
-                                                    bottom: 8, left: 0),
+                                                    bottom: 0, left: 0),
                                                 child: Text(
                                                   valueShow,
                                                   style: TextStyle(
-                                                      fontSize: 18,
+                                                      fontSize: 14,
                                                       color: Colors.colorgreen),
                                                 ),
                                               ),

@@ -65,24 +65,30 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                               child: Column(
                                 children: <Widget>[
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
                                           "Phone Number",
-                                          style: TextStyle(fontSize: 18, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                     child: Center(
                                       child: TextField(
                                         controller: phoneController,
-                                        decoration: new InputDecoration.collapsed(
-                                            hintText: 'Enter Phone No.'),
+                                        decoration:
+                                            new InputDecoration.collapsed(
+                                                hintText: 'Enter Phone No.'),
                                         textAlign: TextAlign.start,
                                         keyboardType: TextInputType.phone,
                                         textInputAction: TextInputAction.next,
@@ -91,40 +97,51 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                   ),
                                   Divider(height: 1, color: Colors.black),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
                                           "Password",
-                                          style: TextStyle(fontSize: 18, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                       child: Row(children: <Widget>[
                                         Flexible(
                                           child: Container(
                                             child: Center(
                                               child: TextField(
-                                                decoration: new InputDecoration.collapsed(
-                                                    hintText: 'Enter New Password'),
+                                                decoration: new InputDecoration
+                                                        .collapsed(
+                                                    hintText:
+                                                        'Enter New Password'),
                                                 controller: passwordController,
                                                 obscureText: showText,
                                                 textAlign: TextAlign.start,
-                                                textInputAction: TextInputAction.done,
+                                                textInputAction:
+                                                    TextInputAction.done,
                                               ),
                                             ),
                                           ),
-                                          flex: 4,
+                                          flex: 5,
                                         ),
                                         Flexible(
                                           child: GestureDetector(
                                             onTap: () {
                                               setState(() {
-                                                if (passwordController.text.toString().length > 0) {
+                                                if (passwordController.text
+                                                        .toString()
+                                                        .length >
+                                                    0) {
                                                   if (showText) {
                                                     showText = false;
                                                     valueShow = "Hide";
@@ -137,11 +154,13 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                             },
                                             child: Container(
                                               child: Padding(
-                                                padding: EdgeInsets.only(bottom: 8, left: 0),
+                                                padding: EdgeInsets.only(
+                                                    bottom: 0, left: 0),
                                                 child: Text(
                                                   valueShow,
                                                   style: TextStyle(
-                                                      fontSize: 18, color: Colors.colorgreen),
+                                                      fontSize: 14,
+                                                      color: Colors.colorgreen),
                                                 ),
                                               ),
                                             ),
@@ -151,40 +170,50 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                       ])),
                                   Divider(height: 1, color: Colors.black),
                                   Padding(
-                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 0),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
                                     child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: <Widget>[
                                         Text(
                                           "Confirm Password",
-                                          style: TextStyle(fontSize: 18, color: Colors.colorgreen),
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.colorgreen),
                                         ),
                                       ],
                                     ),
                                   ),
                                   Padding(
-                                      padding: const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 8, 0, 0),
                                       child: Row(children: <Widget>[
                                         Flexible(
                                           child: Container(
                                             child: Center(
                                               child: TextField(
-                                                decoration: new InputDecoration.collapsed(
-                                                    hintText: 'Confirm New Password'),
+                                                decoration: new InputDecoration
+                                                        .collapsed(
+                                                    hintText:
+                                                        'Confirm New Password'),
                                                 controller: password2Controller,
                                                 obscureText: showText2,
                                                 textAlign: TextAlign.start,
-                                                textInputAction: TextInputAction.done,
+                                                textInputAction:
+                                                    TextInputAction.done,
                                               ),
                                             ),
                                           ),
-                                          flex: 4,
+                                          flex: 5,
                                         ),
                                         Flexible(
                                           child: GestureDetector(
                                             onTap: () {
                                               setState(() {
-                                                if (password2Controller.text.toString().length >
+                                                if (password2Controller.text
+                                                        .toString()
+                                                        .length >
                                                     0) {
                                                   if (showText2) {
                                                     showText2 = false;
@@ -198,11 +227,13 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                             },
                                             child: Container(
                                               child: Padding(
-                                                padding: EdgeInsets.only(bottom: 8, left: 0),
+                                                padding: EdgeInsets.only(
+                                                    bottom: 0, left: 0),
                                                 child: Text(
                                                   valueShow2,
                                                   style: TextStyle(
-                                                      fontSize: 18, color: Colors.colorgreen),
+                                                      fontSize: 14,
+                                                      color: Colors.colorgreen),
                                                 ),
                                               ),
                                             ),
@@ -213,61 +244,96 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                   Divider(height: 1, color: Colors.black),
                                   showLoader
                                       ? Padding(
-                                          padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              32, 32, 32, 0),
                                           child: Container(
                                             decoration: new BoxDecoration(
-                                                borderRadius: new BorderRadius.all(
+                                                borderRadius: new BorderRadius
+                                                        .all(
                                                     new Radius.circular(100.0)),
                                                 color: Colors.colorgreen),
                                             child: SizedBox(
                                               width: double.infinity,
                                               height: 60,
                                               child: Center(
-                                                child: CircularProgressIndicator(),
+                                                child:
+                                                    CircularProgressIndicator(),
                                               ),
                                             ),
                                           ),
                                         )
                                       : Padding(
-                                          padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
+                                          padding: const EdgeInsets.fromLTRB(
+                                              32, 32, 32, 0),
                                           child: GestureDetector(
                                             onTap: () {
-                                              String phone = phoneController.text.toString();
-                                              String password = passwordController.text.toString();
+                                              String phone = phoneController
+                                                  .text
+                                                  .toString();
+                                              String password =
+                                                  passwordController.text
+                                                      .toString();
                                               String cPassword =
-                                                  password2Controller.text.toString();
+                                                  password2Controller.text
+                                                      .toString();
 
                                               if (phone.length > 0 &&
                                                   phone.length == 10 &&
                                                   password.length > 3 &&
                                                   cPassword == password) {
-                                                print("Phone: $phone Password: $password");
+                                                print(
+                                                    "Phone: $phone Password: $password");
                                                 setState(() {
                                                   showLoader = true;
                                                 });
                                                 bloc.fetchData(phone);
                                                 passwordObserver(context);
                                               } else {
-                                                if (phone.length < 10 || phone.length > 10) {
+                                                if (phone.length < 10 ||
+                                                    phone.length > 10) {
                                                   Toast.show(
-                                                      "Enter 10 digit mobile number", context,
-                                                      duration: Toast.LENGTH_SHORT,
+                                                      "Enter 10 digit mobile number",
+                                                      context,
+                                                      duration:
+                                                          Toast.LENGTH_SHORT,
                                                       gravity: Toast.BOTTOM);
-                                                } else if (password != cPassword) {
-                                                  Toast.show("Passoword not matched", context,
-                                                      duration: Toast.LENGTH_SHORT,
+                                                } else if (password.isEmpty) {
+                                                  Toast.show("Enter Password.",
+                                                      context,
+                                                      duration:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity: Toast.BOTTOM);
+                                                } else if (cPassword.isEmpty) {
+                                                  Toast.show(
+                                                      "Enter Confirm Password.",
+                                                      context,
+                                                      duration:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity: Toast.BOTTOM);
+                                                } else if (password !=
+                                                    cPassword) {
+                                                  Toast.show(
+                                                      "Your New password and Confirm password field does not match.",
+                                                      context,
+                                                      duration:
+                                                          Toast.LENGTH_SHORT,
                                                       gravity: Toast.BOTTOM);
                                                 } else {
-                                                  Toast.show("Enter valid credentials", context,
-                                                      duration: Toast.LENGTH_SHORT,
+                                                  Toast.show(
+                                                      "Enter valid credentials",
+                                                      context,
+                                                      duration:
+                                                          Toast.LENGTH_SHORT,
                                                       gravity: Toast.BOTTOM);
                                                 }
                                               }
                                             },
                                             child: Container(
                                               decoration: new BoxDecoration(
-                                                  borderRadius: new BorderRadius.all(
-                                                      new Radius.circular(100.0)),
+                                                  borderRadius:
+                                                      new BorderRadius.all(
+                                                          new Radius.circular(
+                                                              100.0)),
                                                   color: Colors.colorgreen),
                                               child: SizedBox(
                                                 width: double.infinity,
@@ -315,7 +381,8 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
           ),
         );
       } else {
-        Toast.show(obj['msg'], context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        Toast.show(obj['msg'], context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       }
     });
   }

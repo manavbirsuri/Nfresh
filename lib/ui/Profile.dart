@@ -180,10 +180,12 @@ class StateProfilePage extends State<stateProfile> {
                 child: Material(
                   elevation: 16.0,
                   borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(18), topLeft: Radius.circular(18)),
+                      topRight: Radius.circular(18),
+                      topLeft: Radius.circular(18)),
                   child: ClipRRect(
                     borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(18), topLeft: Radius.circular(18)),
+                        topRight: Radius.circular(18),
+                        topLeft: Radius.circular(18)),
                     child: Container(
                       child: Padding(
                         padding: EdgeInsets.all(16),
@@ -203,9 +205,11 @@ class StateProfilePage extends State<stateProfile> {
                                         textInputAction: TextInputAction.next,
                                         // autofocus: true,
                                         controller: nameController,
-                                        decoration: InputDecoration(labelText: 'Name'),
+                                        decoration:
+                                            InputDecoration(labelText: 'Name'),
                                         onFieldSubmitted: (v) {
-                                          FocusScope.of(context).requestFocus(focus);
+                                          FocusScope.of(context)
+                                              .requestFocus(focus);
                                         },
                                       ),
                                     ),
@@ -215,9 +219,11 @@ class StateProfilePage extends State<stateProfile> {
                                         //  focusNode: focus,
                                         controller: emailController,
                                         textInputAction: TextInputAction.next,
-                                        decoration: InputDecoration(labelText: 'Email'),
+                                        decoration:
+                                            InputDecoration(labelText: 'Email'),
                                         onFieldSubmitted: (v) {
-                                          FocusScope.of(context).requestFocus(focus1);
+                                          FocusScope.of(context)
+                                              .requestFocus(focus1);
                                         },
                                       ),
                                     ),
@@ -432,7 +438,9 @@ class StateProfilePage extends State<stateProfile> {
                     child: Text(
                       "Update Password",
                       style: TextStyle(
-                          color: Colors.colorgreen, fontWeight: FontWeight.bold, fontSize: 18.0),
+                          color: Colors.colorgreen,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0),
                     ),
                   ),
                   Flexible(
@@ -493,7 +501,8 @@ class StateProfilePage extends State<stateProfile> {
                       },
                       child: Text(
                         'Submit',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -532,7 +541,9 @@ class StateProfilePage extends State<stateProfile> {
                     child: Text(
                       "Update Contact",
                       style: TextStyle(
-                          color: Colors.colorgreen, fontWeight: FontWeight.bold, fontSize: 18.0),
+                          color: Colors.colorgreen,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0),
                     ),
                   ),
                   Flexible(
@@ -564,16 +575,19 @@ class StateProfilePage extends State<stateProfile> {
                       onPressed: () {
                         Utils.checkInternet().then((connected) {
                           if (connected != null && connected) {
-                            updatePhoneWebservice(phoneController.text.toString());
+                            updatePhoneWebservice(
+                                phoneController.text.toString());
                           } else {
                             Toast.show("Not connected to internet", context,
-                                duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                                duration: Toast.LENGTH_SHORT,
+                                gravity: Toast.BOTTOM);
                           }
                         });
                       },
                       child: Text(
                         'Verify',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -610,7 +624,9 @@ class StateProfilePage extends State<stateProfile> {
                     child: Text(
                       "Update Address",
                       style: TextStyle(
-                          color: Colors.colorgreen, fontWeight: FontWeight.bold, fontSize: 18.0),
+                          color: Colors.colorgreen,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18.0),
                     ),
                   ),
                   Flexible(
@@ -622,7 +638,8 @@ class StateProfilePage extends State<stateProfile> {
                           decoration: InputDecoration(
                             labelText: 'Address',
                             border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.colorgreen)),
+                                borderSide:
+                                    BorderSide(color: Colors.colorgreen)),
                             hasFloatingPlaceholder: true,
                           ),
                           textInputAction: TextInputAction.done,
@@ -649,7 +666,8 @@ class StateProfilePage extends State<stateProfile> {
                           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                           child: Center(
                             child: DropdownButtonFormField<CityModel>(
-                              decoration: InputDecoration.collapsed(hintText: selectedCity.name),
+                              decoration: InputDecoration.collapsed(
+                                  hintText: selectedCity.name),
                               value: null,
                               items: cities.map((CityModel value) {
                                 return new DropdownMenuItem<CityModel>(
@@ -691,7 +709,8 @@ class StateProfilePage extends State<stateProfile> {
                           padding: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                           child: Center(
                             child: DropdownButtonFormField<AreaModel>(
-                              decoration: InputDecoration.collapsed(hintText: selectedArea.name),
+                              decoration: InputDecoration.collapsed(
+                                  hintText: selectedArea.name),
                               value: null,
                               items: cityAreas.map((AreaModel value) {
                                 return new DropdownMenuItem<AreaModel>(
@@ -728,11 +747,13 @@ class StateProfilePage extends State<stateProfile> {
                         if (localAddress.length > 0) {
                           Utils.checkInternet().then((connected) {
                             if (connected != null && connected) {
-                              dialog = new ProgressDialog(context, ProgressDialogType.Normal);
+                              dialog = new ProgressDialog(
+                                  context, ProgressDialogType.Normal);
                               dialog.setMessage("Please wait...");
                               dialog.show();
 
-                              blocAddress.fetchData(localAddress, selectedCity.id, selectedArea.id);
+                              blocAddress.fetchData(localAddress,
+                                  selectedCity.id, selectedArea.id);
                               blocAddress.profileData.listen((response) {
                                 dialog.hide();
                                 if (response.status == "true") {
@@ -741,21 +762,25 @@ class StateProfilePage extends State<stateProfile> {
                                   _prefs.saveProfile(data);
                                 }
                                 Toast.show(response.msg, context,
-                                    duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                                    duration: Toast.LENGTH_SHORT,
+                                    gravity: Toast.BOTTOM);
                               });
                             } else {
                               Toast.show("Not connected to internet", context,
-                                  duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                                  duration: Toast.LENGTH_SHORT,
+                                  gravity: Toast.BOTTOM);
                             }
                           });
                         } else {
                           Toast.show("Address cannot be empty", context,
-                              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                              duration: Toast.LENGTH_SHORT,
+                              gravity: Toast.BOTTOM);
                         }
                       },
                       child: Text(
                         'Submit',
-                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            color: Colors.white, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ),
@@ -777,7 +802,8 @@ class StateProfilePage extends State<stateProfile> {
       return;
     }
     if (email.length == 0 || !isEmail(email)) {
-      Toast.show("Enter valid email", context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      Toast.show("Enter valid email", context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       return;
     }
 
@@ -792,19 +818,21 @@ class StateProfilePage extends State<stateProfile> {
         String data = jsonEncode(response.profile);
         _prefs.saveProfile(data);
       }
-      Toast.show(response.msg, context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      Toast.show(response.msg, context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     });
   }
 
   // call webservice for update profile
-  void updatePasswordWebservice(String oldPass, String newPass, String conPass) {
+  void updatePasswordWebservice(
+      String oldPass, String newPass, String conPass) {
     if (oldPass.length == 0) {
-      Toast.show("Enter old password", context,
+      Toast.show("Enter old password.", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       return;
     }
     if (newPass.length == 0) {
-      Toast.show("Enter new password", context,
+      Toast.show("Enter new password.", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       return;
     }
@@ -814,7 +842,7 @@ class StateProfilePage extends State<stateProfile> {
       return;
     }
     if (conPass != newPass) {
-      Toast.show("Password not  matched", context,
+      Toast.show("Password and confirm password field does not match.", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       return;
     }
@@ -829,7 +857,8 @@ class StateProfilePage extends State<stateProfile> {
       if (obj['status'] == "true") {
         Navigator.of(context).pop();
       }
-      Toast.show(obj['msg'], context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      Toast.show(obj['msg'], context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     });
   }
 
@@ -873,7 +902,8 @@ class StateProfilePage extends State<stateProfile> {
           });
         });
       } else {
-        Toast.show(object['msg'], context, duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        Toast.show(object['msg'], context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       }
     });
   }

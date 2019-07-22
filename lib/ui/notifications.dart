@@ -16,7 +16,7 @@ class NotificationState extends State<NotificationPage> {
   var bloc = NotificationsBloc();
   var isLoading = true;
 
-  List<NotificationModel> notifications;
+  List<NotificationModel> notifications = List();
 
   @override
   void initState() {
@@ -56,19 +56,26 @@ class NotificationState extends State<NotificationPage> {
             ),
             centerTitle: true,
           ),
-          body: Container(
-            color: Colors.colorlightgreyback,
-            child: isLoading
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : ListView.builder(
-                    itemBuilder: (context, position) {
-                      return notificationListItem(context, position);
-                    },
-                    itemCount: notifications.length,
+          body: notifications.length > 0
+              ? Container(
+                  color: Colors.colorlightgreyback,
+                  child: isLoading
+                      ? Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ListView.builder(
+                          itemBuilder: (context, position) {
+                            return notificationListItem(context, position);
+                          },
+                          itemCount: notifications.length,
+                        ),
+                )
+              : Container(
+                  color: Colors.colorlightgreyback,
+                  child: Center(
+                    child: Text("No data"),
                   ),
-          ),
+                ),
         )
       ],
     );

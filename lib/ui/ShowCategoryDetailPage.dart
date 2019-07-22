@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:grouped_buttons/grouped_buttons.dart';
 import 'package:nfresh/bloc/cat_products_bloc.dart';
 import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/category_model.dart';
@@ -11,6 +12,7 @@ import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:nfresh/ui/cart.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'login.dart';
 
@@ -33,7 +35,8 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
   ProfileModel profile;
   var _prefs = SharedPrefs();
   var pos = 0;
-
+  String SelectedLanguage = "A to Z";
+  String _picked = "A to Z";
   var blocFav = SetFavBloc();
   var _database = DatabaseHelper.instance;
   int totalAmount = 0;
@@ -1362,7 +1365,32 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                         color: Colors.colorgrey,
                       ),
                       GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            return showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return refresh();
+                                }).then((_) => setState(() {
+                                  _read().then((result) {
+                                    print(result);
+                                    setState(() {
+                                      SelectedLanguage = result;
+                                      _picked = SelectedLanguage;
+                                      if (SelectedLanguage == "A to Z") {
+                                        snapshot.products.sort(
+                                            (a, b) => a.name.compareTo(b.name));
+                                        print(snapshot.products);
+                                      } else {
+                                        snapshot.products.sort(
+                                            (a, b) => a.name.compareTo(b.name));
+                                        snapshot.products =
+                                            snapshot.products.reversed.toList();
+                                        print(snapshot.products);
+                                      }
+                                    });
+                                  });
+                                }));
+                          },
                           child: Container(
                               child: Image.asset('assets/sort.png',
                                   height: 20, width: 20))),
@@ -1796,5 +1824,166 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
         ),
       ),
     );
+  }
+
+  Widget refresh() {
+    return showCustomDialog(SelectedLanguage);
+  }
+
+  _read() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'sort';
+    final value = prefs.getString(key) ?? "A to Z";
+    print('read: $value');
+    return value;
+  }
+}
+
+class showCustomDialog extends StatefulWidget {
+  var SelectedLanguage = "A to Z";
+
+  showCustomDialog(String selectedLanguage) {
+    this.SelectedLanguage = selectedLanguage;
+  }
+
+  @override
+  _MyDialogState createState() => new _MyDialogState(SelectedLanguage);
+}
+
+class _MyDialogState extends State<showCustomDialog> {
+  Color _c = Colors.redAccent;
+  var SelectedLanguage = "A to Z";
+  String _picked1 = "A to Z";
+
+  _MyDialogState(String selectedLanguage) {
+    this.SelectedLanguage = selectedLanguage;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // ignore: unnecessary_statements
+    _read().then((result) {
+      print(result);
+      setState(() {
+        SelectedLanguage = result;
+        _picked1 = SelectedLanguage;
+      });
+    });
+    build(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var GroupedButtonsOrientation;
+    return AlertDialog(
+      title: new Text("Sort By"),
+      content: new Container(
+        width: 260.0,
+        height: 180.0,
+        decoration: new BoxDecoration(
+          shape: BoxShape.rectangle,
+          color: const Color(0xFFFFFF),
+          borderRadius: new BorderRadius.all(new Radius.circular(32.0)),
+        ),
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            // dialog top
+            new Expanded(
+              child: new Column(
+                children: <Widget>[
+                  Center(
+                      child: RadioButtonGroup(
+                    onSelected: (String selected) => setState(() {
+                          _picked1 = selected.trim();
+                        }),
+                    margin: EdgeInsets.only(left: 14),
+                    //orientation: GroupedButtonsOrientation.VERTICAL,
+                    labels: <String>["A to Z", "Z to A"],
+                    picked: _picked1,
+                  ))
+                ],
+              ),
+            ),
+
+            new Container(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: GestureDetector(
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      setState(() {
+                        SelectedLanguage = _picked1;
+                        _save(SelectedLanguage);
+                      });
+
+//                      Navigator.pushReplacement(
+//                          context, MaterialPageRoute(builder: (BuildContext context) => MyHome()));
+                      Navigator.pop(context);
+//                      Navigator.push(
+//                        context,
+//                        new MaterialPageRoute(builder: (context) => new MyHome()),
+//                      );
+//                      SystemNavigator.pop();
+
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 12.0),
+                    child: Container(
+                      height: 60.0,
+                      color: Colors.transparent,
+                      child: new Container(
+                          decoration: new BoxDecoration(
+                              color: Colors.mygreen,
+                              borderRadius: new BorderRadius.only(
+                                  topLeft: const Radius.circular(40.0),
+                                  bottomLeft: const Radius.circular(40.0),
+                                  bottomRight: const Radius.circular(40.0),
+                                  topRight: const Radius.circular(40.0))),
+                          child: new Center(
+                            child: new Text("Done",
+                                style: new TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontFamily: 'helvetica_bold')),
+                          )),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            //),
+          ],
+        ),
+      ),
+//                          actions: <Widget>[
+//                            new FlatButton(
+//                              onPressed: () => Navigator.of(context).pop(false),
+//                              child: new Text('No'),
+//                            ),
+//                            new FlatButton(
+//                              onPressed: () => Navigator.of(context).pop(true),
+//                              child: new Text('Yes'),
+//                            ),
+//                          ],
+    );
+  }
+
+  _read() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'sort';
+    final value = prefs.getString(key) ?? "A to Z";
+    print('read: $value');
+    return value;
+  }
+
+  _save(String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'sort';
+    prefs.setString(key, value);
+    print('saved $value');
   }
 }
