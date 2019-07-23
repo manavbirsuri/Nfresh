@@ -21,6 +21,7 @@ import 'package:nfresh/ui/notifications.dart';
 import 'package:nfresh/ui/refers_earn.dart';
 import 'package:page_indicator/page_indicator.dart';
 import 'package:toast/toast.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'bloc/get_fav_bloc.dart';
 import 'bloc/home_bloc.dart';
@@ -689,6 +690,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                 ),
                               ),
                               onTap: () {
+                                openEmailComposer();
+
 //                    Navigator.of(context).pop();
 //                    Navigator.push(
 //                      context,
@@ -715,6 +718,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                 ),
                               ),
                               onTap: () {
+                                openEmailComposer();
 //                    Navigator.of(context).pop();
 //                    Navigator.push(
 //                      context,
@@ -3011,6 +3015,25 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         .listen((IosNotificationSettings settings) {
       print("Settings registered: $settings");
     });
+  }
+
+  void openEmailComposer() async {
+    var url = 'mailto:"nfreshventures@gmail.com"?subject="Get in touch"&body=';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+//    final Email email = Email(
+//      body: '',
+//      subject: 'Get in touch',
+//      recipients: ['nfreshventures@gmail.com'],
+////      cc: ['cc@example.com'],
+////      bcc: ['bcc@example.com'],
+//      // attachmentPath: '/path/to/attachment.zip',
+//    );
+//
+//    await FlutterEmailSender.send(email);
   }
 }
 

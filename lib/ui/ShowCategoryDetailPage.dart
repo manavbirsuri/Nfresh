@@ -1881,7 +1881,7 @@ class _MyDialogState extends State<showCustomDialog> {
       title: new Text("Sort By"),
       content: new Container(
         width: 260.0,
-        height: 180.0,
+        height: 160.0,
         decoration: new BoxDecoration(
           shape: BoxShape.rectangle,
           color: const Color(0xFFFFFF),
@@ -1933,7 +1933,7 @@ class _MyDialogState extends State<showCustomDialog> {
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 12.0),
                     child: Container(
-                      height: 60.0,
+                      height: 40.0,
                       color: Colors.transparent,
                       child: new Container(
                           decoration: new BoxDecoration(
@@ -1947,7 +1947,7 @@ class _MyDialogState extends State<showCustomDialog> {
                             child: new Text("Done",
                                 style: new TextStyle(
                                     color: Colors.white,
-                                    fontSize: 20,
+                                    fontSize: 16,
                                     fontFamily: 'helvetica_bold')),
                           )),
                     ),
