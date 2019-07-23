@@ -82,7 +82,8 @@ class ProState extends State<ProductDetailPage> {
         productResponse.products != null &&
         productResponse.products.length > 0) {
       for (int i = 0; i < productResponse.products.length; i++) {
-        var product = await _database.queryConditionalProduct(productResponse.products[i]);
+        var product = await _database
+            .queryConditionalProduct(productResponse.products[i]);
         if (product != null) {
           product.selectedDisplayPrice = getCalculatedPrice(product);
           setState(() {
@@ -134,7 +135,8 @@ class ProState extends State<ProductDetailPage> {
                                   AspectRatio(
                                     aspectRatio: 2 / 1,
                                     child: Padding(
-                                      padding: EdgeInsets.only(left: 16, right: 16),
+                                      padding:
+                                          EdgeInsets.only(left: 16, right: 16),
                                       child: Image.network(
                                         widget.product.image,
                                         fit: BoxFit.contain,
@@ -155,7 +157,8 @@ class ProState extends State<ProductDetailPage> {
                                               widget.product.fav = "1";
                                             }
                                             blocFav.fetchData(
-                                                widget.product.fav, widget.product.id.toString());
+                                                widget.product.fav,
+                                                widget.product.id.toString());
                                           }
                                         });
                                       },
@@ -179,7 +182,8 @@ class ProState extends State<ProductDetailPage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: <Widget>[
                                   Padding(
-                                    padding: EdgeInsets.only(left: 16, right: 16),
+                                    padding:
+                                        EdgeInsets.only(left: 16, right: 16),
                                     child: Text(
                                       widget.product.name,
                                       style: TextStyle(
@@ -193,51 +197,70 @@ class ProState extends State<ProductDetailPage> {
                                     padding: EdgeInsets.fromLTRB(16, 8, 16, 0),
                                     child: Text(
                                       widget.product.nameHindi,
-                                      style: TextStyle(fontSize: 16, color: Colors.colorgrey),
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color: Colors.colorgrey),
                                       textAlign: TextAlign.start,
                                     ),
                                   ),
                                   Padding(
-                                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                                      padding:
+                                          EdgeInsets.fromLTRB(16, 0, 16, 0),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
                                           Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
                                               children: <Widget>[
                                                 Text(
                                                   '₹${widget.product.selectedPacking.price}  ',
                                                   style: TextStyle(
                                                       fontSize: 18,
-                                                      color: Colors.colorlightgrey,
-                                                      fontWeight: FontWeight.bold),
+                                                      color:
+                                                          Colors.colorlightgrey,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                                   textAlign: TextAlign.start,
                                                 ),
-                                                widget.product.selectedPacking.displayPrice > 0
+                                                widget.product.selectedPacking
+                                                            .displayPrice >
+                                                        0
                                                     ? Text(
                                                         '₹${widget.product.selectedPacking.displayPrice}',
                                                         style: TextStyle(
                                                             fontSize: 16,
-                                                            color: Colors.colororange,
-                                                            decoration: TextDecoration.lineThrough),
-                                                        textAlign: TextAlign.start,
+                                                            color: Colors
+                                                                .colororange,
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .lineThrough),
+                                                        textAlign:
+                                                            TextAlign.start,
                                                       )
                                                     : Container(),
                                               ]),
-                                          widget.product.selectedPacking.displayPrice > 0
+                                          widget.product.selectedPacking
+                                                      .displayPrice >
+                                                  0
                                               ? Text(
                                                   getOff(widget.product),
                                                   style: TextStyle(
-                                                      fontSize: 14, color: Colors.colororange),
+                                                      fontSize: 14,
+                                                      color:
+                                                          Colors.colororange),
                                                   textAlign: TextAlign.center,
                                                 )
                                               : Container(),
                                         ],
                                       )),
                                   Padding(
-                                      padding: EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                      padding:
+                                          EdgeInsets.fromLTRB(16, 8, 16, 8),
                                       child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
                                           Container(
                                             // height: 35,
@@ -246,28 +269,38 @@ class ProState extends State<ProductDetailPage> {
                                             child: Center(
                                               child: Padding(
                                                 padding: EdgeInsets.all(8),
-                                                child: DropdownButtonFormField<Packing>(
-                                                  decoration: InputDecoration.collapsed(
-                                                      hintText: widget
-                                                          .product.selectedPacking.unitQtyShow),
+                                                child: DropdownButtonFormField<
+                                                    Packing>(
+                                                  decoration:
+                                                      InputDecoration.collapsed(
+                                                          hintText: widget
+                                                              .product
+                                                              .selectedPacking
+                                                              .unitQtyShow),
                                                   value: null,
-                                                  items:
-                                                      widget.product.packing.map((Packing value) {
-                                                    return new DropdownMenuItem<Packing>(
+                                                  items: widget.product.packing
+                                                      .map((Packing value) {
+                                                    return new DropdownMenuItem<
+                                                        Packing>(
                                                       value: value,
                                                       child: new Text(
                                                         value.unitQtyShow,
                                                         style: TextStyle(
-                                                            color: Colors.grey, fontSize: 12),
+                                                            color: Colors.grey,
+                                                            fontSize: 12),
                                                       ),
                                                     );
                                                   }).toList(),
                                                   onChanged: (newValue) {
                                                     setState(() {
-                                                      widget.product.selectedPacking = newValue;
+                                                      widget.product
+                                                              .selectedPacking =
+                                                          newValue;
                                                       widget.product.count = 0;
-                                                      widget.product.selectedDisplayPrice =
-                                                          getCalculatedPrice(widget.product);
+                                                      widget.product
+                                                              .selectedDisplayPrice =
+                                                          getCalculatedPrice(
+                                                              widget.product);
                                                     });
                                                   },
                                                 ),
@@ -325,32 +358,48 @@ class ProState extends State<ProductDetailPage> {
                                                 ),
                                               )),*/
                                           Padding(
-                                            padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                                            padding: EdgeInsets.only(
+                                                right: 8, left: 8, top: 16),
                                             child: Container(
                                               width: 120,
                                               //color: Colors.grey,
                                               child: Padding(
-                                                padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                                                padding: EdgeInsets.fromLTRB(
+                                                    0, 0, 0, 0),
                                                 child: IntrinsicHeight(
                                                   child: Center(
                                                     child: IntrinsicHeight(
                                                       child: Row(
                                                         crossAxisAlignment:
-                                                            CrossAxisAlignment.stretch,
-                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                            CrossAxisAlignment
+                                                                .stretch,
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
                                                         children: <Widget>[
                                                           GestureDetector(
                                                             onTap: () {
-                                                              decrementCount(widget.product);
+                                                              decrementCount(
+                                                                  widget
+                                                                      .product);
                                                             },
                                                             child: Container(
-                                                              padding: EdgeInsets.only(left: 15),
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      left: 15),
                                                               // color: Colors.white,
                                                               child: Container(
-                                                                decoration: myBoxDecoration2(),
-                                                                padding: EdgeInsets.fromLTRB(
-                                                                    12, 0, 12, 0),
-                                                                child: Image.asset(
+                                                                decoration:
+                                                                    myBoxDecoration2(),
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            12,
+                                                                            0,
+                                                                            12,
+                                                                            0),
+                                                                child:
+                                                                    Image.asset(
                                                                   'assets/minus.png',
                                                                   height: 12,
                                                                   width: 12,
@@ -359,34 +408,54 @@ class ProState extends State<ProductDetailPage> {
                                                             ),
                                                           ),
                                                           Container(
-                                                            margin: EdgeInsets.only(
-                                                                left: 8,
-                                                                right: 8,
-                                                                top: 4,
-                                                                bottom: 4),
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    left: 8,
+                                                                    right: 8,
+                                                                    top: 4,
+                                                                    bottom: 4),
                                                             child: Center(
                                                               child: Text(
-                                                                widget.product.count.toString(),
+                                                                widget.product
+                                                                    .count
+                                                                    .toString(),
                                                                 style: TextStyle(
-                                                                    color: Colors.colorgreen,
-                                                                    fontWeight: FontWeight.bold,
-                                                                    fontSize: 20),
-                                                                textAlign: TextAlign.center,
+                                                                    color: Colors
+                                                                        .colorgreen,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    fontSize:
+                                                                        20),
+                                                                textAlign:
+                                                                    TextAlign
+                                                                        .center,
                                                               ),
                                                             ),
                                                           ),
                                                           GestureDetector(
                                                             onTap: () {
-                                                              incrementCount(widget.product);
+                                                              incrementCount(
+                                                                  widget
+                                                                      .product);
                                                             },
                                                             child: Container(
                                                               //  color: Colors.white,
-                                                              padding: EdgeInsets.only(right: 0),
+                                                              padding: EdgeInsets
+                                                                  .only(
+                                                                      right: 0),
                                                               child: Container(
-                                                                decoration: myBoxDecoration2(),
-                                                                padding: EdgeInsets.fromLTRB(
-                                                                    12, 0, 12, 0),
-                                                                child: Image.asset(
+                                                                decoration:
+                                                                    myBoxDecoration2(),
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .fromLTRB(
+                                                                            12,
+                                                                            0,
+                                                                            12,
+                                                                            0),
+                                                                child:
+                                                                    Image.asset(
                                                                   'assets/plus.png',
                                                                   height: 12,
                                                                   width: 12,
@@ -405,28 +474,34 @@ class ProState extends State<ProductDetailPage> {
                                         ],
                                       )),
                                   Padding(
-                                      padding: EdgeInsets.only(top: 16, left: 16, right: 16),
+                                      padding: EdgeInsets.only(
+                                          top: 16, left: 16, right: 16),
                                       child: Column(
-                                        mainAxisAlignment: MainAxisAlignment.start,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         mainAxisSize: MainAxisSize.min,
                                         children: <Widget>[
                                           Text(
                                             "DESCRIPTION",
-                                            style: TextStyle(color: Colors.colorgreen),
+                                            style: TextStyle(
+                                                color: Colors.colorgreen),
                                           ),
                                           Padding(
                                             padding: EdgeInsets.only(top: 8),
                                             child: Text(
                                               widget.product.description,
-                                              style: TextStyle(color: Colors.colorgrey),
+                                              style: TextStyle(
+                                                  color: Colors.colorgrey),
                                             ),
                                           ),
                                           Padding(
                                             padding: EdgeInsets.only(top: 16),
                                             child: Text(
                                               "RELATED PRODUCTS",
-                                              style: TextStyle(color: Colors.colorgreen),
+                                              style: TextStyle(
+                                                  color: Colors.colorgreen),
                                             ),
                                           ),
                                         ],
@@ -436,8 +511,10 @@ class ProState extends State<ProductDetailPage> {
                                     // child: showProductsCategories(),
                                     color: Colors.colorlightgreyback,
                                     child: showLoader
-                                        ? Center(child: CircularProgressIndicator())
-                                        : showProductsCategories(productResponse),
+                                        ? Center(
+                                            child: CircularProgressIndicator())
+                                        : showProductsCategories(
+                                            productResponse),
                                     /*  child: StreamBuilder(
                                       stream: blocRelated.productsList,
                                       builder: (context,
@@ -461,96 +538,106 @@ class ProState extends State<ProductDetailPage> {
                   ),
 
                   // Cart Bottom bar
-                  Column(children: <Widget>[
-                    Container(
-                      color: Colors.colorlightgreyback,
-                      height: 55,
-                      // padding: EdgeInsets.all(0),
-                      child: Row(
-                        children: <Widget>[
-                          Flexible(
-                            child: GestureDetector(
-                              child: Container(
-                                //color: Colors.amber,
-                                child: Column(
-                                  children: <Widget>[
-                                    Column(
-                                      children: <Widget>[
-                                        Text(
-                                          '₹$totalAmount',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 21,
-                                              color: Colors.colorgrey),
-                                        ),
-                                        Text(
-                                          'Total amount',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.colorPink,
+                  totalAmount > 0
+                      ? Column(children: <Widget>[
+                          Container(
+                            color: Colors.colorlightgreyback,
+                            height: 55,
+                            // padding: EdgeInsets.all(0),
+                            child: Row(
+                              children: <Widget>[
+                                Flexible(
+                                  child: GestureDetector(
+                                    child: Container(
+                                      //color: Colors.amber,
+                                      child: Column(
+                                        children: <Widget>[
+                                          Column(
+                                            children: <Widget>[
+                                              Text(
+                                                '₹$totalAmount',
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 21,
+                                                    color: Colors.colorgrey),
+                                              ),
+                                              Text(
+                                                'Total amount',
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.colorPink,
+                                                ),
+                                              )
+                                            ],
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                           ),
-                                        )
-                                      ],
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                        ],
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                      ),
                                     ),
-                                  ],
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                ),
-                              ),
-                              onTap: () {
+                                    onTap: () {
 //                      Scaffold.of(context).showSnackBar(SnackBar(
 //                        content: Text('View details Coming soon'),
 //                        duration: Duration(seconds: 1),
 //                      ));
-                              },
-                            ),
-                            flex: 1,
-                          ),
-                          Flexible(
-                            child: GestureDetector(
-                              child: Container(
-                                //  margin: EdgeInsets.only(top: 4, bottom: 4),
-                                color: Colors.colorgreen,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: <Widget>[
-                                    Flexible(
-                                      child: Row(
+                                    },
+                                  ),
+                                  flex: 1,
+                                ),
+                                Flexible(
+                                  child: GestureDetector(
+                                    child: Container(
+                                      //  margin: EdgeInsets.only(top: 4, bottom: 4),
+                                      color: Colors.colorgreen,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.stretch,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
                                         children: <Widget>[
-                                          Text(
-                                            'Checkout',
-                                            style: TextStyle(fontSize: 18, color: Colors.white),
+                                          Flexible(
+                                            child: Row(
+                                              children: <Widget>[
+                                                Text(
+                                                  'Checkout',
+                                                  style: TextStyle(
+                                                      fontSize: 18,
+                                                      color: Colors.white),
+                                                ),
+                                              ],
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                            ),
+                                            flex: 1,
                                           ),
                                         ],
-                                        mainAxisAlignment: MainAxisAlignment.center,
                                       ),
-                                      flex: 1,
                                     ),
-                                  ],
-                                ),
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => CartPage(),
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => CartPage(),
+                                        ),
+                                      ).then((value) {
+                                        getCartTotal();
+                                        getCartCount();
+                                        updateProducts();
+                                        updateMainProduct();
+                                      });
+                                    },
                                   ),
-                                ).then((value) {
-                                  getCartTotal();
-                                  getCartCount();
-                                  updateProducts();
-                                  updateMainProduct();
-                                });
-                              },
+                                  flex: 1,
+                                ),
+                              ],
                             ),
-                            flex: 1,
                           ),
-                        ],
-                      ),
-                    ),
-                  ]),
+                        ])
+                      : Container(),
                 ],
               )),
         )
@@ -614,12 +701,14 @@ class ProState extends State<ProductDetailPage> {
                           child: Column(
                             children: <Widget>[
                               Padding(
-                                padding: EdgeInsets.only(right: 4, left: 0, top: 0),
+                                padding:
+                                    EdgeInsets.only(right: 4, left: 0, top: 0),
                                 child: Container(
                                   width: 168,
                                   //color: Colors.green,
                                   child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: <Widget>[
                                       GestureDetector(
                                           onTap: () {
@@ -633,15 +722,16 @@ class ProState extends State<ProductDetailPage> {
                                                   product.fav = "1";
                                                 }
 
-                                                blocFav.fetchData(
-                                                    product.fav, product.id.toString());
+                                                blocFav.fetchData(product.fav,
+                                                    product.id.toString());
                                               }
                                             });
                                           },
                                           child: Container(
                                             // color: Colors.mygrey,
                                             padding: EdgeInsets.all(8),
-                                            child: product != null && product.fav == "1"
+                                            child: product != null &&
+                                                    product.fav == "1"
                                                 ? Image.asset(
                                                     'assets/fav_filled.png',
                                                     width: 20.0,
@@ -704,18 +794,23 @@ class ProState extends State<ProductDetailPage> {
                                       padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
                                       child: Text(
                                         products[position].nameHindi,
-                                        style:
-                                            TextStyle(fontSize: 16, color: Colors.colorlightgrey),
+                                        style: TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.colorlightgrey),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
                                     Padding(
                                       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
                                       child: Row(
-                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
                                           children: <Widget>[
                                             Text(
-                                              "₹" + product.selectedPacking.price.toString() + "  ",
+                                              "₹" +
+                                                  product.selectedPacking.price
+                                                      .toString() +
+                                                  "  ",
                                               style: TextStyle(
                                                 fontSize: 18,
                                                 color: Colors.colorlightgrey,
@@ -723,15 +818,21 @@ class ProState extends State<ProductDetailPage> {
                                               ),
                                               textAlign: TextAlign.center,
                                             ),
-                                            product.selectedPacking.displayPrice > 0
+                                            product.selectedPacking
+                                                        .displayPrice >
+                                                    0
                                                 ? Text(
                                                     "₹" +
-                                                        product.selectedPacking.displayPrice
+                                                        product.selectedPacking
+                                                            .displayPrice
                                                             .toString(),
                                                     style: TextStyle(
                                                         fontSize: 16,
-                                                        color: Colors.colororange,
-                                                        decoration: TextDecoration.lineThrough),
+                                                        color:
+                                                            Colors.colororange,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .lineThrough),
                                                     textAlign: TextAlign.center,
                                                   )
                                                 : Container(),
@@ -752,25 +853,34 @@ class ProState extends State<ProductDetailPage> {
                                       decoration: myBoxDecoration3(),
                                       child: Center(
                                         child: Padding(
-                                          padding: EdgeInsets.only(right: 8, left: 8),
-                                          child: DropdownButtonFormField<Packing>(
-                                            decoration: InputDecoration.collapsed(
-                                                hintText: product.selectedPacking.unitQtyShow),
+                                          padding: EdgeInsets.only(
+                                              right: 8, left: 8),
+                                          child:
+                                              DropdownButtonFormField<Packing>(
+                                            decoration:
+                                                InputDecoration.collapsed(
+                                                    hintText: product
+                                                        .selectedPacking
+                                                        .unitQtyShow),
                                             // value: product.selectedPacking,
                                             value: null,
-                                            items: product.packing //getQtyList(products[position])
+                                            items: product
+                                                .packing //getQtyList(products[position])
                                                 .map((Packing value) {
-                                              return new DropdownMenuItem<Packing>(
+                                              return new DropdownMenuItem<
+                                                  Packing>(
                                                 value: value,
                                                 child: new Text(
                                                   value.unitQtyShow,
-                                                  style: TextStyle(color: Colors.grey),
+                                                  style: TextStyle(
+                                                      color: Colors.grey),
                                                 ),
                                               );
                                             }).toList(),
                                             onChanged: (newValue) {
                                               setState(() {
-                                                products[position].selectedPacking = newValue;
+                                                products[position]
+                                                    .selectedPacking = newValue;
                                                 product.count = 0;
                                                 product.selectedDisplayPrice =
                                                     getCalculatedPrice(product);
@@ -784,7 +894,8 @@ class ProState extends State<ProductDetailPage> {
                                 ),
                               ),
                               Padding(
-                                padding: EdgeInsets.only(right: 8, left: 8, top: 16),
+                                padding:
+                                    EdgeInsets.only(right: 8, left: 8, top: 16),
                                 child: Container(
                                   width: 150,
                                   //color: Colors.grey,
@@ -794,19 +905,26 @@ class ProState extends State<ProductDetailPage> {
                                       child: Center(
                                         child: IntrinsicHeight(
                                           child: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
                                             children: <Widget>[
                                               GestureDetector(
                                                 onTap: () {
-                                                  decrementCount(products[position]);
+                                                  decrementCount(
+                                                      products[position]);
                                                 },
                                                 child: Container(
-                                                  padding: EdgeInsets.only(left: 20),
+                                                  padding:
+                                                      EdgeInsets.only(left: 20),
                                                   // color: Colors.white,
                                                   child: Container(
-                                                    decoration: myBoxDecoration2(),
-                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                    decoration:
+                                                        myBoxDecoration2(),
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            12, 0, 12, 0),
                                                     child: Image.asset(
                                                       'assets/minus.png',
                                                       height: 12,
@@ -817,13 +935,18 @@ class ProState extends State<ProductDetailPage> {
                                               ),
                                               Container(
                                                 margin: EdgeInsets.only(
-                                                    left: 8, right: 8, top: 4, bottom: 4),
+                                                    left: 8,
+                                                    right: 8,
+                                                    top: 4,
+                                                    bottom: 4),
                                                 child: Center(
                                                   child: Text(
                                                     product.count.toString(),
                                                     style: TextStyle(
-                                                        color: Colors.colorgreen,
-                                                        fontWeight: FontWeight.bold,
+                                                        color:
+                                                            Colors.colorgreen,
+                                                        fontWeight:
+                                                            FontWeight.bold,
                                                         fontSize: 20),
                                                     textAlign: TextAlign.center,
                                                   ),
@@ -831,14 +954,19 @@ class ProState extends State<ProductDetailPage> {
                                               ),
                                               GestureDetector(
                                                 onTap: () {
-                                                  incrementCount(products[position]);
+                                                  incrementCount(
+                                                      products[position]);
                                                 },
                                                 child: Container(
                                                   //  color: Colors.white,
-                                                  padding: EdgeInsets.only(right: 20),
+                                                  padding: EdgeInsets.only(
+                                                      right: 20),
                                                   child: Container(
-                                                    decoration: myBoxDecoration2(),
-                                                    padding: EdgeInsets.fromLTRB(12, 0, 12, 0),
+                                                    decoration:
+                                                        myBoxDecoration2(),
+                                                    padding:
+                                                        EdgeInsets.fromLTRB(
+                                                            12, 0, 12, 0),
                                                     child: Image.asset(
                                                       'assets/plus.png',
                                                       height: 12,
@@ -874,8 +1002,8 @@ class ProState extends State<ProductDetailPage> {
         // return object of type Dialog
         return AlertDialog(
           title: new Text("Alert!"),
-          content:
-              new Text("You would need to login in order to proceed. Please click here to Login."),
+          content: new Text(
+              "You would need to login in order to proceed. Please click here to Login."),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(

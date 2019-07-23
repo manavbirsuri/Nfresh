@@ -1225,7 +1225,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                       children: <Widget>[
                         Flexible(
                           child: Image.network(
-                            categories[position].image,
+                            categories[position].icon,
                             //list[position].image,
                             height: 120,
                             width: 120,
@@ -2103,7 +2103,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Text(
-            "No product in your whishlist",
+            "No products in your whishlist",
             textAlign: TextAlign.center,
           ),
         ],

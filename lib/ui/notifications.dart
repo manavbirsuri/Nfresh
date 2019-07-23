@@ -73,7 +73,7 @@ class NotificationState extends State<NotificationPage> {
               : Container(
                   color: Colors.colorlightgreyback,
                   child: Center(
-                    child: Text("No data"),
+                    child: Text("No Notifications"),
                   ),
                 ),
         )

@@ -157,28 +157,29 @@ class _MyCustomFormState extends State<CartPage> {
           ),
         ),
         Scaffold(
-            backgroundColor: Colors.colorgreen.withOpacity(0.5),
-            appBar: AppBar(
-              backgroundColor: Colors.colorgreen.withOpacity(0.0),
-              title: Text(
-                'Cart',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              centerTitle: true,
+          backgroundColor: Colors.colorgreen.withOpacity(0.5),
+          appBar: AppBar(
+            backgroundColor: Colors.colorgreen.withOpacity(0.0),
+            title: Text(
+              'Cart',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            body: Container(
-              color: Colors.white,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  Flexible(
-                    child: SingleChildScrollView(
-                      child: Container(
-                        child: isLoadingCart
-                            ? Center(child: CircularProgressIndicator())
-                            : productContent(mProducts),
-                        /*child: StreamBuilder(
+            centerTitle: true,
+          ),
+          body: mProducts.length > 0
+              ? Container(
+                  color: Colors.white,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Flexible(
+                        child: SingleChildScrollView(
+                          child: Container(
+                            child: isLoadingCart
+                                ? Center(child: CircularProgressIndicator())
+                                : productContent(mProducts),
+                            /*child: StreamBuilder(
                           stream: bloc.catProductsList,
                           builder: (context, AsyncSnapshot<List<Product>> snapshot) {
                             if (snapshot.hasData) {
@@ -191,160 +192,112 @@ class _MyCustomFormState extends State<CartPage> {
                             return Center(child: CircularProgressIndicator());
                           },
                         ),*/
-                        color: Colors.white,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
 
-                  // Cart Bottom bar
-                  mProducts.length > 0
-                      ? Column(children: <Widget>[
-                          Container(
-                            height: 55,
-                            color: Colors.colorlightgreyback,
-                            //  padding: EdgeInsets.all(4),
-                            child: Row(
-                              children: <Widget>[
-                                Flexible(
-                                  child: GestureDetector(
-                                    child: Container(
-                                      child: Column(
-                                        children: <Widget>[
-                                          // Flexible(
-                                          Column(
+                      // Cart Bottom bar
+                      mProducts.length > 0
+                          ? Column(children: <Widget>[
+                              Container(
+                                height: 55,
+                                color: Colors.colorlightgreyback,
+                                //  padding: EdgeInsets.all(4),
+                                child: Row(
+                                  children: <Widget>[
+                                    Flexible(
+                                      child: GestureDetector(
+                                        child: Container(
+                                          child: Column(
                                             children: <Widget>[
-                                              Text(
-                                                '₹$checkoutTotal',
-                                                style: TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 21),
+                                              // Flexible(
+                                              Column(
+                                                children: <Widget>[
+                                                  Text(
+                                                    '₹$checkoutTotal',
+                                                    style: TextStyle(
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontSize: 21),
+                                                  ),
+                                                  Text(
+                                                    'Total amount',
+                                                    style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: Colors.colorPink,
+                                                    ),
+                                                  )
+                                                ],
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
                                               ),
-                                              Text(
-                                                'Total amount',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.colorPink,
-                                                ),
-                                              )
+                                              //flex: 1,
+                                              // ),
                                             ],
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
                                             mainAxisAlignment:
                                                 MainAxisAlignment.center,
                                           ),
-                                          //flex: 1,
-                                          // ),
-                                        ],
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                      ),
-                                    ),
-                                    onTap: () {
+                                        ),
+                                        onTap: () {
 //                      Scaffold.of(context).showSnackBar(SnackBar(
 //                        content: Text('View details Coming soon'),
 //                        duration: Duration(seconds: 1),
 //                      ));
-                                    },
-                                  ),
-                                  flex: 1,
-                                ),
-                                Flexible(
-                                  child: GestureDetector(
-                                    child: Container(
-                                      color: Colors.colorgreen,
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.stretch,
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                          Flexible(
-                                            child: Row(
-                                              children: <Widget>[
-                                                Text(
-                                                  'Place Order',
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      color: Colors.white),
-                                                ),
-                                              ],
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                            ),
-                                            flex: 1,
-                                          ),
-                                        ],
+                                        },
                                       ),
+                                      flex: 1,
                                     ),
-                                    onTap: () async {
-                                      final _prefs = SharedPrefs();
+                                    Flexible(
+                                      child: GestureDetector(
+                                        child: Container(
+                                          color: Colors.colorgreen,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.stretch,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: <Widget>[
+                                              Flexible(
+                                                child: Row(
+                                                  children: <Widget>[
+                                                    Text(
+                                                      'Place Order',
+                                                      style: TextStyle(
+                                                          fontSize: 18,
+                                                          color: Colors.white),
+                                                    ),
+                                                  ],
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                ),
+                                                flex: 1,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        onTap: () async {
+                                          final _prefs = SharedPrefs();
 
-                                      _prefs.getCouponCode().then((value) {
-                                        setState(() {
-                                          couponCode = value;
-                                        });
-                                      });
-                                      if (selectedMethod ==
-                                          "Select Payment method") {
-                                        Toast.show(
-                                            "Please select payment method.",
-                                            context,
-                                            duration: Toast.LENGTH_SHORT,
-                                            gravity: Toast.BOTTOM);
+                                          _prefs.getCouponCode().then((value) {
+                                            setState(() {
+                                              couponCode = value;
+                                            });
+                                          });
+                                          if (selectedMethod ==
+                                              "Select Payment method") {
+                                            Toast.show(
+                                                "Please select payment method.",
+                                                context,
+                                                duration: Toast.LENGTH_SHORT,
+                                                gravity: Toast.BOTTOM);
 
-                                        return;
-                                      }
-                                      if (selectedMethod ==
-                                          "Cash on delivery") {
-                                        if (profile != null) {
-                                          dialog = new ProgressDialog(context,
-                                              ProgressDialogType.Normal);
-                                          dialog.setMessage("Please wait...");
-                                          dialog.show();
-                                          Map<String, dynamic> data = {
-                                            'total': checkoutTotal,
-                                            'address': address,
-                                            'city': profile.city,
-                                            'area': profile.area,
-                                            'type': profile.type,
-                                            'discount': discount,
-                                            'wallet_use_amount': walletDiscount,
-                                            'coupon_code': couponCode,
-                                          };
-//                                          placeOrder(
-//                                              response: response,
-//                                              cartExtra: data,
-//                                              contexte: context);
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    PaymentSuccessPage(
-                                                        response: response,
-                                                        cartExtra: data,
-                                                        from: "0"),
-                                              ));
-                                        } else {
-                                          showAlertMessage(context);
-                                        }
-//                                        Map<String, dynamic> data = {
-//                                          'total': checkoutTotal,
-//                                          'address': address,
-//                                          'city': profile.city,
-//                                          'area': profile.area,
-//                                          'type': profile.type,
-//                                          'discount': discount,
-//                                          'wallet_use_amount':
-//                                          walletDiscount,
-//                                          'coupon_code': couponCode,
-//                                        };
-
-                                      } else {
-                                        if (profile != null) {
-                                          if (checkoutTotal > 0) {
-                                            getCheckSum(context);
-                                          } else if (walletDiscount > 0 &&
-                                              checkoutTotal == 0) {
+                                            return;
+                                          }
+                                          if (selectedMethod ==
+                                              "Cash on delivery") {
                                             if (profile != null) {
                                               dialog = new ProgressDialog(
                                                   context,
@@ -363,10 +316,10 @@ class _MyCustomFormState extends State<CartPage> {
                                                     walletDiscount,
                                                 'coupon_code': couponCode,
                                               };
-//                                              placeOrder(
-//                                                  response: response,
-//                                                  cartExtra: data,
-//                                                  contexte: context);
+//                                          placeOrder(
+//                                              response: response,
+//                                              cartExtra: data,
+//                                              contexte: context);
                                               Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
@@ -379,44 +332,101 @@ class _MyCustomFormState extends State<CartPage> {
                                             } else {
                                               showAlertMessage(context);
                                             }
+//                                        Map<String, dynamic> data = {
+//                                          'total': checkoutTotal,
+//                                          'address': address,
+//                                          'city': profile.city,
+//                                          'area': profile.area,
+//                                          'type': profile.type,
+//                                          'discount': discount,
+//                                          'wallet_use_amount':
+//                                          walletDiscount,
+//                                          'coupon_code': couponCode,
+//                                        };
+
                                           } else {
-                                            Map<String, dynamic> data = {
-                                              'total': checkoutTotal,
-                                              'address': address,
-                                              'city': profile.city,
-                                              'area': profile.area,
-                                              'type': profile.type,
-                                              'discount': discount,
-                                              'wallet_use_amount':
-                                                  walletDiscount,
-                                              'coupon_code': couponCode,
-                                            };
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      PaymentSuccessPage(
-                                                          response: response,
-                                                          cartExtra: data,
-                                                          from: "0"),
-                                                ));
+                                            if (profile != null) {
+                                              if (checkoutTotal > 0) {
+                                                getCheckSum(context);
+                                              } else if (walletDiscount > 0 &&
+                                                  checkoutTotal == 0) {
+                                                if (profile != null) {
+                                                  dialog = new ProgressDialog(
+                                                      context,
+                                                      ProgressDialogType
+                                                          .Normal);
+                                                  dialog.setMessage(
+                                                      "Please wait...");
+                                                  dialog.show();
+                                                  Map<String, dynamic> data = {
+                                                    'total': checkoutTotal,
+                                                    'address': address,
+                                                    'city': profile.city,
+                                                    'area': profile.area,
+                                                    'type': profile.type,
+                                                    'discount': discount,
+                                                    'wallet_use_amount':
+                                                        walletDiscount,
+                                                    'coupon_code': couponCode,
+                                                  };
+//                                              placeOrder(
+//                                                  response: response,
+//                                                  cartExtra: data,
+//                                                  contexte: context);
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            PaymentSuccessPage(
+                                                                response:
+                                                                    response,
+                                                                cartExtra: data,
+                                                                from: "0"),
+                                                      ));
+                                                } else {
+                                                  showAlertMessage(context);
+                                                }
+                                              } else {
+                                                Map<String, dynamic> data = {
+                                                  'total': checkoutTotal,
+                                                  'address': address,
+                                                  'city': profile.city,
+                                                  'area': profile.area,
+                                                  'type': profile.type,
+                                                  'discount': discount,
+                                                  'wallet_use_amount':
+                                                      walletDiscount,
+                                                  'coupon_code': couponCode,
+                                                };
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          PaymentSuccessPage(
+                                                              response:
+                                                                  response,
+                                                              cartExtra: data,
+                                                              from: "0"),
+                                                    ));
+                                              }
+                                            } else {
+                                              showAlertMessage(context);
+                                            }
                                           }
-                                        } else {
-                                          showAlertMessage(context);
-                                        }
-                                      }
-                                    },
-                                  ),
-                                  flex: 1,
+                                        },
+                                      ),
+                                      flex: 1,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                        ])
-                      : Container(),
-                ],
-              ),
-            ))
+                              ),
+                            ])
+                          : Container(),
+                    ],
+                  ),
+                )
+              : noDataView(),
+        )
       ],
     );
   }
@@ -1452,8 +1462,7 @@ class _MyCustomFormState extends State<CartPage> {
 
   Widget noDataView() {
     return Container(
-      width: double.infinity,
-      height: 400,
+      color: Colors.white,
       child: Center(
         child: Text(
           "No item in your cart",
