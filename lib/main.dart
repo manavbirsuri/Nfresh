@@ -542,7 +542,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     children: <Widget>[
                                       Text(
                                         profile == null
-                                            ? "No name"
+                                            ? "Login here"
                                             : profile.name,
                                         style: TextStyle(
                                           fontSize: 18,
@@ -551,9 +551,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                         textAlign: TextAlign.start,
                                       ),
                                       Text(
-                                        profile == null
-                                            ? "Please login"
-                                            : profile.email,
+                                        profile == null ? "" : profile.email,
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: profile == null
@@ -1224,12 +1222,12 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         Flexible(
-                          child: Image.network(
-                            categories[position].icon,
-                            //list[position].image,
-                            height: 120,
-                            width: 120,
-                            fit: BoxFit.fill,
+                          child: AspectRatio(
+                            aspectRatio: 1.3 / 1,
+                            child: Image.network(
+                              categories[position].icon,
+                              fit: BoxFit.fill,
+                            ),
                           ),
                           flex: 3,
                         ),
