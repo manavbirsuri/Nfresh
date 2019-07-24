@@ -15,12 +15,11 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="NFresh"
         android:allowBackup="false"
-        android:testOnly="false"
         android:icon="@mipmap/ic_launcher"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTop"
+
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
