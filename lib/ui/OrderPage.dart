@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:nfresh/bloc/cancel_order.dart';
 import 'package:nfresh/bloc/order_detail_bloc.dart';
 import 'package:nfresh/bloc/reorder_bloc.dart';
 import 'package:nfresh/models/order_product_model.dart';
 import 'package:nfresh/models/product_model.dart';
+import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_order_detail.dart';
 import 'package:nfresh/resources/database.dart';
+import 'package:nfresh/resources/prefrences.dart';
 import 'package:toast/toast.dart';
 
 class OrderPage extends StatefulWidget {
@@ -18,14 +23,34 @@ class OrderPage extends StatefulWidget {
 
 class StateOrderPage extends State<OrderPage> {
   var bloc = OrderDetailBloc();
+  ResponseOrderDetail orderDetail;
   var blocReorder = ReorderBloc();
+  var cancel = CancelOrderBloc();
   var _database = DatabaseHelper.instance;
+  var _prefs = SharedPrefs();
+  ProfileModel profile;
+  String customerType = "";
 
   bool showLoader = false;
   @override
   void initState() {
     super.initState();
     bloc.fetchOrderDetail(widget.title);
+    _prefs.getProfile().then((value) {
+      setState(() {
+        profile = value;
+
+        if (profile.type == 1) {
+          customerType = "Retailer";
+        } else if (profile.type == 2) {
+          customerType = "Wholesaler";
+        } else if (profile.type == 3) {
+          customerType = "Marriage Palace";
+        }
+        //  cityController.text = profile.city;
+        //  areaController.text = profile.name;
+      });
+    });
   }
 
   @override
@@ -68,7 +93,7 @@ class StateOrderPage extends State<OrderPage> {
   }
 
   Widget getMainCardItem(context, ResponseOrderDetail data) {
-    var orderDetail = data.order;
+    orderDetail = data;
     return Card(
       elevation: 2,
       margin: EdgeInsets.all(8.0),
@@ -79,12 +104,12 @@ class StateOrderPage extends State<OrderPage> {
           children: <Widget>[
             ListTile(
               title: Text(
-                'Order No: ${orderDetail.orderId}',
+                'Order No: ${orderDetail.order.orderId}',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               contentPadding: EdgeInsets.all(0),
               trailing: Text(
-                orderDetail.status,
+                orderDetail.order.status,
                 style:
                     TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
               ),
@@ -97,14 +122,14 @@ class StateOrderPage extends State<OrderPage> {
                   Text("Placed on"),
                   Padding(
                     padding: EdgeInsets.only(top: 0),
-                    child: Text(orderDetail.createdAt),
+                    child: Text(orderDetail.order.createdAt),
                   ),
                 ],
               ),
               trailing: Padding(
                 padding: EdgeInsets.only(top: 8),
                 child: Text(
-                  'Rs ${orderDetail.total} / ${orderDetail.products.length} Items',
+                  'Rs ${orderDetail.order.total} / ${orderDetail.order.products.length} Items',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
@@ -112,9 +137,9 @@ class StateOrderPage extends State<OrderPage> {
             Expanded(
                 child: ListView.builder(
               itemBuilder: (context, position) {
-                return getNestedListItem(position, orderDetail.products);
+                return getNestedListItem(position, orderDetail.order.products);
               },
-              itemCount: orderDetail.products.length,
+              itemCount: orderDetail.order.products.length,
               shrinkWrap: true,
               scrollDirection: Axis.vertical,
               //  primary: false,
@@ -215,23 +240,87 @@ class StateOrderPage extends State<OrderPage> {
             children: <Widget>[
               showLoader
                   ? Center(child: CircularProgressIndicator())
-                  : FlatButton(
-                      onPressed: () {
-                        setState(() {
-                          showLoader = true;
-                        });
-                        blocReorder
-                            .fetchSearchData(snapshot.data.order.orderId);
-                        observeReorder(context);
-                      },
-                      child: Text(
-                        "REORDER",
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    )
+                  : Expanded(
+                      child: snapshot.data.order.status == "Pending" &&
+                              profile.type == 1
+                          ? Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: <Widget>[
+                                Flexible(
+                                  child: FlatButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        showLoader = true;
+                                      });
+                                      blocReorder.fetchSearchData(
+                                          snapshot.data.order.orderId);
+                                      observeReorder(context);
+                                    },
+                                    child: Text(
+                                      "REORDER",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ),
+                                  flex: 1,
+                                ),
+                                snapshot.data.order.status == "Pending" &&
+                                        profile.type == 1
+                                    ? Container(
+                                        color: Colors.white,
+                                        height: 65,
+                                        width: 1,
+                                      )
+                                    : Container(),
+                                snapshot.data.order.status == "Pending" &&
+                                        profile.type == 1
+                                    ? Flexible(
+                                        child: FlatButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              showLoader = true;
+                                            });
+
+                                            cancel.cancelOrder(
+                                                snapshot.data.order.orderId);
+                                            observeCancel(context);
+                                          },
+                                          child: Text(
+                                            "CANCEL",
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 15,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        flex: 1,
+                                      )
+                                    : Container(
+                                        color: Colors.white,
+                                      )
+                              ],
+                            )
+                          : FlatButton(
+                              onPressed: () {
+                                setState(() {
+                                  showLoader = true;
+                                });
+                                blocReorder.fetchSearchData(
+                                    snapshot.data.order.orderId);
+                                observeReorder(context);
+                              },
+                              child: Text(
+                                "REORDER",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                    ),
             ],
           ),
         )
@@ -287,6 +376,52 @@ class StateOrderPage extends State<OrderPage> {
         }
       } else {
         Toast.show(response.msg, context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+  }
+
+  void observeCancel(context) {
+    cancel.notificationData.listen((response) {
+      setState(() {
+        showLoader = false;
+      });
+      var obj = jsonDecode(response);
+      if (obj['status'] == "true") {
+        if (obj['msg'].length > 3) {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              // return object of type Dialog
+              return AlertDialog(
+                title: new Text("Alert!"),
+                content: new Text(obj['msg']),
+                actions: <Widget>[
+                  // usually buttons at the bottom of the dialog
+                  new FlatButton(
+                    child: new Text("OK"),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      //insertIntoCart(response.products, context);
+                    },
+                  ),
+//                  new FlatButton(
+//                    child: new Text("Cancel"),
+//                    onPressed: () {
+//                      Navigator.of(context).pop();
+//                    },
+//                  ),
+                ],
+              );
+            },
+          ).then((val) {
+            setState(() {
+              orderDetail.order.status = "Cancelled";
+            });
+          });
+        }
+      } else {
+        Toast.show(obj['msg'], context,
             duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       }
     });

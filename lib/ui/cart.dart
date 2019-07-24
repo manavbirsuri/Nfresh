@@ -917,19 +917,26 @@ class _MyCustomFormState extends State<CartPage> {
                                 return Material(
                                   type: MaterialType.transparency,
                                   child: Container(
-                                    child: DynamicDialog(profile),
+                                    child:
+                                        DynamicDialog(profile, walletDiscount),
                                     padding:
                                         EdgeInsets.only(top: 40, bottom: 40),
                                   ),
                                 );
-                              }).then((value) {
+                              }).then((value) async {
+                            SharedPreferences prefs =
+                                await SharedPreferences.getInstance();
+
+                            String vv =
+                                await prefs.getString('walletBal') ?? "";
                             setState(() {
-                              //  walletDiscount = value;
-                              getBalance().then((onValue) {
-                                //print("LLLLLLLLLLLL: " + onValue);
-//                        walletDiscount = onValue as int;
-                              });
+                              walletDiscount = int.parse(vv);
+//                            getBalance().then((onValue) {
+//                              //print("LLLLLLLLLLLL: " + onValue);
+//                              setState(() {
+//                                walletDiscount = onValue as int;
                             });
+//                            });
 
                             setState(() {
                               walletDiscount = int.parse(value);
@@ -1352,30 +1359,30 @@ class _MyCustomFormState extends State<CartPage> {
   }
 
   getBalance() async {
-    setState(() async {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
 //    print('Pressed $counter times.');
-      String vv = await prefs.getString('walletBal') ?? "";
-      if (vv == "0") {
-        return vv;
-      }
-      if (profile.walletCredits >= int.parse(vv)) {
-        if (checkoutTotal >= int.parse(vv)) {
+    String vv = await prefs.getString('walletBal') ?? "";
+    if (vv == "0") {
+      return vv;
+    }
+    if (profile.walletCredits >= int.parse(vv)) {
+      if (checkoutTotal >= int.parse(vv)) {
+        setState(() {
           walletDiscount = int.parse(vv);
-        } else {
-          showAlert("Amount should not be more than your cart total.", context);
+        });
+      } else {
+        showAlert("Amount should not be more than your cart total.", context);
 //          Toast.show("Amount should not be more than your cart total.", context,
 //              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-        }
-      } else {
-        vv = "0";
-        showAlert("Amount is more than Balance in Wallet.", context);
+      }
+    } else {
+      vv = "0";
+      showAlert("Amount is more than Balance in Wallet.", context);
 //        Toast.show("Amount is more than Balance in Wallet.", context,
 //            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-      }
-      return vv;
-    });
+    }
+    return vv;
   }
 
   Widget productContent(List<Product> products) {
@@ -2023,8 +2030,10 @@ class LogoutOverlayState extends State<LogoutOverlay>
 
 class DynamicDialog extends StatefulWidget {
   ProfileModel waletb;
-  DynamicDialog(ProfileModel waletb) {
+  int walletBalance;
+  DynamicDialog(ProfileModel waletb, int walletBalance) {
     this.waletb = waletb;
+    this.walletBalance = walletBalance;
   }
 
 //  DynamicDialog({this.title});
@@ -2041,6 +2050,7 @@ class _DynamicDialogState extends State<DynamicDialog> {
   String image2 = "assets/ic_fav.png";
   String currentimage = "assets/ic_fav.png";
   var textFieldController = TextEditingController();
+  bool _value = false;
 
   ProfileModel waletb;
 
@@ -2155,6 +2165,64 @@ class _DynamicDialogState extends State<DynamicDialog> {
                     ),
                   ),
                 ),
+                widget.walletBalance > 0
+                    ? Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                        child: GestureDetector(
+                          onTap: () {
+                            if (_value) {
+                              saveToPrefs("0");
+                            }
+                            saveToPrefs(textFieldController.text.toString());
+                            Navigator.pop(context);
+                            // textFieldController.toString();
+                          },
+                          child: Container(
+                              height: 70,
+                              width: 270,
+                              child: Row(
+                                children: <Widget>[
+                                  Center(
+                                      child: InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        _value = !_value;
+                                      });
+                                    },
+                                    child: Container(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: !_value
+                                            ? Icon(
+                                                Icons.check_box_outline_blank,
+                                                size: 20.0,
+                                                color: Colors.grey,
+                                              )
+                                            : Icon(
+                                                Icons.check_box,
+                                                size: 20.0,
+                                                color: Colors.blue,
+                                              ),
+                                      ),
+                                    ),
+                                  )),
+                                  Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child:
+                                        Text("Remove Applied Wallet balance.",
+                                            style: new TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 14,
+                                            )),
+                                  ),
+                                ],
+                              )),
+                        ),
+                      )
+                    : Container(
+                        height: 5,
+                        width: 270,
+                      )
               ]))
             ])),
       ),

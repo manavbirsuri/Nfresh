@@ -89,4 +89,6 @@ class Repository {
       apiProvider.getNotifications(auth, dateTime);
   Future<String> resendOtp(auth, phoneNo) =>
       apiProvider.resendOtp(auth, phoneNo);
+  Future<String> CancelOrder(auth, orderId) =>
+      apiProvider.CancelOrder(auth, orderId);
 }

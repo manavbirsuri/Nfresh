@@ -92,7 +92,9 @@ class OrderHistoryState extends State<OrderState> {
               builder: (context) => new OrderPage(
                     title: '${order.orderId}',
                   ),
-            ));
+            )).then((value) {
+          bloc.fetchOrdersData();
+        });
       },
       child: Card(
         elevation: 2,

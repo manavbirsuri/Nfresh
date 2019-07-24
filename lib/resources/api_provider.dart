@@ -537,4 +537,20 @@ class ApiProvider {
       throw Exception('NFresh: Failed to load get_notifications service');
     }
   }
+
+// Webservice call for Forgot password
+  Future<String> CancelOrder(auth, orderId) async {
+    Map map = {
+      'auth_code': auth,
+      'order_id': orderId.toString(),
+    };
+    final response = await client.post("$baseUrl/cancel_order", body: map);
+    print("Address Update: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load get_notifications service');
+    }
+  }
 }
