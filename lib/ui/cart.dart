@@ -330,7 +330,8 @@ class _MyCustomFormState extends State<CartPage> {
                                                             from: "0"),
                                                   ));
                                             } else {
-                                              showAlertMessage(context);
+                                              // showAlertMessage(context);
+                                              goToLogin();
                                             }
 //                                        Map<String, dynamic> data = {
 //                                          'total': checkoutTotal,
@@ -384,7 +385,8 @@ class _MyCustomFormState extends State<CartPage> {
                                                                 from: "0"),
                                                       ));
                                                 } else {
-                                                  showAlertMessage(context);
+                                                  // showAlertMessage(context);
+                                                  goToLogin();
                                                 }
                                               } else {
                                                 Map<String, dynamic> data = {
@@ -410,7 +412,8 @@ class _MyCustomFormState extends State<CartPage> {
                                                     ));
                                               }
                                             } else {
-                                              showAlertMessage(context);
+                                              // showAlertMessage(context);
+                                              goToLogin();
                                             }
                                           }
                                         },
@@ -801,7 +804,7 @@ class _MyCustomFormState extends State<CartPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            padding: EdgeInsets.only(left: 16, top: 0, right: 16),
+            padding: EdgeInsets.only(left: 0, top: 0, right: 0),
             child: DropdownButton<String>(
               isExpanded: true,
               value: selectedMethod,
@@ -823,20 +826,21 @@ class _MyCustomFormState extends State<CartPage> {
               ].map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
-                  child: Text(value),
+                  child: Padding(
+                      padding: EdgeInsets.only(left: 16), child: Text(value)),
                 );
               }).toList(),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(
-              top: 0,
-            ),
-            child: Divider(
-              color: Colors.grey,
-              height: 1,
-            ),
-          ),
+//          Padding(
+//            padding: EdgeInsets.only(
+//              top: 0,
+//            ),
+//            child: Divider(
+//              color: Colors.grey,
+//              height: 1,
+//            ),
+//          ),
           ListTile(
             title: Text(
               'COUPONS',
@@ -946,7 +950,8 @@ class _MyCustomFormState extends State<CartPage> {
 //                    Toast.show("Insufficiant Balance in Wallet.", context,
 //                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
                           if (profile == null) {
-                            showAlertMessage(context);
+                            // showAlertMessage(context);
+                            goToLogin();
                           } else {
                             Navigator.push(
                                 context,
@@ -1197,7 +1202,8 @@ class _MyCustomFormState extends State<CartPage> {
             ),
             onTap: () {
               if (profile == null) {
-                showAlertMessage(context);
+                // showAlertMessage(context);
+                goToLogin();
               } else {
                 _showAddressDialog(context);
               }

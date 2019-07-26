@@ -525,28 +525,28 @@ class stateProfilePage extends State<stateProfile> {
                                           'Agree to the ',
                                           style: new TextStyle(fontSize: 14.0),
                                         ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    TermAndPrivacy(
-                                                        'Terms of Use'),
-                                              ),
-                                            );
-                                          },
-                                          child: new Text(
-                                            'Terms of Use ',
-                                            style: new TextStyle(
-                                                fontSize: 14.0,
-                                                color: Colors.colorgreen),
-                                          ),
-                                        ),
-                                        new Text(
-                                          'and ',
-                                          style: new TextStyle(fontSize: 14.0),
-                                        ),
+//                                        GestureDetector(
+//                                          onTap: () {
+//                                            Navigator.push(
+//                                              context,
+//                                              MaterialPageRoute(
+//                                                builder: (context) =>
+//                                                    TermAndPrivacy(
+//                                                        'Terms of Use'),
+//                                              ),
+//                                            );
+//                                          },
+//                                          child: new Text(
+//                                            'Terms of Use ',
+//                                            style: new TextStyle(
+//                                                fontSize: 14.0,
+//                                                color: Colors.colorgreen),
+//                                          ),
+//                                        ),
+//                                        new Text(
+//                                          'and ',
+//                                          style: new TextStyle(fontSize: 14.0),
+//                                        ),
                                         GestureDetector(
                                           onTap: () {
                                             Navigator.push(
@@ -559,7 +559,7 @@ class stateProfilePage extends State<stateProfile> {
                                             );
                                           },
                                           child: new Text(
-                                            'Privacy Policy',
+                                            'Terms of Use and Privacy Policy',
                                             style: new TextStyle(
                                                 fontSize: 14.0,
                                                 color: Colors.colorgreen),

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/forgot_password_bloc.dart';
 import 'package:nfresh/bloc/update_phone2_bloc.dart';
@@ -82,8 +80,6 @@ class PinState extends State<PinViewUpdatePage> {
                           enteredPin = pin;
                         });
                       } // gets triggered when all the fields are filled
-
-                      // gets triggered when all the fields are filled
                       ),
                   // end onSubmit
                 ),
@@ -145,20 +141,6 @@ class PinState extends State<PinViewUpdatePage> {
                           height: 60,
                           child: Center(
                             child: CircularProgressIndicator(),
-//                                colorBrightness: Brightness.dark,
-//                                onPressed: () {
-//                                  if (emailController.text == "" &&
-//                                      passwordController.text == "") {
-////                              Navigator.push(
-////                                context,
-////                                new MaterialPageRoute(
-////                                    builder: (context) => new DashBoard()),
-////                              );
-//                                  } else {
-//                                    //_showDialog(context);
-//                                  }
-//                                },
-//                                color: Colors.green,
                           ),
                         ),
                       )
@@ -212,34 +194,34 @@ class PinState extends State<PinViewUpdatePage> {
       showLoader = true;
     });
 
-    if (password.length > 0) {
-      blocPassword.fetchData(phone, password);
-      blocPassword.passwordData.listen((res) {
-        setState(() {
-          showLoader = false;
-        });
-        var obj = jsonDecode(res);
-        if (obj['status'] == "true") {
-          Navigator.of(context).pop();
-        }
-        Toast.show(obj['msg'], context,
-            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-      });
-    } else {
-      bloc.fetchData(phone);
-      bloc.phoneData.listen((res) {
-        setState(() {
-          showLoader = false;
-        });
-        if (res.status == "true") {
-          String data = jsonEncode(res.profile);
-          _prefs.saveProfile(data);
-          Navigator.of(context).pop();
-        } //else {
-        Toast.show(res.msg, context,
-            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-        // }
-      });
-    }
+//    if (password.length > 0) {
+//      blocPassword.fetchData(phone, password);
+//      blocPassword.passwordData.listen((res) {
+//        setState(() {
+//          showLoader = false;
+//        });
+//        var obj = jsonDecode(res);
+//        if (obj['status'] == "true") {
+    Navigator.of(context).pop();
+//        }
+//        Toast.show(obj['msg'], context,
+//            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+//      });
+//    } else {
+//      bloc.fetchData(phone);
+//      bloc.phoneData.listen((res) {
+//        setState(() {
+//          showLoader = false;
+//        });
+//        if (res.status == "true") {
+//          String data = jsonEncode(res.profile);
+//          _prefs.saveProfile(data);
+//          Navigator.of(context).pop();
+//        } //else {
+//        Toast.show(res.msg, context,
+//            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+//        // }
+//      });
+//    }
   }
 }
