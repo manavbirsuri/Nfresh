@@ -232,7 +232,7 @@ class StateProfilePage extends State<stateProfile> {
                                       child: ListTile(
                                         contentPadding: EdgeInsets.all(0),
                                         title: Text(
-                                          "Phone Number",
+                                          "Mobile Number",
                                           style: TextStyle(
                                             color: Colors.colorlightgrey,
                                             fontSize: 12,
@@ -871,7 +871,7 @@ class StateProfilePage extends State<stateProfile> {
 
   void updatePhoneWebservice(String phoneNo) {
     if (phoneNo.length == 0) {
-      Toast.show("Enter new phone number", context,
+      Toast.show("Enter new mobile number", context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       return;
     }

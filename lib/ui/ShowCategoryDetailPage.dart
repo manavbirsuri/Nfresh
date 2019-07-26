@@ -14,6 +14,7 @@ import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:nfresh/ui/cart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'SearchPageActivity.dart';
 import 'login.dart';
 
 class ShowCategoryDetailPage extends StatefulWidget {
@@ -174,9 +175,24 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                 ),
               ],
             ),
+            floatingActionButton: Padding(
+              padding: const EdgeInsets.only(bottom: 50.0),
+              child: FloatingActionButton(
+                child: Icon(Icons.add),
+                backgroundColor: Colors.colorgreen,
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SearchPageActivity(),
+                      ));
+                },
+              ),
+            ),
             body: showLoader
                 ? Center(child: CircularProgressIndicator())
                 : mainContent(productResponse)
+
             /* body: StreamBuilder(
             stream: bloc.catProductsList,
             builder: (context, AsyncSnapshot<ResponseCatProducts> snapshot) {
@@ -188,7 +204,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
               return Center(child: CircularProgressIndicator());
             },
           ),*/
-            )
+            ),
       ],
     );
   }

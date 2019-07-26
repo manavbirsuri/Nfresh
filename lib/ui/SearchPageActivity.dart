@@ -25,15 +25,15 @@ import 'login.dart';
   }
 }*/
 
-class SearchPage extends StatefulWidget {
+class SearchPageActivity extends StatefulWidget {
   final CountListener listener;
-  SearchPage({Key key, this.listener}) : super(key: key);
+  SearchPageActivity({Key key, this.listener}) : super(key: key);
 
   @override
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-class _MyHomePageState extends State<SearchPage> {
+class _MyHomePageState extends State<SearchPageActivity> {
   TextEditingController editingController = TextEditingController();
 //  var items = List<ModelProduct>();
   var viewList = false;
@@ -50,6 +50,7 @@ class _MyHomePageState extends State<SearchPage> {
   // var pos = 0;
   String SelectedLanguage = "A to Z";
   String _picked = "A to Z";
+
   @override
   void initState() {
     super.initState();
@@ -85,45 +86,69 @@ class _MyHomePageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      body: Container(
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                onChanged: (value) {
-                  //  filterSearchResults(value);
-                  Future.delayed(const Duration(milliseconds: 1000), () {
-                    bloc.fetchSearchData(value.trim());
-                  });
-                },
-                controller: editingController,
-                decoration: InputDecoration(
-//                    labelText: "Search",
-                    hintText: "Search",
-                    prefixIcon: Icon(Icons.search),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(0.0)))),
-              ),
-            ),
-            StreamBuilder(
-              stream: bloc.searchedData,
-              builder: (context, AsyncSnapshot<ResponseSearch> snapshot) {
-                if (snapshot.hasData) {
-                  return mainContent(snapshot);
-                } else if (snapshot.hasError) {
-                  return Text(snapshot.error.toString());
-                }
-                return Center(
-                  child: Text("Search to display products"),
-                );
-              },
-            )
-          ],
+    return Stack(fit: StackFit.expand, children: <Widget>[
+      Positioned(
+        child: Image.asset(
+          'assets/sigbg.jpg',
+          fit: BoxFit.cover,
         ),
       ),
-    );
+      new Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.colorgreen.withOpacity(0.0),
+          automaticallyImplyLeading: true,
+          title: Text(
+            "Search",
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+        ),
+        backgroundColor: Colors.colorgreen.withOpacity(0.5),
+        body: Container(
+          color: Colors.white,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  onChanged: (value) {
+                    //  filterSearchResults(value);
+                    Future.delayed(const Duration(milliseconds: 1000), () {
+                      bloc.fetchSearchData(value.trim());
+                    });
+                  },
+                  controller: editingController,
+                  decoration: InputDecoration(
+//                    labelText: "Search",
+                      hintText: "Search",
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(0.0)))),
+                ),
+              ),
+              StreamBuilder(
+                stream: bloc.searchedData,
+                builder: (context, AsyncSnapshot<ResponseSearch> snapshot) {
+                  if (snapshot.hasData) {
+                    return mainContent(snapshot);
+                  } else if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  return Center(
+                    child: Text("Search to display products"),
+                  );
+                },
+              )
+            ],
+          ),
+        ),
+      ),
+    ]);
   }
 
   showListView(List<Product> products) {

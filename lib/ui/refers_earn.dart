@@ -144,7 +144,7 @@ class stateProfilePage extends State<referEarnProfile> {
         ),
         Container(
           color: Colors.white,
-          margin: EdgeInsets.only(top: 130),
+          margin: EdgeInsets.only(top: 110),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
@@ -156,11 +156,11 @@ class stateProfilePage extends State<referEarnProfile> {
           margin: EdgeInsets.only(top: 15, right: 20, left: 20),
           child: Material(
             elevation: 16.0,
-            borderRadius:
-                BorderRadius.only(topRight: Radius.circular(18), topLeft: Radius.circular(18)),
+            borderRadius: BorderRadius.only(
+                topRight: Radius.circular(18), topLeft: Radius.circular(18)),
             child: ClipRRect(
-              borderRadius:
-                  BorderRadius.only(topRight: Radius.circular(18), topLeft: Radius.circular(18)),
+              borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(18), topLeft: Radius.circular(18)),
               child: Container(
                 child: Padding(
                   padding: EdgeInsets.all(16),
@@ -170,24 +170,26 @@ class stateProfilePage extends State<referEarnProfile> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         mainAxisSize: MainAxisSize.max,
                         children: <Widget>[
-                          Expanded(
+                          SingleChildScrollView(
                               child: Column(
+                            mainAxisSize: MainAxisSize.max,
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Center(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.baseline,
-                                  textBaseline: TextBaseline.alphabetic,
-                                  children: <Widget>[
-                                    Image.asset(
-                                      "assets/refer.png",
-                                      height: 150,
-                                      width: 150,
-                                    ),
-                                  ],
+//                                child: Row(
+//                                  mainAxisAlignment: MainAxisAlignment.center,
+//                                  crossAxisAlignment:
+//                                      CrossAxisAlignment.baseline,
+//                                  textBaseline: TextBaseline.alphabetic,
+//                                  children: <Widget>[
+                                child: Image.asset(
+                                  "assets/refer.png",
+                                  height: 120,
+                                  width: 120,
                                 ),
+//                                  ],
+//                                ),
                               ),
                               Container(
                                 margin: EdgeInsets.only(top: 16),
@@ -212,22 +214,29 @@ class stateProfilePage extends State<referEarnProfile> {
                                   child: Center(
                                     child: Column(
                                       mainAxisSize: MainAxisSize.max,
-                                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.stretch,
                                       children: <Widget>[
                                         Container(
                                           margin: EdgeInsets.only(top: 0),
                                           child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
                                             children: <Widget>[
                                               Center(
                                                 child: GestureDetector(
                                                   onLongPress: () {
                                                     // code to copy refer code
                                                     Clipboard.setData(
-                                                        new ClipboardData(text: code));
-                                                    Scaffold.of(context).showSnackBar(new SnackBar(
-                                                      content: new Text("Copied to Clipboard"),
+                                                        new ClipboardData(
+                                                            text: code));
+                                                    Scaffold.of(context)
+                                                        .showSnackBar(
+                                                            new SnackBar(
+                                                      content: new Text(
+                                                          "Copied to Clipboard"),
                                                     ));
                                                   },
                                                   child: DottedBorder(
@@ -236,14 +245,18 @@ class stateProfilePage extends State<referEarnProfile> {
                                                     strokeWidth: 1,
                                                     child: Stack(
                                                       fit: StackFit.passthrough,
-                                                      alignment: Alignment.centerLeft,
+                                                      alignment:
+                                                          Alignment.centerLeft,
                                                       children: <Widget>[
                                                         Center(
                                                           child: Text(
                                                             code,
                                                             style: TextStyle(
-                                                                color: Colors.colorgreen,
-                                                                fontWeight: FontWeight.bold,
+                                                                color: Colors
+                                                                    .colorgreen,
+                                                                fontWeight:
+                                                                    FontWeight
+                                                                        .bold,
                                                                 fontSize: 35),
                                                           ),
                                                         ),
@@ -251,7 +264,8 @@ class stateProfilePage extends State<referEarnProfile> {
                                                           //color: Colors.green,
                                                           width: 30,
                                                           child: Center(
-                                                            child: Icon(Icons.content_copy),
+                                                            child: Icon(Icons
+                                                                .content_copy),
                                                           ),
                                                         )
                                                       ],
@@ -271,9 +285,11 @@ class stateProfilePage extends State<referEarnProfile> {
                                                 .share();
                                           },
                                           child: Padding(
-                                            padding: EdgeInsets.only(top: 62),
+                                            padding: EdgeInsets.only(top: 52),
                                             child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: <Widget>[
                                                 Image.asset(
                                                   "assets/fb.png",
@@ -311,7 +327,7 @@ class stateProfilePage extends State<referEarnProfile> {
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(32, 8, 32, 16),
+                          padding: const EdgeInsets.fromLTRB(32, 8, 32, 0),
                           child: GestureDetector(
                             onTap: () {
                               Share.plainText(
@@ -324,7 +340,8 @@ class stateProfilePage extends State<referEarnProfile> {
                               height: 40,
                               width: 120,
                               decoration: new BoxDecoration(
-                                  borderRadius: new BorderRadius.all(new Radius.circular(100.0)),
+                                  borderRadius: new BorderRadius.all(
+                                      new Radius.circular(100.0)),
                                   color: Colors.colorgreen),
                               child: Center(
                                 child: new Text("Share Now",

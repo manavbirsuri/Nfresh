@@ -131,17 +131,26 @@ class stateProfilePage extends State<stateProfile> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         mainAxisSize: MainAxisSize.max,
                         children: <Widget>[
-                          Stack(children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(top: 0),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Image.asset(
-                                  'assets/logo.png',
-                                ),
+//                          Stack(children: <Widget>[
+//                            Padding(
+//                              padding: EdgeInsets.only(top: 0),
+//                              child: Align(
+//                                alignment: Alignment.center,
+//                                child: Image.asset(
+//                                  'assets/logo.png',
+//                                ),
+//                              ),
+//                            )
+//                          ]),
+                          Container(
+                            margin: EdgeInsets.only(top: 0),
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('assets/logo.png'),
                               ),
-                            )
-                          ]),
+                            ),
+                            height: 80,
+                          ),
                           Expanded(
                             child: SingleChildScrollView(
                               child: Column(
@@ -680,11 +689,11 @@ class stateProfilePage extends State<stateProfile> {
       return;
     }
     if (phone.length == 0) {
-      showMessage("Enter valid Phone number");
+      showMessage("Enter valid Mobile number");
       return;
     }
     if (phone.length < 10 || phone.length > 10) {
-      showMessage("Phone number should be 10 digit long");
+      showMessage("Mobile number should be 10 digit long");
       return;
     }
     if (password.length == 0) {

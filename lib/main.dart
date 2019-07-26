@@ -14,6 +14,7 @@ import 'package:nfresh/ui/OffersPage.dart';
 import 'package:nfresh/ui/OrderHistory.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:nfresh/ui/Profile.dart';
+import 'package:nfresh/ui/ShowCategoryDetailPage.dart';
 import 'package:nfresh/ui/WalletPage.dart';
 import 'package:nfresh/ui/cart.dart';
 import 'package:nfresh/ui/login.dart';
@@ -94,6 +95,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   var viewGrid = true;
   var gridImage = 'assets/selected_grid.png';
   var listImage = 'assets/unselected_list.png';
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      new GlobalKey<RefreshIndicatorState>();
 
   int _count = 0;
   ProfileModel profile;
@@ -992,148 +995,180 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   // Methods for Home page
   //***************************************************************
   Widget homeWidget(ResponseHome snapshot) {
-    return SingleChildScrollView(
-        child: Container(
-            color: Colors.colorlightgreyback,
-            child: Stack(children: <Widget>[
-              Column(
-                mainAxisSize: MainAxisSize.max,
-                children: <Widget>[
-                  AspectRatio(
-                    aspectRatio: 2 / 1,
-                    child: showTopPager(snapshot.banners),
-                  ),
+    return RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _refreshStockPrices,
+        child: new SingleChildScrollView(
+            child: Container(
+                color: Colors.colorlightgreyback,
+                child: Stack(children: <Widget>[
                   Column(
                     mainAxisSize: MainAxisSize.max,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.only(top: 12),
-                        child: Stack(
-                          children: <Widget>[
-                            Align(
-                              alignment: Alignment.center,
-                              child: Container(
-                                child: Image.asset('assets/ribbon.png'),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 4),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "CATEGORIES",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                          height: 122,
-                          child: showCategories(snapshot.categories)),
-                      Padding(
-                        padding: EdgeInsets.only(top: 8),
-                        child: Stack(
-                          children: <Widget>[
-                            Align(
-                              alignment: Alignment.center,
-                              child: Container(
-                                child: Image.asset('assets/ribbon.png'),
-                              ),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.only(top: 4),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "OFFERS & PROMOTIONS",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        height: 4,
-                        child: Text(""),
-                      ),
                       AspectRatio(
                         aspectRatio: 2 / 1,
-                        //child: showTopPagerOffer(snapshot.offerBanners),
-                        child: Padding(
-                            padding: EdgeInsets.only(top: 8),
-                            child: ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.horizontal,
-                              itemBuilder: (context, position) {
-                                return Padding(
-                                  padding: EdgeInsets.all(1),
-                                  child: GestureDetector(
-                                    onTap: () {
-//
-                                    },
-                                    child: Card(
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(0.0),
+                        child: showTopPager(snapshot.banners),
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.max,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(top: 12),
+                            child: Stack(
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Container(
+                                    child: Image.asset('assets/ribbon.png'),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 4),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "CATEGORIES",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Colors.black,
                                       ),
-                                      child: Container(
-                                        // height: 200,
-
-                                        //decoration: myBoxDecoration(),
-                                        //       <--- BoxDecoration here
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: <Widget>[
-                                            Flexible(
-                                              child: AspectRatio(
-                                                aspectRatio: 1.7 / 1,
-                                                child: Image.network(
-                                                  snapshot
-                                                      .offerBanners[position]
-                                                      .image,
-                                                  fit: BoxFit.cover,
-                                                ),
-                                              ),
-                                              flex: 1,
-                                            ),
-                                          ],
-                                        ),
-                                      ),
+                                      textAlign: TextAlign.center,
                                     ),
                                   ),
-                                );
-                              },
-                              itemCount: snapshot.offerBanners.length,
-                            )),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                              height: 122,
+                              child: showCategories(snapshot.categories)),
+                          Padding(
+                            padding: EdgeInsets.only(top: 8),
+                            child: Stack(
+                              children: <Widget>[
+                                Align(
+                                  alignment: Alignment.center,
+                                  child: Container(
+                                    child: Image.asset('assets/ribbon.png'),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 4),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      "OFFERS & PROMOTIONS",
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            height: 4,
+                            child: Text(""),
+                          ),
+                          AspectRatio(
+                            aspectRatio: 2 / 1,
+                            //child: showTopPagerOffer(snapshot.offerBanners),
+                            child: Padding(
+                                padding: EdgeInsets.only(top: 8),
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  scrollDirection: Axis.horizontal,
+                                  itemBuilder: (context, position) {
+                                    return Padding(
+                                      padding: EdgeInsets.all(1),
+                                      child: GestureDetector(
+                                        onTap: () {
+//
+                                        },
+                                        child: Card(
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(0.0),
+                                          ),
+                                          child: Container(
+                                            // height: 200,
+
+                                            //decoration: myBoxDecoration(),
+                                            //       <--- BoxDecoration here
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: <Widget>[
+                                                Flexible(
+                                                  child: AspectRatio(
+                                                    aspectRatio: 1.7 / 1,
+                                                    child: Image.network(
+                                                      snapshot
+                                                          .offerBanners[
+                                                              position]
+                                                          .image,
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                  flex: 1,
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  itemCount: snapshot.offerBanners.length,
+                                )),
+                          ),
+                          Container(
+                            height: 4,
+                            child: Text(""),
+                          ),
+                          Container(
+                              child: productsCategories(snapshot.sections)),
+                          Center(
+//                                child: Row(
+//                                  mainAxisAlignment: MainAxisAlignment.center,
+//                                  crossAxisAlignment:
+//                                      CrossAxisAlignment.baseline,
+//                                  textBaseline: TextBaseline.alphabetic,
+//                                  children: <Widget>[
+                            child: Image.asset(
+                              "assets/refer.png",
+                              height: 120,
+                              width: 120,
+                            ),
+//                                  ],
+//                                ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.all(8),
+                            child: Center(
+                              child: Text(
+                                'You can refer your friends and earn bonus credits when they join using your referral code.',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: Colors.colorgreen,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      Container(
-                        height: 4,
-                        child: Text(""),
-                      ),
-                      Container(child: productsCategories(snapshot.sections)),
                     ],
-                  ),
-                  //),
-                ],
-              )
-            ])));
+                  )
+                ]))));
   }
 
   Widget showTopPager(List<BannerModel> banners) {
@@ -1141,10 +1176,23 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       pageView: new PageView.builder(
         controller: _pageController,
         itemBuilder: (BuildContext context, int index) {
-          return Container(
-            child: Image.network(
-              banners[index].image,
-              fit: BoxFit.cover,
+          return GestureDetector(
+            onTap: () {
+              Category cat = Category.init(banners[index]);
+
+              Navigator.push(
+                context,
+                new MaterialPageRoute(
+                  builder: (context) =>
+                      ShowCategoryDetailPage(subCategory: cat),
+                ),
+              );
+            },
+            child: Container(
+              child: Image.network(
+                banners[index].image,
+                fit: BoxFit.cover,
+              ),
             ),
           );
         },
@@ -1204,7 +1252,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                   selectedCategory: categories[position])))
                       .then((value) {
                     onCartUpdate();
-                    updateProducts();
+                    // updateProducts();
                   });
                 },
                 child: Card(
@@ -1274,7 +1322,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
               child: product == null
                   ? Text('')
                   : Padding(
-                      padding: EdgeInsets.all(4),
+                      padding: EdgeInsets.all(0),
                       child: Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(0.0),
@@ -1284,9 +1332,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                             children: <Widget>[
                               Padding(
                                 padding:
-                                    EdgeInsets.only(right: 4, left: 0, top: 0),
+                                    EdgeInsets.only(right: 0, left: 0, top: 0),
                                 child: Container(
-                                  width: 168,
+                                  width: 178,
                                   //color: Colors.green,
                                   child: Row(
                                     mainAxisAlignment:
@@ -2970,8 +3018,11 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   void firebaseCloudMessagingListeners() {
     if (Platform.isIOS) iosPermission();
     _firebaseMessaging.getToken().then((token) {
-      print("FBase Token:  $token");
-      mToken = token;
+      //print("FBase Token:  $token");
+      setState(() {
+        mToken = token;
+      });
+
       bloc.fetchHomeData(token);
     });
 
@@ -3032,6 +3083,13 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 //    );
 //
 //    await FlutterEmailSender.send(email);
+  }
+
+  Future<void> _refreshStockPrices() async {
+//    setState(() {
+//      showLoader = true;
+//    });
+    bloc.fetchHomeData(mToken);
   }
 }
 

@@ -93,17 +93,21 @@ class MyHomePage extends State<LoginPage> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
-                              Stack(children: <Widget>[
-                                Padding(
-                                  padding: EdgeInsets.only(top: 26),
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: Image.asset(
-                                      'assets/logo.png',
-                                    ),
+                              /* Padding(
+                                padding: EdgeInsets.only(top: 26),
+                                child: Image.asset(
+                                  'assets/logo.png',
+                                ),
+                              ),*/
+                              Container(
+                                margin: EdgeInsets.only(top: 26),
+                                decoration: BoxDecoration(
+                                  image: DecorationImage(
+                                    image: AssetImage('assets/logo.png'),
                                   ),
-                                )
-                              ]),
+                                ),
+                                height: 80,
+                              ),
                               Padding(
                                   padding: EdgeInsets.all(16),
                                   child: Column(
@@ -116,7 +120,7 @@ class MyHomePage extends State<LoginPage> {
                                               MainAxisAlignment.start,
                                           children: <Widget>[
                                             Text(
-                                              "Phone Number",
+                                              "Mobile Number",
                                               style: TextStyle(
                                                   fontSize: 18,
                                                   color: Colors.colorgreen),
@@ -133,7 +137,7 @@ class MyHomePage extends State<LoginPage> {
                                             decoration:
                                                 new InputDecoration.collapsed(
                                                     hintText:
-                                                        'Enter Phone No.'),
+                                                        'Enter Mobile No.'),
                                             textAlign: TextAlign.start,
                                             keyboardType: TextInputType.phone,
                                             textInputAction:
@@ -231,7 +235,7 @@ class MyHomePage extends State<LoginPage> {
                                           padding: const EdgeInsets.fromLTRB(
                                               0, 16, 0, 0),
                                           child: Align(
-                                            child: Text("Forget Password?"),
+                                            child: Text("Forgot Password?"),
                                             alignment: Alignment.topRight,
                                           ),
                                         ),

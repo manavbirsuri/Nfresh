@@ -153,7 +153,8 @@ class _CategoryDetailsState extends State<CategoryDetails> {
                 Navigator.push(
                   context,
                   new MaterialPageRoute(
-                    builder: (context) => ShowCategoryDetailPage(subCategory: subCat),
+                    builder: (context) =>
+                        ShowCategoryDetailPage(subCategory: subCat),
                   ),
                 ).then((onValue) {
                   _database.getCartCount().then((value) {

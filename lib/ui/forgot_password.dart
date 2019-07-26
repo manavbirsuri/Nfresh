@@ -82,7 +82,7 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                                 MainAxisAlignment.start,
                                             children: <Widget>[
                                               Text(
-                                                "Phone Number",
+                                                "Mobile Number",
                                                 style: TextStyle(
                                                     fontSize: 18,
                                                     color: Colors.colorgreen),
@@ -101,7 +101,7 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                               decoration:
                                                   new InputDecoration.collapsed(
                                                       hintText:
-                                                          'Enter Phone No.'),
+                                                          'Enter Mobile No.'),
                                               textAlign: TextAlign.start,
                                               keyboardType: TextInputType.phone,
                                               textInputAction:
