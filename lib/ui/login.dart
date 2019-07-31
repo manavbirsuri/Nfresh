@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/login_bloc.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/SignUp.dart';
@@ -132,8 +133,12 @@ class MyHomePage extends State<LoginPage> {
                                         padding: const EdgeInsets.fromLTRB(
                                             0, 8, 0, 0),
                                         child: Center(
-                                          child: TextField(
+                                          child: TextFormField(
                                             controller: emailController,
+                                            inputFormatters: [
+                                              LengthLimitingTextInputFormatter(
+                                                  10),
+                                            ],
                                             decoration:
                                                 new InputDecoration.collapsed(
                                                     hintText:
@@ -389,7 +394,11 @@ class MyHomePage extends State<LoginPage> {
                     alignment: Alignment.bottomCenter,
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.pop(context);
+                        Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DashBoard()),
+                            ModalRoute.withName("/Home"));
 //                        Navigator.push(
 //                          context,
 //                          new MaterialPageRoute(

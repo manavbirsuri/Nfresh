@@ -328,7 +328,9 @@ class _MyCustomFormState extends State<CartPage> {
                                                             response: response,
                                                             cartExtra: data,
                                                             from: "0"),
-                                                  ));
+                                                  )).then((value) {
+                                                bloc.fetchData();
+                                              });
                                             } else {
                                               // showAlertMessage(context);
                                               goToLogin();
@@ -383,7 +385,9 @@ class _MyCustomFormState extends State<CartPage> {
                                                                     response,
                                                                 cartExtra: data,
                                                                 from: "0"),
-                                                      ));
+                                                      )).then((value) {
+                                                    bloc.fetchData();
+                                                  });
                                                 } else {
                                                   // showAlertMessage(context);
                                                   goToLogin();
@@ -409,7 +413,9 @@ class _MyCustomFormState extends State<CartPage> {
                                                                   response,
                                                               cartExtra: data,
                                                               from: "0"),
-                                                    ));
+                                                    )).then((value) {
+                                                  bloc.fetchData();
+                                                });
                                               }
                                             } else {
                                               // showAlertMessage(context);
@@ -1797,8 +1803,8 @@ class _MyCustomFormState extends State<CartPage> {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-                from: 1,
-              ),
+            from: 1,
+          ),
         )).then((value) {
       getProfileDetail();
       blocCity.fetchData();
@@ -2185,7 +2191,7 @@ class _DynamicDialogState extends State<DynamicDialog> {
                           },
                           child: Container(
                               height: 70,
-                              width: 270,
+                              width: 300,
                               child: Row(
                                 children: <Widget>[
                                   Center(
@@ -2218,7 +2224,7 @@ class _DynamicDialogState extends State<DynamicDialog> {
                                         Text("Remove Applied Wallet balance.",
                                             style: new TextStyle(
                                               color: Colors.black,
-                                              fontSize: 14,
+                                              fontSize: 12,
                                             )),
                                   ),
                                 ],

@@ -178,7 +178,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
             floatingActionButton: Padding(
               padding: const EdgeInsets.only(bottom: 50.0),
               child: FloatingActionButton(
-                child: Icon(Icons.add),
+                child: Icon(Icons.search),
                 backgroundColor: Colors.colorgreen,
                 onPressed: () {
                   Navigator.push(
@@ -898,8 +898,8 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
           primary: false,
           itemCount: products.length,
           itemBuilder: (BuildContext context, int index) => new Container(
-                child: girdViewItem(index, context, products),
-              ),
+            child: girdViewItem(index, context, products),
+          ),
           staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
           mainAxisSpacing: 2.0,
           crossAxisSpacing: 2.0,
@@ -1530,8 +1530,8 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
         context,
         MaterialPageRoute(
           builder: (context) => ProductDetailPage(
-                product: product,
-              ),
+            product: product,
+          ),
         )).then((onVal) {
       getCartCount();
       getCartTotal();
@@ -1574,8 +1574,8 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-                from: 1,
-              ),
+            from: 1,
+          ),
         )).then((value) {
       getProfileDetail();
     });
@@ -1913,8 +1913,8 @@ class _MyDialogState extends State<showCustomDialog> {
                   Center(
                       child: RadioButtonGroup(
                     onSelected: (String selected) => setState(() {
-                          _picked1 = selected.trim();
-                        }),
+                      _picked1 = selected.trim();
+                    }),
                     margin: EdgeInsets.only(left: 14),
                     //orientation: GroupedButtonsOrientation.VERTICAL,
                     labels: <String>["A to Z", "Z to A"],

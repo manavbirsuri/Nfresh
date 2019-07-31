@@ -21,6 +21,7 @@ import 'package:nfresh/ui/login.dart';
 import 'package:nfresh/ui/notifications.dart';
 import 'package:nfresh/ui/refers_earn.dart';
 import 'package:page_indicator/page_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -102,7 +103,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   ProfileModel profile;
   ResponseHome homeResponse;
   ResponseGetFav favResponse;
-
+  String SelectedLanguage = "A to Z";
+  String _picked = "A to Z";
   var showLoaderSearch = true;
 
   ResponseSearch responseSearch;
@@ -553,16 +555,20 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                         ),
                                         textAlign: TextAlign.start,
                                       ),
-                                      Text(
-                                        profile == null ? "" : profile.email,
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: profile == null
-                                              ? Colors.grey
-                                              : Colors.white,
-                                        ),
-                                        textAlign: TextAlign.start,
-                                      ),
+                                      profile != null
+                                          ? Text(
+                                              profile == null
+                                                  ? ""
+                                                  : profile.email,
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                color: profile == null
+                                                    ? Colors.grey
+                                                    : Colors.white,
+                                              ),
+                                              textAlign: TextAlign.start,
+                                            )
+                                          : Container(),
                                     ],
                                   ),
                                 )
@@ -752,8 +758,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) => LoginPage(
-                                            from: 0,
-                                          ),
+                                        from: 0,
+                                      ),
                                     ),
                                   );
                                 } else {
@@ -789,8 +795,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) => LoginPage(
-                                                from: 0,
-                                              ),
+                                            from: 0,
+                                          ),
                                         ),
                                       );
                                     },
@@ -1412,8 +1418,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => ProductDetailPage(
-                                              product: product,
-                                            ),
+                                          product: product,
+                                        ),
                                       )).then((value) {
                                     onCartUpdate();
                                     updateProducts();
@@ -2323,7 +2329,33 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                         color: Colors.black,
                       ),
                       GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            return showDialog(
+                                context: context,
+                                builder: (_) {
+                                  return refresh();
+                                }).then((_) => setState(() {
+                                  _read().then((result) {
+                                    print(result);
+                                    setState(() {
+                                      SelectedLanguage = result;
+                                      _picked = SelectedLanguage;
+                                      if (SelectedLanguage == "A to Z") {
+                                        responseSearch.products.sort(
+                                            (a, b) => a.name.compareTo(b.name));
+                                        print(responseSearch.products);
+                                      } else {
+                                        responseSearch.products.sort(
+                                            (a, b) => a.name.compareTo(b.name));
+                                        responseSearch.products = responseSearch
+                                            .products.reversed
+                                            .toList();
+                                        print(responseSearch.products);
+                                      }
+                                    });
+                                  });
+                                }));
+                          },
                           child: Image.asset('assets/sort.png',
                               height: 20, width: 20)),
                     ],
@@ -2693,17 +2725,24 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     itemWidth = itemWidth;
 
     return Expanded(
-      child: StaggeredGridView.countBuilder(
-        crossAxisCount: 2,
-        shrinkWrap: true,
-        primary: false,
-        itemCount: products.length,
-        itemBuilder: (BuildContext context, int index) => new Container(
+      child: Container(
+        padding: EdgeInsets.all(4),
+        color: Colors.colorlightgreyback,
+        child: SingleChildScrollView(
+          child: StaggeredGridView.countBuilder(
+            crossAxisCount: 2,
+            physics: NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            primary: false,
+            itemCount: products.length,
+            itemBuilder: (BuildContext context, int index) => new Container(
               child: girdViewItem(index, context, products),
             ),
-        staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
-        mainAxisSpacing: 2.0,
-        crossAxisSpacing: 2.0,
+            staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
+            mainAxisSpacing: 2.0,
+            crossAxisSpacing: 2.0,
+          ),
+        ),
       ),
     );
   }
@@ -2719,7 +2758,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
             borderRadius: BorderRadius.circular(0.0),
           ),
           child: Container(
-            //height: 330,
+            height: 310,
             padding: EdgeInsets.only(bottom: 12),
             child: Column(
               children: <Widget>[
@@ -2787,6 +2826,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                       ),
                       Text(
                         product.name,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.colorgreen,
@@ -2964,8 +3005,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       context,
       MaterialPageRoute(
         builder: (context) => ProductDetailPage(
-              product: product,
-            ),
+          product: product,
+        ),
       ),
     ).then((value) {
       getCartCount();
@@ -3008,8 +3049,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-                from: 1,
-              ),
+            from: 1,
+          ),
         )).then((value) {
       getProfileDetail();
     });
@@ -3090,6 +3131,18 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 //      showLoader = true;
 //    });
     bloc.fetchHomeData(mToken);
+  }
+
+  Widget refresh() {
+    return showCustomDialog(SelectedLanguage);
+  }
+
+  _read() async {
+    final prefs = await SharedPreferences.getInstance();
+    final key = 'sort';
+    final value = prefs.getString(key) ?? "A to Z";
+    print('read: $value');
+    return value;
   }
 }
 

@@ -521,8 +521,8 @@ class _MyHomePageState extends State<SearchPage> {
     double itemWidth = size.width / 2;
     itemWidth = itemWidth;
 
-    return Expanded(
-      child: SingleChildScrollView(
+    return SingleChildScrollView(
+      child: Expanded(
         child: StaggeredGridView.countBuilder(
           crossAxisCount: 2,
           physics: NeverScrollableScrollPhysics(),
@@ -530,8 +530,8 @@ class _MyHomePageState extends State<SearchPage> {
           primary: false,
           itemCount: products.length,
           itemBuilder: (BuildContext context, int index) => new Container(
-                child: girdViewItem(index, context, products),
-              ),
+            child: girdViewItem(index, context, products),
+          ),
           staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
           mainAxisSpacing: 2.0,
           crossAxisSpacing: 2.0,
@@ -1250,8 +1250,8 @@ class _MyHomePageState extends State<SearchPage> {
       context,
       MaterialPageRoute(
         builder: (context) => ProductDetailPage(
-              product: product,
-            ),
+          product: product,
+        ),
       ),
     );
   }
@@ -1354,8 +1354,8 @@ class _MyDialogState extends State<showCustomDialog> {
                   Center(
                       child: RadioButtonGroup(
                     onSelected: (String selected) => setState(() {
-                          _picked1 = selected.trim();
-                        }),
+                      _picked1 = selected.trim();
+                    }),
                     margin: EdgeInsets.only(left: 14),
                     //orientation: GroupedButtonsOrientation.VERTICAL,
                     labels: <String>["A to Z", "Z to A"],
