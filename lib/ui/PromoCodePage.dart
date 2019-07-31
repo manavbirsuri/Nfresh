@@ -8,6 +8,7 @@ import 'package:nfresh/models/coupon_model.dart';
 import 'package:nfresh/models/responses/response_coupons.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 class PromoCodePage extends StatefulWidget {
   final total;
@@ -84,7 +85,7 @@ class PromoCodeState extends State<PromoCodePage> {
                                           dialog = new ProgressDialog(context,
                                               ProgressDialogType.Normal);
                                           dialog.setMessage("Please wait...");
-                                          dialog.setCancelable(false);
+                                          //dialog.setCancelable(false);
                                           dialog.show();
                                           blocApply.fetchData(widget.total,
                                               couponController.text.toString());
@@ -299,6 +300,8 @@ class PromoCodeState extends State<PromoCodePage> {
               );
             });
       } else {
+        Toast.show(json['msg'], context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         Navigator.pop(context);
       }
     });

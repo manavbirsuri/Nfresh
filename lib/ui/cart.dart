@@ -329,6 +329,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                             cartExtra: data,
                                                             from: "0"),
                                                   )).then((value) {
+                                                dialog.hide();
                                                 bloc.fetchData();
                                               });
                                             } else {
@@ -386,6 +387,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                                 cartExtra: data,
                                                                 from: "0"),
                                                       )).then((value) {
+                                                    dialog.hide();
                                                     bloc.fetchData();
                                                   });
                                                 } else {
@@ -414,6 +416,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                               cartExtra: data,
                                                               from: "0"),
                                                     )).then((value) {
+                                                  dialog.hide();
                                                   bloc.fetchData();
                                                 });
                                               }
@@ -927,8 +930,8 @@ class _MyCustomFormState extends State<CartPage> {
                                 return Material(
                                   type: MaterialType.transparency,
                                   child: Container(
-                                    child:
-                                        DynamicDialog(profile, walletDiscount),
+                                    child: DynamicDialog(
+                                        profile, walletDiscount, checkoutTotal),
                                     padding:
                                         EdgeInsets.only(top: 40, bottom: 40),
                                   ),
@@ -1519,7 +1522,10 @@ class _MyCustomFormState extends State<CartPage> {
           MaterialPageRoute(
             builder: (context) => PaymentSuccessPage(
                 response: response, cartExtra: data, from: "1"),
-          ));
+          )).then((value) {
+        bloc.fetchData();
+        dialog.hide();
+      });
     }
   }
 
@@ -2043,9 +2049,11 @@ class LogoutOverlayState extends State<LogoutOverlay>
 class DynamicDialog extends StatefulWidget {
   ProfileModel waletb;
   int walletBalance;
-  DynamicDialog(ProfileModel waletb, int walletBalance) {
+  int checkoutTotal;
+  DynamicDialog(ProfileModel waletb, int walletBalance, int checkoutTotal) {
     this.waletb = waletb;
     this.walletBalance = walletBalance;
+    this.checkoutTotal = checkoutTotal;
   }
 
 //  DynamicDialog({this.title});
@@ -2156,6 +2164,26 @@ class _DynamicDialogState extends State<DynamicDialog> {
                   padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
                   child: GestureDetector(
                     onTap: () {
+                      if (textFieldController.text.toString().isNotEmpty &&
+                          !textFieldController.text.toString().contains(",") &&
+                          !textFieldController.text.toString().contains(".")) {
+                        int enteredAmount =
+                            int.parse(textFieldController.text.toString());
+                        if (widget.checkoutTotal < enteredAmount) {
+                          SystemChannels.textInput
+                              .invokeMethod('TextInput.hide');
+                          setState(() {
+                            textFieldController.text = "";
+                          });
+
+                          Toast.show(
+                              "You cannot add amount more than cart total.",
+                              context,
+                              duration: Toast.LENGTH_LONG,
+                              gravity: Toast.BOTTOM);
+                          return;
+                        }
+                      }
                       saveToPrefs(textFieldController.text.toString());
                       Navigator.pop(context);
                       // textFieldController.toString();
