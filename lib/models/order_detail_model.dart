@@ -2,7 +2,7 @@ import 'order_product_model.dart';
 
 class OrderDetail {
   int orderId;
-  int total;
+  double total;
   String status;
   String createdAt;
   int count;
@@ -10,7 +10,7 @@ class OrderDetail {
 
   OrderDetail(json) {
     orderId = json['order_id'];
-    total = json['total'];
+    total = (json['total']).toDouble();
     status = json['status'];
     createdAt = json['created_at'];
     count = json['count'];

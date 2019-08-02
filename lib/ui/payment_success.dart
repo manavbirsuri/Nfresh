@@ -2,7 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/create_order_bloc.dart';
+import 'package:nfresh/bloc/profile_bloc.dart';
 import 'package:nfresh/resources/database.dart';
+import 'package:nfresh/resources/prefrences.dart';
 
 import '../main.dart';
 
@@ -25,7 +27,7 @@ class PaymentState extends State<PaymentSuccessPage> {
   List<Map<String, dynamic>> lineItems = [];
   var bloc = CreateOrderBloc();
   var dialog;
-
+  var blocProfile = ProfileBloc();
   bool showLoader = false;
 
   @override
@@ -74,6 +76,8 @@ class PaymentState extends State<PaymentSuccessPage> {
 
   @override
   Widget build(BuildContext context) {
+    blocProfile.fetchData();
+    profileObserver();
     return Stack(
       fit: StackFit.expand,
       children: <Widget>[
@@ -152,6 +156,18 @@ class PaymentState extends State<PaymentSuccessPage> {
         lineItems.add(map);
       });
       bloc.fetchData(lineItems, cartExtra, widget.response);
+    });
+  }
+
+  void profileObserver() {
+    blocProfile.profileData.listen((res) {
+      print("Profile Status = " + res.status);
+      if (res.status == "true") {
+        var _prefs = SharedPrefs();
+
+        String profileData = jsonEncode(res.profile);
+        _prefs.saveProfile(profileData);
+      }
     });
   }
 }

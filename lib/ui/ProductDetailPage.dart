@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/cart_bloc.dart';
+import 'package:nfresh/bloc/get_fav_bloc.dart';
 import 'package:nfresh/bloc/related_product_bloc.dart';
 import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/packing_model.dart';
@@ -29,6 +30,7 @@ class ProState extends State<ProductDetailPage> {
   var blocRelated = RelatedProductBloc();
   var _prefs = SharedPrefs();
   var blocFav = SetFavBloc();
+  var blocFavGet = GetFavBloc();
   var _database = DatabaseHelper.instance;
   ProfileModel profile;
   int cartCount = 0;
@@ -39,6 +41,8 @@ class ProState extends State<ProductDetailPage> {
   @override
   void initState() {
     super.initState();
+    blocFavGet.fetchFavData();
+    favObserver();
     setState(() {});
     getCartTotal();
     getCartCount();
@@ -765,8 +769,8 @@ class ProState extends State<ProductDetailPage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => ProductDetailPage(
-                                              product: product,
-                                            ),
+                                          product: product,
+                                        ),
                                       )).then((value) {
                                     getCartTotal();
                                     getCartCount();
@@ -1030,8 +1034,8 @@ class ProState extends State<ProductDetailPage> {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-                from: 1,
-              ),
+            from: 1,
+          ),
         )).then((value) {
       getProfileDetail();
     });
@@ -1088,6 +1092,21 @@ class ProState extends State<ProductDetailPage> {
       setState(() {
         totalAmount = amount;
       });
+    });
+  }
+
+  void favObserver() {
+    blocFavGet.favList.listen((resFav) {
+      List<Product> product1 = resFav.products;
+      if (product1.length > 0) {
+        for (int i = 0; i < product1.length; i++) {
+          if (product1[i].id == widget.product.id) {
+            setState(() {
+              widget.product.fav = product1[i].fav;
+            });
+          }
+        }
+      }
     });
   }
 }

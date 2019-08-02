@@ -91,7 +91,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   var _database = DatabaseHelper.instance;
   var showLoader = true;
   var showLoaderFav = true;
-
+  List<Product> mainProduct = List();
   var viewList = false;
   var viewGrid = true;
   var gridImage = 'assets/selected_grid.png';
@@ -126,6 +126,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 
   initState() {
     super.initState();
+    blocFavGet.fetchFavData();
+    favObserver();
+
     bloc.homeData.listen((response) {
       homeResponse = response;
       setState(() {
@@ -220,6 +223,18 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       });
       favResponse = resFav;
       updateFavProducts();
+      List<Product> product1 = resFav.products;
+      if (product1.length > 0) {
+        for (int i = 0; i < product1.length; i++) {
+          for (int j = 0; j < mainProduct.length; j++) {
+            if (product1[i].id == mainProduct[j].id) {
+              setState(() {
+                mainProduct[j].fav = product1[i].fav;
+              });
+            }
+          }
+        }
+      }
     });
   }
 
@@ -273,6 +288,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   }
 
   _getDrawerItemWidget(int pos, ResponseHome snapshot) {
+    if (pos != 3) {
+      mainProduct.clear();
+    }
     switch (pos) {
       case 0:
         return Container(
@@ -311,6 +329,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         return new OffersPage();
       case 3:
         //return new SearchPage(listener: this);
+
         return searchViewWidget();
       default:
         return new Text("Error");
@@ -1052,30 +1071,38 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               child: showCategories(snapshot.categories)),
                           Padding(
                             padding: EdgeInsets.only(top: 8),
-                            child: Stack(
-                              children: <Widget>[
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: Container(
-                                    child: Image.asset('assets/ribbon.png'),
-                                  ),
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(top: 4),
-                                  child: Align(
+                            child: Container(
+                              child: Stack(
+                                children: <Widget>[
+                                  Align(
                                     alignment: Alignment.center,
-                                    child: Text(
-                                      "OFFERS & PROMOTIONS",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: Colors.black,
-                                      ),
-                                      textAlign: TextAlign.center,
+                                    child: Container(
+                                      child: Image.asset('assets/ribbon.png'),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  Padding(
+                                    padding: EdgeInsets.all(5),
+                                    child: Align(
+                                      alignment: Alignment.center,
+                                      child: Center(
+                                        child: Container(
+                                          child: Center(
+                                            child: Text(
+                                              "OFFERS & PROMOTIONS",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: Colors.black,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           Container(
@@ -1142,23 +1169,26 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                           ),
                           Container(
                               child: productsCategories(snapshot.sections)),
-                          Center(
+                          Container(
+                            child: Center(
 //                                child: Row(
 //                                  mainAxisAlignment: MainAxisAlignment.center,
 //                                  crossAxisAlignment:
 //                                      CrossAxisAlignment.baseline,
 //                                  textBaseline: TextBaseline.alphabetic,
 //                                  children: <Widget>[
-                            child: Image.asset(
-                              "assets/refer.png",
-                              height: 120,
-                              width: 120,
-                            ),
+                              child: Image.asset(
+                                "assets/refer.png",
+                                height: 120,
+                                width: 120,
+                              ),
 //                                  ],
 //                                ),
+                            ),
                           ),
                           Container(
-                            margin: EdgeInsets.all(8),
+                            margin:
+                                EdgeInsets.only(left: 8, right: 8, bottom: 16),
                             child: Center(
                               child: Text(
                                 'You can refer your friends and earn bonus credits when they join using your referral code.',
@@ -1257,6 +1287,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               builder: (context) => CategoryDetails(
                                   selectedCategory: categories[position])))
                       .then((value) {
+                    blocFavGet.fetchFavData();
                     onCartUpdate();
                     // updateProducts();
                   });
@@ -1676,7 +1707,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                         child: Align(
                           alignment: Alignment.center,
                           child: Text(
-                            sections[position].title,
+                            sections[position].title.toUpperCase(),
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -2384,11 +2415,12 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   }
 
   showListView(List<Product> products) {
+    mainProduct = products;
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
       itemBuilder: (context, position) {
-        var product = products[position];
+        var product = mainProduct[position];
         return Padding(
           padding: EdgeInsets.only(top: 4),
           child: getListItemSearch(position, product),
@@ -2748,7 +2780,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   }
 
   girdViewItem(int index, BuildContext context, List<Product> products) {
-    var product = products[index];
+    mainProduct = products;
+    var product = mainProduct[index];
     return Material(
       color: Colors.transparent,
       child: Padding(
@@ -3009,6 +3042,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         ),
       ),
     ).then((value) {
+      blocFavGet.fetchFavData();
       getCartCount();
       updateSearchProducts();
     });

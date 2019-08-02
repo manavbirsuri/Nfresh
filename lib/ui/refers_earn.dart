@@ -347,7 +347,7 @@ class stateProfilePage extends State<referEarnProfile> {
                                 child: new Text("Share Now",
                                     style: new TextStyle(
                                       color: Colors.white,
-                                      fontSize: 16,
+                                      fontSize: 20,
                                     )),
                               ),
                             ),

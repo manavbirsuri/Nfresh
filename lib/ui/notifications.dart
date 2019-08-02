@@ -93,19 +93,42 @@ class NotificationState extends State<NotificationPage> {
               context,
               MaterialPageRoute(
                 builder: (context) => new OrderPage(
-                      title: '${notifications[position].sourceId}',
-                    ),
+                  title: '${notifications[position].sourceId}',
+                ),
               ));
         }
       },
       child: Card(
-        child: Container(
-          //  height: 120,
-          child: ListTile(
-            leading: setIcon(notification),
-            title: Text(notification.message),
-            subtitle: Text(notification.createdAt),
-          ),
+        child: Padding(
+          padding: EdgeInsets.all(8),
+          child: Container(
+              child: Row(
+            children: <Widget>[
+              setIcon(notification),
+              Flexible(
+                  child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            notification.message,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 4,
+                          ),
+                          Text(notification.createdAt),
+                        ],
+                      )))
+            ],
+          )
+              //  height: 120,
+//          child: ListTile(
+//            leading: setIcon(notification),
+//            title: Text(notification.message),
+//            subtitle: Text(notification.createdAt),
+//          ),
+              ),
         ),
       ),
     );
@@ -118,8 +141,8 @@ class NotificationState extends State<NotificationPage> {
           // alignment: Alignment.center,
           child: Image.asset(
             "assets/noti_order.png",
-            // width: 35,
-            // height: 35,
+            width: 45,
+            height: 45,
           ),
         );
       case 2:
@@ -127,8 +150,8 @@ class NotificationState extends State<NotificationPage> {
           // alignment: Alignment.center,
           child: Image.asset(
             "assets/noti_wallet.png",
-            // width: 35,
-            // height: 35,
+            width: 45,
+            height: 45,
           ),
         );
       default:
@@ -136,8 +159,8 @@ class NotificationState extends State<NotificationPage> {
           // alignment: Alignment.center,
           child: Image.asset(
             "assets/noti_admin.png",
-            //  width: 35,
-            //  height: 35,
+            width: 45,
+            height: 45,
           ),
         );
     }

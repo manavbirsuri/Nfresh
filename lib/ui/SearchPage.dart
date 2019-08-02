@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:grouped_buttons/grouped_buttons.dart';
+import 'package:nfresh/bloc/get_fav_bloc.dart';
 import 'package:nfresh/bloc/search_bloc.dart';
 import 'package:nfresh/bloc/set_fav_bloc.dart';
 import 'package:nfresh/models/packing_model.dart';
@@ -46,13 +47,27 @@ class _MyHomePageState extends State<SearchPage> {
   var bloc = SearchBloc();
   var blocFav = SetFavBloc();
   var _database = DatabaseHelper.instance;
+  var blocFavGet = GetFavBloc();
   int cartCount = 0;
   // var pos = 0;
   String SelectedLanguage = "A to Z";
   String _picked = "A to Z";
+  List<Product> mainProduct = List();
   @override
   void initState() {
     super.initState();
+    blocFavGet.favList.listen((resFav) {
+      List<Product> product1 = resFav.products;
+      for (int i = 0; i < product1.length; i++) {
+        for (int j = 0; j < mainProduct.length; j++) {
+          if (product1[i].id == mainProduct[j].id) {
+            setState(() {
+              mainProduct[j].fav = product1[i].fav;
+            });
+          }
+        }
+      }
+    });
     _prefs.getProfile().then((modelProfile) {
       setState(() {
         profile = modelProfile;
@@ -127,11 +142,12 @@ class _MyHomePageState extends State<SearchPage> {
   }
 
   showListView(List<Product> products) {
+    mainProduct = products;
     return ListView.builder(
       shrinkWrap: true,
       scrollDirection: Axis.vertical,
       itemBuilder: (context, position) {
-        var product = products[position];
+        var product = mainProduct[position];
         return Padding(
           padding: EdgeInsets.only(top: 4),
           child: getListItem(position, product),
@@ -515,6 +531,7 @@ class _MyHomePageState extends State<SearchPage> {
   }
 
   showGridView(List<Product> products) {
+    mainProduct = products;
     var size = MediaQuery.of(context).size;
     double itemHeight = (size.height - kToolbarHeight - 24) / 2;
     itemHeight = itemHeight;
@@ -530,7 +547,7 @@ class _MyHomePageState extends State<SearchPage> {
           primary: false,
           itemCount: products.length,
           itemBuilder: (BuildContext context, int index) => new Container(
-            child: girdViewItem(index, context, products),
+            child: girdViewItem(index, context, mainProduct),
           ),
           staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
           mainAxisSpacing: 2.0,
@@ -1253,7 +1270,9 @@ class _MyHomePageState extends State<SearchPage> {
           product: product,
         ),
       ),
-    );
+    ).then((value) {
+      blocFavGet.fetchFavData();
+    });
   }
 
   Future incrementCount(Product product) async {

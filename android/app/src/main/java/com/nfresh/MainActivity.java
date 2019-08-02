@@ -73,7 +73,7 @@ public class MainActivity extends FlutterActivity {
 
 
   private void paytmPayment(String checksumData, MethodChannel.Result result) throws Exception {
-    PaytmPGService Service = PaytmPGService.getStagingService();
+    PaytmPGService Service = PaytmPGService.getProductionService();
     PaytmOrder Order = new PaytmOrder(getMapData(checksumData));
     Service.initialize(Order, null);
     Service.startPaymentTransaction(this, true, true, new PaytmPaymentTransactionCallback() {

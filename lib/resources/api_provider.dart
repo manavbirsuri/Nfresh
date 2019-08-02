@@ -25,7 +25,8 @@ class ApiProvider {
   Client client = Client();
 //  final String baseUrl =
 //      "http://cloudart.com.au/projects/nfresh//index.php/api/data_v1";
-  final String baseUrl = "http://nfreshonline.com/nfresh/index.php/api/Data_v1";
+  //final String baseUrl = "http://nfreshonline.com/nfresh/index.php/api/Data_v1";
+  final String baseUrl = "http://nfreshonline.com/api/Data_v1";
 
   // Webservice call to fetch home page data
   Future<ResponseHome> fetchHomeData(auth, String firebaseToken) async {

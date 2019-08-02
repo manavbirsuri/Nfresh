@@ -60,15 +60,15 @@ class _MyCustomFormState extends State<CartPage> {
 
   Map<String, dynamic> mapPayTm = {
     //'MID': "zqpQeZ24755039419769",
-    'MID': "Nfresh39378019817673",
+    'MID': "Nfresh85976368609478",
     'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
     'CUST_ID': "cust123",
     'MOBILE_NO': "7777777777",
     'EMAIL': "username@emailprovider.com",
     'CHANNEL_ID': "WAP",
     'TXN_AMOUNT': "100",
-    'WEBSITE': "WEBSTAGING",
-    'INDUSTRY_TYPE_ID': "Retail",
+    'WEBSITE': "Nfresh",
+    'INDUSTRY_TYPE_ID': "Retail105",
     'CALLBACK_URL': ""
   };
   var blocCheck = ChecksumBloc();
@@ -1542,7 +1542,7 @@ class _MyCustomFormState extends State<CartPage> {
       mapPayTm['EMAIL'] = profile.email;
       mapPayTm['TXN_AMOUNT'] = checkoutTotal.toString();
       mapPayTm['CALLBACK_URL'] =
-          "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
+          "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
     });
     blocCheck.fetchData(mapPayTm);
 //    });

@@ -37,18 +37,34 @@ class stateProfilePage extends State<stateProfile> {
   var blocWallet = UpdateWalletBloc();
   String checksum = "";
   String orderId = "";
+//  Map<String, dynamic> mapPayTm = {
+//    // 'MID': "zqpQeZ24755039419769",
+//    //'MID': "apXePW28170154069075",
+//    //'MID': "Nfresh39378019817673",
+//    'MID': "Nfresh85976368609478",
+//    'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
+//    'CUST_ID': "cust123",
+//    'MOBILE_NO': "7777777777",
+//    'EMAIL': "username@emailprovider.com",
+//    'CHANNEL_ID': "WAP",
+//    'TXN_AMOUNT': "100",
+//    'WEBSITE': "WEBSTAGING",
+//    'INDUSTRY_TYPE_ID': "Retail105",
+//    'CALLBACK_URL': ""
+//  };
   Map<String, dynamic> mapPayTm = {
     // 'MID': "zqpQeZ24755039419769",
     //'MID': "apXePW28170154069075",
-    'MID': "Nfresh39378019817673",
+    //'MID': "Nfresh39378019817673",
+    'MID': "Nfresh85976368609478",
     'ORDER_ID': "NF${new DateTime.now().millisecondsSinceEpoch}",
     'CUST_ID': "cust123",
     'MOBILE_NO': "7777777777",
     'EMAIL': "username@emailprovider.com",
     'CHANNEL_ID': "WAP",
     'TXN_AMOUNT': "100",
-    'WEBSITE': "WEBSTAGING",
-    'INDUSTRY_TYPE_ID': "Retail",
+    'WEBSITE': "Nfresh",
+    'INDUSTRY_TYPE_ID': "Retail105",
     'CALLBACK_URL': ""
   };
 
@@ -180,7 +196,7 @@ class stateProfilePage extends State<stateProfile> {
         ),
         Container(
           color: Colors.white,
-          margin: EdgeInsets.only(top: 170),
+          margin: EdgeInsets.only(top: 190),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
@@ -422,7 +438,8 @@ class stateProfilePage extends State<stateProfile> {
                                     if (profileModel != null) {
                                       getCheckSum(context);
                                     } else {
-                                      showAlertMessage(context);
+                                      goToLogin();
+                                      // showAlertMessage(context);
                                     }
                                   },
                                   child: Container(
@@ -491,8 +508,8 @@ class stateProfilePage extends State<stateProfile> {
         context,
         MaterialPageRoute(
           builder: (context) => LoginPage(
-                from: 1,
-              ),
+            from: 1,
+          ),
         )).then((value) {
       getProfileDetail();
     });
@@ -527,14 +544,14 @@ class stateProfilePage extends State<stateProfile> {
     dialog.setMessage("Please wait...");
     dialog.show();
     setState(() {
-      orderId = "NFW${new DateTime.now().millisecondsSinceEpoch}";
+      orderId = "${new DateTime.now().millisecondsSinceEpoch}";
       mapPayTm['ORDER_ID'] = orderId;
       mapPayTm['CUST_ID'] = "C_" + profileModel.phoneNo;
       mapPayTm['MOBILE_NO'] = profileModel.phoneNo;
       mapPayTm['EMAIL'] = profileModel.email;
       mapPayTm['TXN_AMOUNT'] = totalAmount.toString();
       mapPayTm['CALLBACK_URL'] =
-          "https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
+          "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
     });
     blocCheck.fetchData(mapPayTm);
 //    });
