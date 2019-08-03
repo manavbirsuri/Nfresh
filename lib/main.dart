@@ -109,7 +109,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 
   ResponseSearch responseSearch;
 
-  String mToken;
+  String mToken = "1234";
 
   _MyHomePageState(String title) {
     this.title = title;
@@ -288,9 +288,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   }
 
   _getDrawerItemWidget(int pos, ResponseHome snapshot) {
-    if (pos != 3) {
-      mainProduct.clear();
-    }
+//    if (pos != 3) {
+//      mainProduct.clear();
+//    }
     switch (pos) {
       case 0:
         return Container(
@@ -3094,11 +3094,12 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     if (Platform.isIOS) iosPermission();
     _firebaseMessaging.getToken().then((token) {
       //print("FBase Token:  $token");
-      setState(() {
-        mToken = token;
-      });
-
-      bloc.fetchHomeData(token);
+      if (token != null) {
+        setState(() {
+          mToken = token;
+        });
+      }
+      bloc.fetchHomeData(mToken);
     });
 
     _firebaseMessaging.configure(

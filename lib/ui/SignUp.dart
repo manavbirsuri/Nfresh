@@ -684,10 +684,10 @@ class stateProfilePage extends State<stateProfile> {
       showMessage("Enter valid name");
       return;
     }
-    if (email.length == 0 || !isEmail(email)) {
-      showMessage("Enter valid email address");
-      return;
-    }
+//    if (email.length == 0 || !isEmail(email)) {
+//      showMessage("Enter valid email address");
+//      return;
+//    }
     if (phone.length == 0) {
       showMessage("Enter valid Mobile number");
       return;

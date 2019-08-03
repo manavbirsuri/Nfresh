@@ -801,11 +801,11 @@ class StateProfilePage extends State<stateProfile> {
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       return;
     }
-    if (email.length == 0 || !isEmail(email)) {
-      Toast.show("Enter valid email", context,
-          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-      return;
-    }
+//    if (email.length == 0 || !isEmail(email)) {
+//      Toast.show("Enter valid email", context,
+//          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+//      return;
+//    }
 
     dialog = new ProgressDialog(context, ProgressDialogType.Normal);
     dialog.setMessage("Please wait...");
@@ -889,10 +889,10 @@ class StateProfilePage extends State<stateProfile> {
           context,
           new MaterialPageRoute(
             builder: (context) => PinViewUpdatePage(
-                  otp: object['otp'],
-                  phone: phoneNo,
-                  password: "",
-                ),
+              otp: object['otp'].toString(),
+              phone: phoneNo,
+              password: "",
+            ),
           ),
         ).then((value) {
           _prefs.getProfile().then((res) {

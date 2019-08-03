@@ -59,15 +59,15 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
                           Stack(children: <Widget>[
-                            Padding(
-                              padding: EdgeInsets.only(top: 26),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Image.asset(
-                                  'assets/logo.png',
+                            Container(
+                              margin: EdgeInsets.only(top: 26),
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage('assets/logo.png'),
                                 ),
                               ),
-                            )
+                              height: 80,
+                            ),
                           ]),
                           Padding(
                               padding: EdgeInsets.all(16),
@@ -425,10 +425,10 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
           context,
           new MaterialPageRoute(
             builder: (context) => PinViewUpdatePage(
-                  otp: obj['otp'].toString(),
-                  phone: phoneController.text.toString(),
-                  password: passwordController.text.toString(),
-                ),
+              otp: obj['otp'].toString(),
+              phone: phoneController.text.toString(),
+              password: passwordController.text.toString(),
+            ),
           ),
         ).then((value) {
           setState(() {

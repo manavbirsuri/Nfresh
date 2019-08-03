@@ -772,6 +772,9 @@ class ProState extends State<ProductDetailPage> {
                                           product: product,
                                         ),
                                       )).then((value) {
+                                    blocRelated.fetchRelatedProducts(
+                                        widget.product.id.toString());
+                                    blocFavGet.fetchFavData();
                                     getCartTotal();
                                     getCartCount();
                                     updateProducts();
@@ -1106,6 +1109,10 @@ class ProState extends State<ProductDetailPage> {
             });
           }
         }
+      } else {
+        setState(() {
+          widget.product.fav = "0";
+        });
       }
     });
   }
