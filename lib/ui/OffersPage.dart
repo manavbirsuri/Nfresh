@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/coupon_bloc.dart';
 import 'package:nfresh/models/responses/response_coupons.dart';
 import 'package:share/share.dart';
+import 'package:toast/toast.dart';
+
+import '../utils.dart';
 
 class OffersPage extends StatelessWidget {
   @override
@@ -21,10 +24,22 @@ class OfferOrder extends StatefulWidget {
 
 class OfferOrderPage extends State<OfferOrder> {
   var bloc = CouponBloc();
+  var network = false;
   @override
   void initState() {
     super.initState();
-    bloc.fetchData();
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        bloc.fetchData();
+      } else {
+        setState(() {
+          network = true;
+        });
+
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
   }
 
   @override
@@ -41,7 +56,14 @@ class OfferOrderPage extends State<OfferOrder> {
           } else if (snapshot.hasError) {
             return Text(snapshot.error.toString());
           }
-          return Center(child: CircularProgressIndicator());
+          return !network
+              ? Center(child: CircularProgressIndicator())
+              : Center(
+                  child: Text(
+                    "No Data",
+                    style: TextStyle(color: Colors.black, fontSize: 18),
+                  ),
+                );
         },
       ),
     );
@@ -105,13 +127,22 @@ class OfferOrderPage extends State<OfferOrder> {
                                           // fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                      Text(
-                                        coupon.discount.toString(),
-                                        style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
+                                      snapshot.data.coupons[position].type == 1
+                                          ? Text(
+                                              "Rs." +
+                                                  coupon.discount.toString(),
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            )
+                                          : Text(
+                                              coupon.discount.toString() + "%",
+                                              style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                     ],
                                   )),
                             ),
@@ -152,10 +183,26 @@ class OfferOrderPage extends State<OfferOrder> {
                             ]),
                             GestureDetector(
                               onTap: () {
-                                Share.plainText(
-                                        text: "Hi! share my app",
-                                        title: "Share")
-                                    .share();
+                                snapshot.data.coupons[position].type == 1
+                                    ? Share.plainText(
+                                            text: "Use this " +
+                                                coupon.couponCode +
+                                                " to get discount Rs." +
+                                                snapshot.data.coupons[position]
+                                                    .discount
+                                                    .toString(),
+                                            title: "Share")
+                                        .share()
+                                    : Share.plainText(
+                                            text: "Use this " +
+                                                coupon.couponCode +
+                                                " to get discount " +
+                                                snapshot.data.coupons[position]
+                                                    .discount
+                                                    .toString() +
+                                                "%",
+                                            title: "Share")
+                                        .share();
 //                            Share.share(
 //                                'check out my website https://example.com');
                               },

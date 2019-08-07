@@ -51,6 +51,7 @@ class stateProfilePage extends State<stateProfile> {
   CityModel selectedCity;
   AreaModel selectedArea;
   bool showLoader = false;
+  bool _obscureText = true;
   @override
   void initState() {
     super.initState();
@@ -307,7 +308,7 @@ class stateProfilePage extends State<stateProfile> {
                                               ),
                                             ),
                                           ),
-                                          flex: 6,
+                                          flex: 15,
                                         ),
                                         Flexible(
                                           child: GestureDetector(
@@ -331,12 +332,15 @@ class stateProfilePage extends State<stateProfile> {
                                               child: Padding(
                                                 padding: EdgeInsets.only(
                                                     bottom: 0, left: 0),
-                                                child: Text(
-                                                  valueShow,
-                                                  style: TextStyle(
-                                                      fontSize: 18,
-                                                      color: Colors.colorgreen),
-                                                ),
+                                                child: valueShow == "Hide"
+                                                    ? Icon(
+                                                        Icons.visibility,
+                                                        size: 20,
+                                                      )
+                                                    : Icon(
+                                                        Icons.visibility_off,
+                                                        size: 20,
+                                                      ),
                                               ),
                                             ),
                                           ),
@@ -684,10 +688,12 @@ class stateProfilePage extends State<stateProfile> {
       showMessage("Enter valid name");
       return;
     }
-//    if (email.length == 0 || !isEmail(email)) {
-//      showMessage("Enter valid email address");
-//      return;
-//    }
+    if (email.trim().length != 0) {
+      if (!isEmail(email)) {
+        showMessage("Enter valid email address");
+        return;
+      }
+    }
     if (phone.length == 0) {
       showMessage("Enter valid Mobile number");
       return;

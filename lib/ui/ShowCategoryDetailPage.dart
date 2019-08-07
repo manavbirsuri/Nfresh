@@ -13,7 +13,9 @@ import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:nfresh/ui/cart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
+import '../utils.dart';
 import 'SearchPageActivity.dart';
 import 'login.dart';
 
@@ -30,6 +32,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
   var bloc = CatProductsBloc();
   var viewList = false;
   var viewGrid = true;
+  var network = true;
   var gridImage = 'assets/selected_grid.png';
   var listImage = 'assets/unselected_list.png';
   List<String> selectedValues = List();
@@ -54,7 +57,18 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
     super.initState();
     getCartCount();
     getCartTotal();
-    bloc.fetchData(widget.subCategory.id.toString());
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        bloc.fetchData(widget.subCategory.id.toString());
+      } else {
+        setState(() {
+          network = true;
+        });
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+
     bloc.catProductsList.listen((res) {
       setState(() {
         showLoader = false;
@@ -190,9 +204,25 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
               ),
             ),
             body: showLoader
-                ? Center(child: CircularProgressIndicator())
+                ? Center(
+                    child: !network
+                        ? CircularProgressIndicator()
+                        : Center(
+                            child: Text(
+                              "No Data",
+                              style:
+                                  TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                          ))
                 : mainContent(productResponse)
-
+//    !network
+//    ? Center(child: CircularProgressIndicator())
+//        : Center(
+//    child: Text(
+//    "No Data",
+//    style: TextStyle(color: Colors.white, fontSize: 18),
+//    ),
+//    );
             /* body: StreamBuilder(
             stream: bloc.catProductsList,
             builder: (context, AsyncSnapshot<ResponseCatProducts> snapshot) {
@@ -1244,9 +1274,9 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
       getCartTotal();
       // Future.delayed(const Duration(milliseconds: 500), () async {});
     } else {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text("Available inventory : ${product.inventory}"),
-      ));
+      Toast.show(
+          "Available quantity : " + product.inventory.toString(), context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
   }
 

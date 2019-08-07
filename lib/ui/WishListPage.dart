@@ -5,6 +5,7 @@ import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/responses/response_getFavorite.dart';
 import 'package:nfresh/resources/database.dart';
+import 'package:toast/toast.dart';
 
 import '../count_listener.dart';
 
@@ -762,9 +763,9 @@ class WishPage extends State<WishListPage> {
         widget.listener.onCartUpdate();
       });
     } else {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text("Available inventory : ${product.inventory}"),
-      ));
+      Toast.show(
+          "Available quantity : " + product.inventory.toString(), context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
   }
 

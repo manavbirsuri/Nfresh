@@ -21,7 +21,7 @@ class TermAndPrivacy extends StatelessWidget {
     return Scaffold(
       body: Center(
           child: WebviewScaffold(
-        url: link,
+        url: "https://nfreshonline.com/api/Data_v1/page_link/4",
         appBar: new AppBar(
           title: new Text(
             "$title",

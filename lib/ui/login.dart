@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/login_bloc.dart';
+import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/SignUp.dart';
 import 'package:toast/toast.dart';
 
 import '../main.dart';
+import '../utils.dart';
 import 'forgot_password.dart';
 
 /*class LoginPage extends StatelessWidget {
@@ -38,7 +40,7 @@ class MyHomePage extends State<LoginPage> {
   var bloc = LoginBloc();
   bool showLoader = false;
   var _prefs = SharedPrefs();
-
+  var _database = DatabaseHelper.instance;
   @override
   void initState() {
     super.initState();
@@ -49,6 +51,8 @@ class MyHomePage extends State<LoginPage> {
         showLoader = false;
       });
       if (data.status == "true") {
+        _database.clearCart();
+        //getCartCount();
         String profileData = jsonEncode(data.profile);
         _prefs.saveProfile(profileData);
         if (widget.from == 1) {
@@ -189,7 +193,7 @@ class MyHomePage extends State<LoginPage> {
                                                   ),
                                                 ),
                                               ),
-                                              flex: 6,
+                                              flex: 9,
                                             ),
                                             Flexible(
                                               child: GestureDetector(
@@ -213,13 +217,15 @@ class MyHomePage extends State<LoginPage> {
                                                   child: Padding(
                                                     padding: EdgeInsets.only(
                                                         bottom: 0, left: 0),
-                                                    child: Text(
-                                                      valueShow,
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: Colors
-                                                              .colorgreen),
-                                                    ),
+                                                    child: valueShow == "Hide"
+                                                        ? Icon(
+                                                            Icons.visibility,
+                                                            size: 20,
+                                                          )
+                                                        : Icon(
+                                                            Icons
+                                                                .visibility_off,
+                                                            size: 20),
                                                   ),
                                                 ),
                                               ),
@@ -288,8 +294,25 @@ class MyHomePage extends State<LoginPage> {
                                                     setState(() {
                                                       showLoader = true;
                                                     });
-                                                    bloc.fetchData(
-                                                        phone, password);
+                                                    Utils.checkInternet()
+                                                        .then((connected) {
+                                                      if (connected != null &&
+                                                          connected) {
+                                                        bloc.fetchData(
+                                                            phone, password);
+                                                      } else {
+                                                        setState(() {
+                                                          showLoader = false;
+                                                        });
+                                                        Toast.show(
+                                                            "Not connected to internet",
+                                                            context,
+                                                            duration: Toast
+                                                                .LENGTH_SHORT,
+                                                            gravity:
+                                                                Toast.BOTTOM);
+                                                      }
+                                                    });
                                                   } else {
                                                     if (phone.length < 10 ||
                                                         phone.length > 10) {

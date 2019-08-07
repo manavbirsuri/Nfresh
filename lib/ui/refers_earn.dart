@@ -6,6 +6,9 @@ import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:share/share.dart';
+import 'package:toast/toast.dart';
+
+import '../utils.dart';
 
 class ReferEarnPage extends StatelessWidget {
   @override
@@ -39,7 +42,18 @@ class stateProfilePage extends State<referEarnProfile> {
   @override
   void initState() {
     super.initState();
-    bloc.fetchData();
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        bloc.fetchData();
+      } else {
+        setState(() {
+          // showLoader = false;
+        });
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+
     getProfileDetail();
   }
 
@@ -280,7 +294,7 @@ class stateProfilePage extends State<referEarnProfile> {
                                           onTap: () {
                                             Share.plainText(
                                                     text:
-                                                        "You can refer your friends and earn bonus credits when they join using your referral code $code.",
+                                                        "You can refer your friends and earn bonus credits when they join using your referral code $code. Visit our website at http://nfreshonline.com/",
                                                     title: "Share")
                                                 .share();
                                           },
@@ -332,7 +346,7 @@ class stateProfilePage extends State<referEarnProfile> {
                             onTap: () {
                               Share.plainText(
                                       text:
-                                          "You can refer your friends and earn bonus credits when they join using your referral code $code.",
+                                          "You can refer your friends and earn bonus credits when they join using your referral code $code. Visit our website at http://nfreshonline.com/",
                                       title: "Share")
                                   .share();
                             },

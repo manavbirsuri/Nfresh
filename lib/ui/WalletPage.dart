@@ -9,7 +9,9 @@ import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_wallet.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:progress_dialog/progress_dialog.dart';
+import 'package:toast/toast.dart';
 
+import '../utils.dart';
 import 'login.dart';
 
 class WalletPage extends StatelessWidget {
@@ -31,6 +33,7 @@ class stateProfile extends StatefulWidget {
 class stateProfilePage extends State<stateProfile> {
   static const platform = const MethodChannel('flutter.native/helper');
   var valueChecked = 0;
+  var network = false;
   var bloc = WalletBloc();
   var blocCheck = ChecksumBloc();
   var prefs = SharedPrefs();
@@ -70,13 +73,25 @@ class stateProfilePage extends State<stateProfile> {
 
   ProfileModel profileModel;
   var totalAmount = 100;
-  int credits = 0;
+  double credits = 0;
 
   ProgressDialog dialog;
   @override
   void initState() {
     super.initState();
-    bloc.fetchData();
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        bloc.fetchData();
+      } else {
+        setState(() {
+          network = true;
+        });
+
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+
     getProfileDetail();
   }
 
@@ -125,7 +140,14 @@ class stateProfilePage extends State<stateProfile> {
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
               }
-              return Center(child: CircularProgressIndicator());
+              return !network
+                  ? Center(child: CircularProgressIndicator())
+                  : Center(
+                      child: Text(
+                        "No Data",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
+                    );
             },
           ),
         ),

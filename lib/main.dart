@@ -20,7 +20,9 @@ import 'package:nfresh/ui/cart.dart';
 import 'package:nfresh/ui/login.dart';
 import 'package:nfresh/ui/notifications.dart';
 import 'package:nfresh/ui/refers_earn.dart';
+import 'package:nfresh/utils.dart';
 import 'package:page_indicator/page_indicator.dart';
+import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -90,10 +92,12 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   var _prefs = SharedPrefs();
   var _database = DatabaseHelper.instance;
   var showLoader = true;
+  var network = true;
   var showLoaderFav = true;
   List<Product> mainProduct = List();
   var viewList = false;
   var viewGrid = true;
+  int noNetwork = 0;
   var gridImage = 'assets/selected_grid.png';
   var listImage = 'assets/unselected_list.png';
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
@@ -126,8 +130,23 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 
   initState() {
     super.initState();
-    blocFavGet.fetchFavData();
-    favObserver();
+
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        blocFavGet.fetchFavData();
+        favObserver();
+        setState(() {
+          network = true;
+        });
+      } else {
+        setState(() {
+          network = false;
+          showLoader = false;
+        });
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
 
     bloc.homeData.listen((response) {
       homeResponse = response;
@@ -374,7 +393,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         ),
       ),
       Container(
-        // color: Colors.white,
+        //color: Colors.white,
         child: showLoader
             ? Container(
                 color: Colors.white,
@@ -382,7 +401,68 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                   child: CircularProgressIndicator(),
                 ),
               )
-            : bodyContent(homeResponse),
+            : network
+                ? bodyContent(homeResponse)
+                : Center(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Container(
+                          child: Center(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: <Widget>[
+                                Text(
+                                  "Network Error! Please check your network connection.",
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.white),
+                                ),
+                                GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        showLoader = true;
+                                      });
+                                      blocFavGet.fetchFavData();
+                                      favObserver();
+
+                                      bloc.homeData.listen((response) {
+                                        homeResponse = response;
+                                        setState(() {
+                                          showLoader = false;
+                                        });
+                                        blocProfile.fetchData();
+                                        profileObserver();
+
+                                        blocFavGet.fetchFavData();
+                                        favObserver();
+                                        updateProducts();
+                                      });
+                                      getCartCount();
+
+                                      blocSearch.searchedData.listen((data) {
+                                        setState(() {
+                                          showLoaderSearch = false;
+                                        });
+                                        responseSearch = data;
+                                        updateSearchProducts();
+                                      });
+                                      //  OneSignal.shared.init("fddecd6c-3940-472d-a65d-4200ae829891");
+                                      firebaseCloudMessagingListeners();
+                                    },
+                                    child: Text(
+                                      "Click here to reload",
+                                      style: TextStyle(
+                                          fontSize: 18, color: Colors.white),
+                                    ))
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
         /* child: StreamBuilder(
           stream: bloc.homeData,
           builder: (context, AsyncSnapshot<ResponseHome> snapshot) {
@@ -666,10 +746,23 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               ),
                               onTap: () {
                                 Navigator.pop(context);
-
-                                blocFavGet.fetchFavData();
-
-                                changeTabs(1, snapshot);
+                                Utils.checkInternet().then((connected) {
+                                  if (connected != null && connected) {
+                                    blocFavGet.fetchFavData();
+                                    changeTabs(1, snapshot);
+                                    setState(() {
+                                      network = true;
+                                    });
+                                  } else {
+                                    setState(() {
+                                      showLoader = false;
+                                    });
+                                    Toast.show(
+                                        "Not connected to internet", context,
+                                        duration: Toast.LENGTH_SHORT,
+                                        gravity: Toast.BOTTOM);
+                                  }
+                                });
                               },
                             ),
                             Divider(
@@ -834,14 +927,30 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                     ),
                                     onTap: () {
                                       // logout webservice
+                                      Utils.checkInternet().then((connected) {
+                                        if (connected != null && connected) {
+                                          var blocLogout = LogoutBloc();
+                                          blocLogout.fetchData();
+                                          _database.clearCart();
+                                          getCartCount();
+                                          removePromoFromPrefs();
+                                          _prefs.saveProfile("");
+                                          _prefs.saveFirstTime(true);
 
-                                      var blocLogout = LogoutBloc();
-                                      blocLogout.fetchData();
-
-                                      _prefs.saveProfile("");
-                                      _prefs.saveFirstTime(true);
-                                      setState(() {
-                                        profile = null;
+                                          setState(() {
+                                            network = true;
+                                            profile = null;
+                                          });
+                                        } else {
+                                          setState(() {
+                                            showLoader = false;
+                                          });
+                                          Toast.show(
+                                              "Not connected to internet",
+                                              context,
+                                              duration: Toast.LENGTH_SHORT,
+                                              gravity: Toast.BOTTOM);
+                                        }
                                       });
                                     },
                                   ),
@@ -1122,7 +1231,16 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       padding: EdgeInsets.all(1),
                                       child: GestureDetector(
                                         onTap: () {
-//
+                                          Category cat = Category.init(
+                                              snapshot.offerBanners[position]);
+                                          Navigator.push(
+                                            context,
+                                            new MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ShowCategoryDetailPage(
+                                                      subCategory: cat),
+                                            ),
+                                          );
                                         },
                                         child: Card(
                                           shape: RoundedRectangleBorder(
@@ -1196,6 +1314,47 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                 style: TextStyle(
                                   fontSize: 20,
                                   color: Colors.colorgreen,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(32, 8, 32, 16),
+                            child: Center(
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (profile != null) {
+                                    String code = '';
+                                    var prefs = SharedPrefs();
+                                    prefs.getProfile().then((profile) {
+                                      setState(() {
+                                        code = profile.referralCode;
+                                      });
+                                    });
+                                    Share.plainText(
+                                            text:
+                                                "You can refer your friends and earn bonus credits when they join using your referral code $code. Visit our website at http://nfreshonline.com/",
+                                            title: "Share")
+                                        .share();
+                                  } else {
+                                    goToLogin();
+                                    // showAlertMessage(context);
+                                  }
+                                },
+                                child: Container(
+                                  height: 40,
+                                  width: 120,
+                                  decoration: new BoxDecoration(
+                                      borderRadius: new BorderRadius.all(
+                                          new Radius.circular(100.0)),
+                                      color: Colors.colorgreen),
+                                  child: Center(
+                                    child: new Text("Share now",
+                                        style: new TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                        )),
+                                  ),
                                 ),
                               ),
                             ),
@@ -1287,7 +1446,23 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               builder: (context) => CategoryDetails(
                                   selectedCategory: categories[position])))
                       .then((value) {
-                    blocFavGet.fetchFavData();
+                    Utils.checkInternet().then((connected) {
+                      if (connected != null && connected) {
+                        blocFavGet.fetchFavData();
+
+                        setState(() {
+                          network = true;
+                        });
+                      } else {
+                        setState(() {
+                          showLoader = false;
+                        });
+                        Toast.show("Not connected to internet", context,
+                            duration: Toast.LENGTH_SHORT,
+                            gravity: Toast.BOTTOM);
+                      }
+                    });
+
                     onCartUpdate();
                     // updateProducts();
                   });
@@ -1389,10 +1564,31 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                     } else {
                                                       product.fav = "1";
                                                     }
-
-                                                    blocFav.fetchData(
-                                                        product.fav,
-                                                        product.id.toString());
+                                                    Utils.checkInternet()
+                                                        .then((connected) {
+                                                      if (connected != null &&
+                                                          connected) {
+                                                        blocFav.fetchData(
+                                                            product.fav,
+                                                            product.id
+                                                                .toString());
+                                                        setState(() {
+                                                          network = true;
+                                                        });
+                                                      } else {
+                                                        setState(() {
+                                                          network = false;
+                                                          showLoader = false;
+                                                        });
+                                                        Toast.show(
+                                                            "Not connected to internet",
+                                                            context,
+                                                            duration: Toast
+                                                                .LENGTH_SHORT,
+                                                            gravity:
+                                                                Toast.BOTTOM);
+                                                      }
+                                                    });
                                                   }
                                                 });
                                               },
@@ -1621,8 +1817,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                               ),
                                               Container(
                                                 margin: EdgeInsets.only(
-                                                    left: 8,
-                                                    right: 8,
+                                                    left: 6,
+                                                    right: 6,
                                                     top: 4,
                                                     bottom: 4),
                                                 child: Center(
@@ -1759,9 +1955,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         onCartUpdate();
       });
     } else {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text("Available inventory : ${product.inventory}"),
-      ));
+      Toast.show(
+          "Available quantity : " + product.inventory.toString(), context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
   }
 
@@ -1874,7 +2070,14 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
           padding: EdgeInsets.fromLTRB(0, 16, 0, 0),
           child: GestureDetector(
               onTap: () {
-                showMessageFav2(context, products);
+                Utils.checkInternet().then((connected) {
+                  if (connected != null && connected) {
+                    showMessageFav2(context, products);
+                  } else {
+                    Toast.show("Not connected to internet", context,
+                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                  }
+                });
               },
               child: Container(
                 height: 40.0,
@@ -2065,8 +2268,17 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                         children: <Widget>[
                           GestureDetector(
                             onTap: () {
-                              showMessageFav(
-                                  context, product, products, position);
+                              Utils.checkInternet().then((connected) {
+                                if (connected != null && connected) {
+                                  showMessageFav(
+                                      context, product, products, position);
+                                } else {
+                                  Toast.show(
+                                      "Not connected to internet", context,
+                                      duration: Toast.LENGTH_SHORT,
+                                      gravity: Toast.BOTTOM);
+                                }
+                              });
                             },
                             child: Padding(
                               padding: EdgeInsets.only(left: 16, right: 8),
@@ -2186,7 +2398,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
           Text(
-            "No products in your whishlist",
+            "No products in your wishlist",
             textAlign: TextAlign.center,
           ),
         ],
@@ -2209,9 +2421,22 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
               child: new Text("Yes"),
               onPressed: () {
                 Navigator.of(context).pop();
-                blocFav.fetchData("0", product.id.toString());
-                setState(() {
-                  products.removeAt(position);
+                Utils.checkInternet().then((connected) {
+                  if (connected != null && connected) {
+                    blocFav.fetchData("0", product.id.toString());
+                    setState(() {
+                      products.removeAt(position);
+                    });
+                    setState(() {
+                      network = true;
+                    });
+                  } else {
+                    setState(() {
+                      showLoader = false;
+                    });
+                    Toast.show("Not connected to internet", context,
+                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                  }
                 });
               },
             ),
@@ -2242,11 +2467,25 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
               child: new Text("Yes"),
               onPressed: () {
                 Navigator.of(context).pop();
-                for (int i = 0; i < products.length; i++) {
-                  blocFav.fetchData("0", products[i].id.toString());
-                }
-                setState(() {
-                  products.clear();
+                Utils.checkInternet().then((connected) {
+                  if (connected != null && connected) {
+                    for (int i = 0; i < products.length; i++) {
+                      blocFav.fetchData("0", products[i].id.toString());
+                    }
+                    setState(() {
+                      products.clear();
+                    });
+                    setState(() {
+                      network = true;
+                    });
+                  } else {
+                    setState(() {
+                      network = false;
+                      showLoader = false;
+                    });
+                    Toast.show("Not connected to internet", context,
+                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                  }
                 });
               },
             ),
@@ -3099,7 +3338,21 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
           mToken = token;
         });
       }
-      bloc.fetchHomeData(mToken);
+      Utils.checkInternet().then((connected) {
+        if (connected != null && connected) {
+          bloc.fetchHomeData(mToken);
+          setState(() {
+            network = true;
+          });
+        } else {
+          setState(() {
+            network = false;
+            showLoader = false;
+          });
+          Toast.show("Not connected to internet", context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        }
+      });
     });
 
     _firebaseMessaging.configure(
@@ -3143,7 +3396,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   }
 
   void openEmailComposer() async {
-    var url = 'mailto:"nfreshventures@gmail.com"?subject="Get in touch"&body=';
+    var url = 'mailto:"support@nfreshonline.com"?subject="Get in touch"&body=';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -3165,7 +3418,17 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 //    setState(() {
 //      showLoader = true;
 //    });
-    bloc.fetchHomeData(mToken);
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        bloc.fetchHomeData(mToken);
+      } else {
+        setState(() {
+          showLoader = false;
+        });
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
   }
 
   Widget refresh() {
@@ -3178,6 +3441,14 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     final value = prefs.getString(key) ?? "A to Z";
     print('read: $value');
     return value;
+  }
+
+  Future removePromoFromPrefs() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('promoApplies', "");
+    await prefs.setString('couponCode', "");
+    await prefs.setInt('discount', 0);
+    await prefs.setString('walletBal', "");
   }
 }
 

@@ -12,8 +12,10 @@ import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 import '../count_listener.dart';
+import '../utils.dart';
 import 'login.dart';
 
 /*class SearchPage extends StatelessWidget {
@@ -110,7 +112,15 @@ class _MyHomePageState extends State<SearchPage> {
                 onChanged: (value) {
                   //  filterSearchResults(value);
                   Future.delayed(const Duration(milliseconds: 1000), () {
-                    bloc.fetchSearchData(value.trim());
+                    Utils.checkInternet().then((connected) {
+                      if (connected != null && connected) {
+                        bloc.fetchSearchData(value.trim());
+                      } else {
+                        Toast.show("Not connected to internet", context,
+                            duration: Toast.LENGTH_SHORT,
+                            gravity: Toast.CENTER);
+                      }
+                    });
                   });
                 },
                 controller: editingController,
@@ -206,13 +216,26 @@ class _MyHomePageState extends State<SearchPage> {
                                                 ),
                                               );
                                             } else {
-                                              if (product.fav == "1") {
-                                                product.fav = "0";
-                                              } else {
-                                                product.fav = "1";
-                                              }
-                                              blocFav.fetchData(product.fav,
-                                                  product.id.toString());
+                                              Utils.checkInternet()
+                                                  .then((connected) {
+                                                if (connected != null &&
+                                                    connected) {
+                                                  if (product.fav == "1") {
+                                                    product.fav = "0";
+                                                  } else {
+                                                    product.fav = "1";
+                                                  }
+                                                  blocFav.fetchData(product.fav,
+                                                      product.id.toString());
+                                                } else {
+                                                  Toast.show(
+                                                      "Not connected to internet",
+                                                      context,
+                                                      duration:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity: Toast.BOTTOM);
+                                                }
+                                              });
                                             }
                                           });
                                         },
@@ -902,13 +925,22 @@ class _MyHomePageState extends State<SearchPage> {
                                   ),
                                 );
                               } else {
-                                if (product.fav == "1") {
-                                  product.fav = "0";
-                                } else {
-                                  product.fav = "1";
-                                }
-                                blocFav.fetchData(
-                                    product.fav, product.id.toString());
+                                Utils.checkInternet().then((connected) {
+                                  if (connected != null && connected) {
+                                    if (product.fav == "1") {
+                                      product.fav = "0";
+                                    } else {
+                                      product.fav = "1";
+                                    }
+                                    blocFav.fetchData(
+                                        product.fav, product.id.toString());
+                                  } else {
+                                    Toast.show(
+                                        "Not connected to internet", context,
+                                        duration: Toast.LENGTH_SHORT,
+                                        gravity: Toast.BOTTOM);
+                                  }
+                                });
                               }
                             });
                           },
@@ -1283,9 +1315,12 @@ class _MyHomePageState extends State<SearchPage> {
         widget.listener.onCartUpdate();
       });
     } else {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text("Available inventory : ${product.inventory}"),
-      ));
+      Toast.show(
+          "Available quantity : " + product.inventory.toString(), context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+//      Scaffold.of(context).showSnackBar(new SnackBar(
+//        content: new Text("Available inventory : ${product.inventory}"),
+//      ));
     }
   }
 

@@ -3,6 +3,9 @@ import 'package:nfresh/bloc/orders_bloc.dart';
 import 'package:nfresh/models/order_model.dart';
 import 'package:nfresh/models/responses/response_order.dart';
 import 'package:nfresh/ui/OrderPage.dart';
+import 'package:toast/toast.dart';
+
+import '../utils.dart';
 
 class OrderHistory extends StatelessWidget {
   @override
@@ -20,11 +23,23 @@ class OrderState extends StatefulWidget {
 
 class OrderHistoryState extends State<OrderState> {
   var bloc = OrdersBloc();
+  bool network = false;
 
   @override
   void initState() {
     super.initState();
-    bloc.fetchOrdersData();
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        bloc.fetchOrdersData();
+      } else {
+        setState(() {
+          network = true;
+        });
+
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
   }
 
   @override
@@ -73,7 +88,9 @@ class OrderHistoryState extends State<OrderState> {
                 } else if (snapshot.hasError) {
                   return Text(snapshot.error.toString());
                 }
-                return Center(child: CircularProgressIndicator());
+                return !network
+                    ? Center(child: CircularProgressIndicator())
+                    : noDataView();
               },
             ),
           ),
@@ -90,8 +107,8 @@ class OrderHistoryState extends State<OrderState> {
             context,
             MaterialPageRoute(
               builder: (context) => new OrderPage(
-                    title: '${order.orderId}',
-                  ),
+                title: '${order.orderId}',
+              ),
             )).then((value) {
           bloc.fetchOrdersData();
         });

@@ -8,6 +8,8 @@ import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/pin_view_update.dart';
 import 'package:toast/toast.dart';
 
+import '../utils.dart';
+
 class ForgotPasswordPage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -153,7 +155,7 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                                   ),
                                                 ),
                                               ),
-                                              flex: 5,
+                                              flex: 9,
                                             ),
                                             Flexible(
                                               child: GestureDetector(
@@ -177,13 +179,16 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                                   child: Padding(
                                                     padding: EdgeInsets.only(
                                                         bottom: 0, left: 0),
-                                                    child: Text(
-                                                      valueShow,
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: Colors
-                                                              .colorgreen),
-                                                    ),
+                                                    child: valueShow == "Hide"
+                                                        ? Icon(
+                                                            Icons.visibility,
+                                                            size: 20,
+                                                          )
+                                                        : Icon(
+                                                            Icons
+                                                                .visibility_off,
+                                                            size: 20,
+                                                          ),
                                                   ),
                                                 ),
                                               ),
@@ -234,7 +239,7 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                                   ),
                                                 ),
                                               ),
-                                              flex: 5,
+                                              flex: 9,
                                             ),
                                             Flexible(
                                               child: GestureDetector(
@@ -258,13 +263,16 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                                   child: Padding(
                                                     padding: EdgeInsets.only(
                                                         bottom: 0, left: 0),
-                                                    child: Text(
-                                                      valueShow2,
-                                                      style: TextStyle(
-                                                          fontSize: 14,
-                                                          color: Colors
-                                                              .colorgreen),
-                                                    ),
+                                                    child: valueShow2 == "Hide"
+                                                        ? Icon(
+                                                            Icons.visibility,
+                                                            size: 20,
+                                                          )
+                                                        : Icon(
+                                                            Icons
+                                                                .visibility_off,
+                                                            size: 20,
+                                                          ),
                                                   ),
                                                 ),
                                               ),
@@ -313,7 +321,24 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                                 setState(() {
                                                   showLoader = true;
                                                 });
-                                                bloc.fetchData(phone);
+                                                Utils.checkInternet()
+                                                    .then((connected) {
+                                                  if (connected != null &&
+                                                      connected) {
+                                                    bloc.fetchData(phone);
+                                                  } else {
+                                                    setState(() {
+                                                      showLoader = false;
+                                                    });
+                                                    Toast.show(
+                                                        "Not connected to internet",
+                                                        context,
+                                                        duration:
+                                                            Toast.LENGTH_SHORT,
+                                                        gravity: Toast.BOTTOM);
+                                                  }
+                                                });
+
                                                 passwordObserver(context);
                                               } else {
                                                 if (password.length > 0 &&
@@ -323,26 +348,45 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                                   setState(() {
                                                     showLoader = true;
                                                   });
-                                                  var blocPassword =
-                                                      ForgotPasswordBloc();
-                                                  blocPassword.fetchData(
-                                                      phone, password);
-                                                  blocPassword.passwordData
-                                                      .listen((res) {
-                                                    setState(() {
-                                                      showLoader = false;
-                                                    });
-                                                    var obj = jsonDecode(res);
-                                                    if (obj['status'] ==
-                                                        "true") {
-                                                      Navigator.of(context)
-                                                          .pop();
+                                                  Utils.checkInternet()
+                                                      .then((connected) {
+                                                    if (connected != null &&
+                                                        connected) {
+                                                      var blocPassword =
+                                                          ForgotPasswordBloc();
+                                                      blocPassword.fetchData(
+                                                          phone, password);
+                                                      blocPassword.passwordData
+                                                          .listen((res) {
+                                                        setState(() {
+                                                          showLoader = false;
+                                                        });
+                                                        var obj =
+                                                            jsonDecode(res);
+                                                        if (obj['status'] ==
+                                                            "true") {
+                                                          Navigator.of(context)
+                                                              .pop();
+                                                        }
+                                                        Toast.show(
+                                                            obj['msg'], context,
+                                                            duration: Toast
+                                                                .LENGTH_SHORT,
+                                                            gravity:
+                                                                Toast.BOTTOM);
+                                                      });
+                                                    } else {
+                                                      setState(() {
+                                                        showLoader = false;
+                                                      });
+                                                      Toast.show(
+                                                          "Not connected to internet",
+                                                          context,
+                                                          duration: Toast
+                                                              .LENGTH_SHORT,
+                                                          gravity:
+                                                              Toast.BOTTOM);
                                                     }
-                                                    Toast.show(
-                                                        obj['msg'], context,
-                                                        duration:
-                                                            Toast.LENGTH_SHORT,
-                                                        gravity: Toast.BOTTOM);
                                                   });
                                                 } else {
                                                   if (password.isEmpty) {
@@ -414,6 +458,7 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
   }
 
   void passwordObserver(BuildContext context) {
+    int value = 0;
     bloc.phoneData.listen((res) {
       setState(() {
         showLoader = false;
@@ -421,20 +466,27 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
       var obj = jsonDecode(res);
       if (obj['status'] == "true") {
         // Navigator.of(context).pop();
-        Navigator.push(
-          context,
-          new MaterialPageRoute(
-            builder: (context) => PinViewUpdatePage(
-              otp: obj['otp'].toString(),
-              phone: phoneController.text.toString(),
-              password: passwordController.text.toString(),
+        if (value == 0) {
+          value = 1;
+
+          Navigator.push(
+            context,
+            new MaterialPageRoute(
+              builder: (context) => PinViewUpdatePage(
+                otp: obj['otp'].toString(),
+                phone: phoneController.text.toString(),
+                password: passwordController.text.toString(),
+              ),
             ),
-          ),
-        ).then((value) {
-          setState(() {
-            isVisible = false;
+          ).then((value) {
+            var f = value;
+            if (value == "yes") {
+              setState(() {
+                isVisible = false;
+              });
+            }
           });
-        });
+        }
       } else {
         Toast.show(obj['msg'], context,
             duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);

@@ -68,7 +68,15 @@ class StateProfilePage extends State<stateProfile> {
   @override
   void initState() {
     super.initState();
-    blocCity.fetchData();
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        blocCity.fetchData();
+      } else {
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+
     _prefs.getProfile().then((value) {
       setState(() {
         profile = value;
@@ -135,8 +143,16 @@ class StateProfilePage extends State<stateProfile> {
                   child: GestureDetector(
                 onTap: () {
                   //Navigator.pop(context);
-                  updateProfileWebservice(nameController.text.trim().toString(),
-                      emailController.text.trim().toString());
+                  Utils.checkInternet().then((connected) {
+                    if (connected != null && connected) {
+                      updateProfileWebservice(
+                          nameController.text.trim().toString(),
+                          emailController.text.trim().toString());
+                    } else {
+                      Toast.show("Not connected to internet", context,
+                          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                    }
+                  });
                 },
                 child: Padding(
                   padding: EdgeInsets.only(right: 16),
@@ -262,7 +278,19 @@ class StateProfilePage extends State<stateProfile> {
                                         title: Text("Update Password"),
                                         trailing: Icon(Icons.chevron_right),
                                         onTap: () {
-                                          _showPasswordDialog(context);
+                                          Utils.checkInternet()
+                                              .then((connected) {
+                                            if (connected != null &&
+                                                connected) {
+                                              _showPasswordDialog(context);
+                                            } else {
+                                              Toast.show(
+                                                  "Not connected to internet",
+                                                  context,
+                                                  duration: Toast.LENGTH_SHORT,
+                                                  gravity: Toast.BOTTOM);
+                                            }
+                                          });
                                         },
                                       ),
                                     ),
@@ -277,7 +305,19 @@ class StateProfilePage extends State<stateProfile> {
                                         title: Text("Update Address"),
                                         trailing: Icon(Icons.chevron_right),
                                         onTap: () {
-                                          _showAddressDialog(context);
+                                          Utils.checkInternet()
+                                              .then((connected) {
+                                            if (connected != null &&
+                                                connected) {
+                                              _showAddressDialog(context);
+                                            } else {
+                                              Toast.show(
+                                                  "Not connected to internet",
+                                                  context,
+                                                  duration: Toast.LENGTH_SHORT,
+                                                  gravity: Toast.BOTTOM);
+                                            }
+                                          });
                                         },
                                       ),
                                     ),
@@ -494,10 +534,18 @@ class StateProfilePage extends State<stateProfile> {
                       splashColor: Colors.black12,
                       color: Colors.colorgreen,
                       onPressed: () {
-                        updatePasswordWebservice(
-                            oldPasswordController.text.toString(),
-                            newPasswordController.text.toString(),
-                            conPasswordController.text.toString());
+                        Utils.checkInternet().then((connected) {
+                          if (connected != null && connected) {
+                            updatePasswordWebservice(
+                                oldPasswordController.text.toString(),
+                                newPasswordController.text.toString(),
+                                conPasswordController.text.toString());
+                          } else {
+                            Toast.show("Not connected to internet", context,
+                                duration: Toast.LENGTH_SHORT,
+                                gravity: Toast.BOTTOM);
+                          }
+                        });
                       },
                       child: Text(
                         'Submit',
@@ -801,11 +849,13 @@ class StateProfilePage extends State<stateProfile> {
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       return;
     }
-//    if (email.length == 0 || !isEmail(email)) {
-//      Toast.show("Enter valid email", context,
-//          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-//      return;
-//    }
+    if (email.trim().length != 0) {
+      if (!isEmail(email)) {
+        Toast.show("Enter valid email", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        return;
+      }
+    }
 
     dialog = new ProgressDialog(context, ProgressDialogType.Normal);
     dialog.setMessage("Please wait...");
@@ -850,7 +900,16 @@ class StateProfilePage extends State<stateProfile> {
     dialog = new ProgressDialog(context, ProgressDialogType.Normal);
     dialog.setMessage("Please wait...");
     dialog.show();
-    blocPassword.fetchData(oldPass, newPass);
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        blocPassword.fetchData(oldPass, newPass);
+      } else {
+        dialog.hide();
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+
     blocPassword.passwordData.listen((response) {
       dialog.hide();
       var obj = jsonDecode(response);
@@ -878,7 +937,16 @@ class StateProfilePage extends State<stateProfile> {
     dialog = new ProgressDialog(context, ProgressDialogType.Normal);
     dialog.setMessage("Please wait...");
     dialog.show();
-    blocPhone.fetchData(phoneNo);
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        blocPhone.fetchData(phoneNo);
+      } else {
+        dialog.hide();
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+
     blocPhone.phoneData.listen((res) {
       dialog.hide();
       var object = jsonDecode(res);

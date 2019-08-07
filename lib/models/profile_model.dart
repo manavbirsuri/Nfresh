@@ -6,7 +6,7 @@ class ProfileModel {
   String referralCode = "";
   int city = 0;
   int area = 0;
-  int walletCredits = 0;
+  double walletCredits = 0;
   int type = 0;
   String password; // this field used only while signing up.
 
@@ -18,7 +18,7 @@ class ProfileModel {
       address = json['address'];
       city = json['city'];
       area = json['area'];
-      walletCredits = json['wallet_credits'];
+      walletCredits = json['wallet_credits'].toDouble();
       referralCode = json['referral_code'];
       type = json['type'];
     }

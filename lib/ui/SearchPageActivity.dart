@@ -11,6 +11,7 @@ import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 import '../count_listener.dart';
 import 'login.dart';
@@ -555,8 +556,8 @@ class _MyHomePageState extends State<SearchPageActivity> {
           primary: false,
           itemCount: products.length,
           itemBuilder: (BuildContext context, int index) => new Container(
-                child: girdViewItem(index, context, products),
-              ),
+            child: girdViewItem(index, context, products),
+          ),
           staggeredTileBuilder: (int index) => new StaggeredTile.fit(1),
           mainAxisSpacing: 2.0,
           crossAxisSpacing: 2.0,
@@ -1275,37 +1276,51 @@ class _MyHomePageState extends State<SearchPageActivity> {
       context,
       MaterialPageRoute(
         builder: (context) => ProductDetailPage(
-              product: product,
-            ),
+          product: product,
+        ),
       ),
     );
   }
 
   Future incrementCount(Product product) async {
     if (product.count < product.inventory) {
-      product.count = product.count + 1;
+      setState(() {
+        product.count = product.count + 1;
+      });
+
       await _database.update(product);
       Future.delayed(const Duration(milliseconds: 500), () {
         widget.listener.onCartUpdate();
       });
     } else {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text("Available inventory : ${product.inventory}"),
-      ));
+      Toast.show(
+          "Available quantity : " + product.inventory.toString(), context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
   }
 
   Future decrementCount(Product product) async {
-    if (product.count > 1) {
-      product.count = product.count - 1;
-      await _database.update(product);
-    } else if (product.count == 1) {
-      product.count = product.count - 1;
-      _database.remove(product);
+    if (product.count < product.inventory) {
+      if (product.count > 1) {
+        setState(() {
+          product.count = product.count - 1;
+        });
+
+        await _database.update(product);
+      } else if (product.count == 1) {
+        setState(() {
+          product.count = product.count - 1;
+        });
+        _database.remove(product);
+      }
+      Future.delayed(const Duration(milliseconds: 500), () {
+        widget.listener.onCartUpdate();
+      });
+    } else {
+      Toast.show(
+          "Available quantity : " + product.inventory.toString(), context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
-    Future.delayed(const Duration(milliseconds: 500), () {
-      widget.listener.onCartUpdate();
-    });
   }
 
   Widget refresh() {
@@ -1379,8 +1394,8 @@ class _MyDialogState extends State<showCustomDialog> {
                   Center(
                       child: RadioButtonGroup(
                     onSelected: (String selected) => setState(() {
-                          _picked1 = selected.trim();
-                        }),
+                      _picked1 = selected.trim();
+                    }),
                     margin: EdgeInsets.only(left: 14),
                     //orientation: GroupedButtonsOrientation.VERTICAL,
                     labels: <String>["A to Z", "Z to A"],

@@ -10,6 +10,7 @@ import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/ui/CategoryDetails.dart';
 import 'package:nfresh/ui/ProductDetailPage.dart';
 import 'package:page_indicator/page_indicator.dart';
+import 'package:toast/toast.dart';
 
 import '../count_listener.dart';
 
@@ -390,8 +391,8 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) => ProductDetailPage(
-                                              product: product,
-                                            ),
+                                          product: product,
+                                        ),
                                       )).then((value) {
                                     widget.listener.onCartUpdate();
                                     updateProducts();
@@ -572,7 +573,7 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                                             Colors.colorgreen,
                                                         fontWeight:
                                                             FontWeight.bold,
-                                                        fontSize: 20),
+                                                        fontSize: 18),
                                                     textAlign: TextAlign.center,
                                                   ),
                                                 ),
@@ -593,11 +594,11 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                                         myBoxDecoration2(),
                                                     padding:
                                                         EdgeInsets.fromLTRB(
-                                                            12, 0, 12, 0),
+                                                            11, 0, 11, 0),
                                                     child: Image.asset(
                                                       'assets/plus.png',
-                                                      height: 12,
-                                                      width: 12,
+                                                      height: 11,
+                                                      width: 11,
                                                     ),
                                                   ),
                                                 ),
@@ -704,9 +705,9 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
         widget.listener.onCartUpdate();
       });
     } else {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text("Available inventory : ${product.inventory}"),
-      ));
+      Toast.show(
+          "Available quantity : " + product.inventory.toString(), context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
   }
 

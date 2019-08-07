@@ -9,7 +9,9 @@ import 'package:nfresh/models/profile_model.dart';
 import 'package:nfresh/models/responses/response_related_products.dart';
 import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/resources/prefrences.dart';
+import 'package:toast/toast.dart';
 
+import '../utils.dart';
 import 'cart.dart';
 import 'login.dart';
 
@@ -36,17 +38,28 @@ class ProState extends State<ProductDetailPage> {
   int cartCount = 0;
 
   bool showLoader = true;
+  bool network = false;
   ResponseRelatedProducts productResponse;
 
   @override
   void initState() {
     super.initState();
-    blocFavGet.fetchFavData();
-    favObserver();
+
     setState(() {});
     getCartTotal();
     getCartCount();
-    blocRelated.fetchRelatedProducts(widget.product.id.toString());
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        blocRelated.fetchRelatedProducts(widget.product.id.toString());
+      } else {
+        setState(() {
+          network = true;
+        });
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+
     blocRelated.productsList.listen((res) {
       setState(() {
         showLoader = false;
@@ -56,6 +69,16 @@ class ProState extends State<ProductDetailPage> {
       updateMainProduct();
     });
     getProfileDetail();
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        blocFavGet.fetchFavData();
+      } else {
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+
+    favObserver();
   }
 
   getProfileDetail() {
@@ -151,18 +174,29 @@ class ProState extends State<ProductDetailPage> {
                                     padding: EdgeInsets.only(top: 0, left: 16),
                                     child: GestureDetector(
                                       onTap: () {
-                                        setState(() {
-                                          if (profile == null) {
-                                            showAlertMessage(context);
+                                        Utils.checkInternet().then((connected) {
+                                          if (connected != null && connected) {
+                                            setState(() {
+                                              if (profile == null) {
+                                                showAlertMessage(context);
+                                              } else {
+                                                if (widget.product.fav == "1") {
+                                                  widget.product.fav = "0";
+                                                } else {
+                                                  widget.product.fav = "1";
+                                                }
+                                                blocFav.fetchData(
+                                                    widget.product.fav,
+                                                    widget.product.id
+                                                        .toString());
+                                              }
+                                            });
                                           } else {
-                                            if (widget.product.fav == "1") {
-                                              widget.product.fav = "0";
-                                            } else {
-                                              widget.product.fav = "1";
-                                            }
-                                            blocFav.fetchData(
-                                                widget.product.fav,
-                                                widget.product.id.toString());
+                                            Toast.show(
+                                                "Not connected to internet",
+                                                context,
+                                                duration: Toast.LENGTH_SHORT,
+                                                gravity: Toast.BOTTOM);
                                           }
                                         });
                                       },
@@ -259,224 +293,198 @@ class ProState extends State<ProductDetailPage> {
                                               : Container(),
                                         ],
                                       )),
-                                  Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(16, 8, 16, 8),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
-                                        children: <Widget>[
-                                          Container(
-                                            // height: 35,
-                                            width: 120,
-                                            decoration: myBoxDecoration3(),
-                                            child: Center(
-                                              child: Padding(
-                                                padding: EdgeInsets.all(8),
-                                                child: DropdownButtonFormField<
-                                                    Packing>(
-                                                  decoration:
-                                                      InputDecoration.collapsed(
-                                                          hintText: widget
-                                                              .product
-                                                              .selectedPacking
-                                                              .unitQtyShow),
-                                                  value: null,
-                                                  items: widget.product.packing
-                                                      .map((Packing value) {
-                                                    return new DropdownMenuItem<
-                                                        Packing>(
-                                                      value: value,
-                                                      child: new Text(
-                                                        value.unitQtyShow,
-                                                        style: TextStyle(
-                                                            color: Colors.grey,
-                                                            fontSize: 12),
-                                                      ),
-                                                    );
-                                                  }).toList(),
-                                                  onChanged: (newValue) {
-                                                    setState(() {
-                                                      widget.product
-                                                              .selectedPacking =
-                                                          newValue;
-                                                      widget.product.count = 0;
-                                                      widget.product
-                                                              .selectedDisplayPrice =
-                                                          getCalculatedPrice(
-                                                              widget.product);
-                                                    });
-                                                  },
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          /* Container(
-                                              height: 35,
-                                              width: 120,
-                                              decoration: myBoxDecoration2(),
-                                              child: Center(
-                                                child: Row(
-                                                  mainAxisSize: MainAxisSize.max,
-                                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                                  children: <Widget>[
-                                                    Padding(
-                                                      padding: EdgeInsets.only(bottom: 16),
-                                                      child: GestureDetector(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            decrementCount(widget.product);
-                                                          });
-                                                        },
-                                                        child: Icon(
-                                                          Icons.minimize,
-                                                          color: Colors.colorgreen,
-                                                          size: 22,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                    Text(
-                                                      widget.product.count.toString(),
-                                                      style: TextStyle(
-                                                          color: Colors.colorgreen,
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 18),
-                                                    ),
-                                                    Padding(
-                                                      padding: EdgeInsets.all(0),
-                                                      child: GestureDetector(
-                                                        onTap: () {
-                                                          setState(() {
-                                                            incrementCount(widget.product);
-                                                          });
-                                                        },
-                                                        child: Icon(
-                                                          Icons.add,
-                                                          color: Colors.colorgreen,
-                                                          size: 22,
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              )),*/
-                                          Padding(
-                                            padding: EdgeInsets.only(
-                                                right: 8, left: 8, top: 16),
-                                            child: Container(
-                                              width: 120,
-                                              //color: Colors.grey,
-                                              child: Padding(
-                                                padding: EdgeInsets.fromLTRB(
-                                                    0, 0, 0, 0),
-                                                child: IntrinsicHeight(
-                                                  child: Center(
-                                                    child: IntrinsicHeight(
-                                                      child: Row(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .stretch,
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: <Widget>[
-                                                          GestureDetector(
-                                                            onTap: () {
-                                                              decrementCount(
-                                                                  widget
-                                                                      .product);
-                                                            },
-                                                            child: Container(
-                                                              padding: EdgeInsets
-                                                                  .only(
-                                                                      left: 15),
-                                                              // color: Colors.white,
-                                                              child: Container(
-                                                                decoration:
-                                                                    myBoxDecoration2(),
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .fromLTRB(
-                                                                            12,
-                                                                            0,
-                                                                            12,
-                                                                            0),
-                                                                child:
-                                                                    Image.asset(
-                                                                  'assets/minus.png',
-                                                                  height: 12,
-                                                                  width: 12,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                          Container(
-                                                            margin:
-                                                                EdgeInsets.only(
-                                                                    left: 8,
-                                                                    right: 8,
-                                                                    top: 4,
-                                                                    bottom: 4),
-                                                            child: Center(
-                                                              child: Text(
-                                                                widget.product
-                                                                    .count
-                                                                    .toString(),
+                                  Container(
+                                      child: Center(
+                                          //
+                                          child: Padding(
+                                              padding: EdgeInsets.fromLTRB(
+                                                  16, 8, 16, 8),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceBetween,
+                                                children: <Widget>[
+                                                  Container(
+                                                    // height: 35,
+                                                    width: 120,
+                                                    decoration:
+                                                        myBoxDecoration3(),
+                                                    child: Center(
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.all(8),
+                                                        child:
+                                                            DropdownButtonFormField<
+                                                                Packing>(
+                                                          decoration: InputDecoration
+                                                              .collapsed(
+                                                                  hintText: widget
+                                                                      .product
+                                                                      .selectedPacking
+                                                                      .unitQtyShow),
+                                                          value: null,
+                                                          items: widget
+                                                              .product.packing
+                                                              .map((Packing
+                                                                  value) {
+                                                            return new DropdownMenuItem<
+                                                                Packing>(
+                                                              value: value,
+                                                              child: new Text(
+                                                                value
+                                                                    .unitQtyShow,
                                                                 style: TextStyle(
                                                                     color: Colors
-                                                                        .colorgreen,
-                                                                    fontWeight:
-                                                                        FontWeight
-                                                                            .bold,
+                                                                        .grey,
                                                                     fontSize:
-                                                                        20),
-                                                                textAlign:
-                                                                    TextAlign
-                                                                        .center,
+                                                                        12),
                                                               ),
-                                                            ),
-                                                          ),
-                                                          GestureDetector(
-                                                            onTap: () {
-                                                              incrementCount(
-                                                                  widget
-                                                                      .product);
-                                                            },
-                                                            child: Container(
-                                                              //  color: Colors.white,
-                                                              padding: EdgeInsets
-                                                                  .only(
-                                                                      right: 0),
-                                                              child: Container(
-                                                                decoration:
-                                                                    myBoxDecoration2(),
-                                                                padding:
-                                                                    EdgeInsets
-                                                                        .fromLTRB(
-                                                                            12,
-                                                                            0,
-                                                                            12,
-                                                                            0),
-                                                                child:
-                                                                    Image.asset(
-                                                                  'assets/plus.png',
-                                                                  height: 12,
-                                                                  width: 12,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        ],
+                                                            );
+                                                          }).toList(),
+                                                          onChanged:
+                                                              (newValue) {
+                                                            setState(() {
+                                                              widget.product
+                                                                      .selectedPacking =
+                                                                  newValue;
+                                                              widget.product
+                                                                  .count = 0;
+                                                              widget.product
+                                                                      .selectedDisplayPrice =
+                                                                  getCalculatedPrice(
+                                                                      widget
+                                                                          .product);
+                                                            });
+                                                          },
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      )),
+                                                  Padding(
+                                                    padding: EdgeInsets.only(
+                                                        right: 8,
+                                                        left: 8,
+                                                        top: 8),
+                                                    child: Container(
+                                                      width: 120,
+//                                                      color: Colors.grey,
+                                                      child: Padding(
+                                                        padding:
+                                                            EdgeInsets.fromLTRB(
+                                                                0, 0, 0, 0),
+                                                        child: IntrinsicHeight(
+                                                          child: Center(
+                                                            child:
+                                                                IntrinsicHeight(
+                                                              child: Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .stretch,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .center,
+                                                                children: <
+                                                                    Widget>[
+                                                                  GestureDetector(
+                                                                    onTap: () {
+                                                                      decrementCount(
+                                                                          widget
+                                                                              .product);
+                                                                    },
+                                                                    child:
+                                                                        Container(
+                                                                      padding: EdgeInsets.only(
+                                                                          left:
+                                                                              15),
+                                                                      // color: Colors.white,
+                                                                      child:
+                                                                          Container(
+                                                                        decoration:
+                                                                            myBoxDecoration2(),
+                                                                        padding: EdgeInsets.fromLTRB(
+                                                                            10,
+                                                                            0,
+                                                                            10,
+                                                                            0),
+                                                                        child: Image
+                                                                            .asset(
+                                                                          'assets/minus.png',
+                                                                          height:
+                                                                              10,
+                                                                          width:
+                                                                              10,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  Container(
+                                                                    margin: EdgeInsets.only(
+                                                                        left: 5,
+                                                                        right:
+                                                                            5,
+                                                                        top: 4,
+                                                                        bottom:
+                                                                            4),
+                                                                    child:
+                                                                        Center(
+                                                                      child:
+                                                                          Text(
+                                                                        widget
+                                                                            .product
+                                                                            .count
+                                                                            .toString(),
+                                                                        style: TextStyle(
+                                                                            color:
+                                                                                Colors.colorgreen,
+                                                                            fontWeight: FontWeight.bold,
+                                                                            fontSize: 20),
+                                                                        textAlign:
+                                                                            TextAlign.center,
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                  GestureDetector(
+                                                                    onTap: () {
+                                                                      incrementCount(
+                                                                          widget
+                                                                              .product);
+                                                                    },
+                                                                    child:
+                                                                        Container(
+                                                                      //  color: Colors.white,
+                                                                      padding: EdgeInsets.only(
+                                                                          right:
+                                                                              0),
+                                                                      child:
+                                                                          Container(
+                                                                        decoration:
+                                                                            myBoxDecoration2(),
+                                                                        padding: EdgeInsets.fromLTRB(
+                                                                            12,
+                                                                            0,
+                                                                            12,
+                                                                            0),
+                                                                        child: Image
+                                                                            .asset(
+                                                                          'assets/plus.png',
+                                                                          height:
+                                                                              12,
+                                                                          width:
+                                                                              12,
+                                                                        ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              )))),
                                   Padding(
                                       padding: EdgeInsets.only(
                                           top: 16, left: 16, right: 16),
@@ -516,7 +524,14 @@ class ProState extends State<ProductDetailPage> {
                                     color: Colors.colorlightgreyback,
                                     child: showLoader
                                         ? Center(
-                                            child: CircularProgressIndicator())
+                                            child: !network
+                                                ? CircularProgressIndicator()
+                                                : Text(
+                                                    "No Data",
+                                                    style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 16),
+                                                  ))
                                         : showProductsCategories(
                                             productResponse),
                                     /*  child: StreamBuilder(
@@ -716,18 +731,32 @@ class ProState extends State<ProductDetailPage> {
                                     children: <Widget>[
                                       GestureDetector(
                                           onTap: () {
-                                            setState(() {
-                                              if (profile == null) {
-                                                showAlertMessage(context);
-                                              } else {
-                                                if (product.fav == "1") {
-                                                  product.fav = "0";
-                                                } else {
-                                                  product.fav = "1";
-                                                }
+                                            Utils.checkInternet()
+                                                .then((connected) {
+                                              if (connected != null &&
+                                                  connected) {
+                                                setState(() {
+                                                  if (profile == null) {
+                                                    showAlertMessage(context);
+                                                  } else {
+                                                    if (product.fav == "1") {
+                                                      product.fav = "0";
+                                                    } else {
+                                                      product.fav = "1";
+                                                    }
 
-                                                blocFav.fetchData(product.fav,
-                                                    product.id.toString());
+                                                    blocFav.fetchData(
+                                                        product.fav,
+                                                        product.id.toString());
+                                                  }
+                                                });
+                                              } else {
+                                                Toast.show(
+                                                    "Not connected to internet",
+                                                    context,
+                                                    duration:
+                                                        Toast.LENGTH_SHORT,
+                                                    gravity: Toast.BOTTOM);
                                               }
                                             });
                                           },
@@ -772,13 +801,22 @@ class ProState extends State<ProductDetailPage> {
                                           product: product,
                                         ),
                                       )).then((value) {
-                                    blocRelated.fetchRelatedProducts(
-                                        widget.product.id.toString());
-                                    blocFavGet.fetchFavData();
-                                    getCartTotal();
-                                    getCartCount();
-                                    updateProducts();
-                                    updateMainProduct();
+                                    Utils.checkInternet().then((connected) {
+                                      if (connected != null && connected) {
+                                        blocRelated.fetchRelatedProducts(
+                                            widget.product.id.toString());
+                                        blocFavGet.fetchFavData();
+                                        getCartTotal();
+                                        getCartCount();
+                                        updateProducts();
+                                        updateMainProduct();
+                                      } else {
+                                        Toast.show("Not connected to internet",
+                                            context,
+                                            duration: Toast.LENGTH_SHORT,
+                                            gravity: Toast.BOTTOM);
+                                      }
+                                    });
                                   });
                                 },
                                 child: Column(
@@ -902,7 +940,7 @@ class ProState extends State<ProductDetailPage> {
                               ),
                               Padding(
                                 padding:
-                                    EdgeInsets.only(right: 8, left: 8, top: 16),
+                                    EdgeInsets.only(right: 6, left: 6, top: 16),
                                 child: Container(
                                   width: 150,
                                   //color: Colors.grey,
@@ -942,8 +980,8 @@ class ProState extends State<ProductDetailPage> {
                                               ),
                                               Container(
                                                 margin: EdgeInsets.only(
-                                                    left: 8,
-                                                    right: 8,
+                                                    left: 6,
+                                                    right: 6,
                                                     top: 4,
                                                     bottom: 4),
                                                 child: Center(
@@ -1058,9 +1096,9 @@ class ProState extends State<ProductDetailPage> {
       getCartTotal();
       // Future.delayed(const Duration(milliseconds: 500), () async {});
     } else {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text("Available inventory : ${product.inventory}"),
-      ));
+      Toast.show(
+          "Available quantity : " + product.inventory.toString(), context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
   }
 
@@ -1101,10 +1139,12 @@ class ProState extends State<ProductDetailPage> {
   void favObserver() {
     blocFavGet.favList.listen((resFav) {
       List<Product> product1 = resFav.products;
+      var exist = 0;
       if (product1.length > 0) {
         for (int i = 0; i < product1.length; i++) {
           if (product1[i].id == widget.product.id) {
             setState(() {
+              exist = 1;
               widget.product.fav = product1[i].fav;
             });
           }
@@ -1113,6 +1153,9 @@ class ProState extends State<ProductDetailPage> {
         setState(() {
           widget.product.fav = "0";
         });
+      }
+      if (exist == 0) {
+        widget.product.fav = "0";
       }
     });
   }

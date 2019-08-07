@@ -5,6 +5,10 @@ import 'package:nfresh/models/responses/response_subcat.dart';
 import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/ui/ShowCategoryDetailPage.dart';
 import 'package:nfresh/ui/cart.dart';
+import 'package:toast/toast.dart';
+
+import '../utils.dart';
+import 'notifications.dart';
 
 class CategoryDetails extends StatefulWidget {
   final Category selectedCategory;
@@ -15,7 +19,7 @@ class CategoryDetails extends StatefulWidget {
 
 class _CategoryDetailsState extends State<CategoryDetails> {
   var bloc = SubCatBloc();
-
+  var network = false;
   var _database = DatabaseHelper.instance;
 
   int cartCount = 0;
@@ -27,8 +31,17 @@ class _CategoryDetailsState extends State<CategoryDetails> {
         cartCount = value;
       });
     });
-
-    bloc.fetchSubCategories(widget.selectedCategory.id.toString());
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        bloc.fetchSubCategories(widget.selectedCategory.id.toString());
+      } else {
+        setState(() {
+          network = true;
+        });
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
   }
 
   @override
@@ -54,12 +67,21 @@ class _CategoryDetailsState extends State<CategoryDetails> {
 //            onPressed: () => Navigator.pop(context, false),
 //          ),
           actions: [
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Image.asset(
-                "assets/noti.png",
-                height: 25,
-                width: 25,
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => NotificationPage(),
+                    ));
+              },
+              child: Padding(
+                padding: EdgeInsets.all(8),
+                child: Image.asset(
+                  "assets/noti.png",
+                  height: 25,
+                  width: 25,
+                ),
               ),
             ),
             GestureDetector(
@@ -130,7 +152,14 @@ class _CategoryDetailsState extends State<CategoryDetails> {
             } else if (snapshot.hasError) {
               return Text(snapshot.error.toString());
             }
-            return Center(child: CircularProgressIndicator());
+            return !network
+                ? Center(child: CircularProgressIndicator())
+                : Center(
+                    child: Text(
+                      "No Data",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                  );
           },
         ),
       )

@@ -21,6 +21,7 @@ import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 
+import '../utils.dart';
 import 'WalletPage.dart';
 import 'login.dart';
 
@@ -38,7 +39,7 @@ class _MyCustomFormState extends State<CartPage> {
   String couponCode;
   var pos = 0;
   String check = "";
-  int walletBalance = 0;
+  double walletBalance = 0;
   String appliedValue = "Apply promo code";
   var bloc = CartBloc();
   var blocInvent = CheckInventoryBloc();
@@ -98,6 +99,7 @@ class _MyCustomFormState extends State<CartPage> {
 //        });
 //      });
     getProfileDetail();
+
     bloc.fetchData();
     bloc.catProductsList.listen((list) {
       setState(() {
@@ -106,7 +108,15 @@ class _MyCustomFormState extends State<CartPage> {
       });
     });
     //blocInventory.fetchData(map);
-    blocCity.fetchData();
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        blocCity.fetchData();
+      } else {
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+
     blocCity.cities.listen((res) {
       setState(() {
         this.cities = res.cities;
@@ -298,62 +308,10 @@ class _MyCustomFormState extends State<CartPage> {
                                           }
                                           if (selectedMethod ==
                                               "Cash on delivery") {
-                                            if (profile != null) {
-                                              dialog = new ProgressDialog(
-                                                  context,
-                                                  ProgressDialogType.Normal);
-                                              dialog
-                                                  .setMessage("Please wait...");
-                                              dialog.show();
-                                              Map<String, dynamic> data = {
-                                                'total': checkoutTotal,
-                                                'address': address,
-                                                'city': profile.city,
-                                                'area': profile.area,
-                                                'type': profile.type,
-                                                'discount': discount,
-                                                'wallet_use_amount':
-                                                    walletDiscount,
-                                                'coupon_code': couponCode,
-                                              };
-//                                          placeOrder(
-//                                              response: response,
-//                                              cartExtra: data,
-//                                              contexte: context);
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        PaymentSuccessPage(
-                                                            response: response,
-                                                            cartExtra: data,
-                                                            from: "0"),
-                                                  )).then((value) {
-                                                dialog.hide();
-                                                bloc.fetchData();
-                                              });
-                                            } else {
-                                              // showAlertMessage(context);
-                                              goToLogin();
-                                            }
-//                                        Map<String, dynamic> data = {
-//                                          'total': checkoutTotal,
-//                                          'address': address,
-//                                          'city': profile.city,
-//                                          'area': profile.area,
-//                                          'type': profile.type,
-//                                          'discount': discount,
-//                                          'wallet_use_amount':
-//                                          walletDiscount,
-//                                          'coupon_code': couponCode,
-//                                        };
-
-                                          } else {
-                                            if (profile != null) {
-                                              if (checkoutTotal > 0) {
-                                                getCheckSum(context);
-                                              } else if (walletDiscount > 0 &&
-                                                  checkoutTotal == 0) {
+                                            Utils.checkInternet()
+                                                .then((connected) {
+                                              if (connected != null &&
+                                                  connected) {
                                                 if (profile != null) {
                                                   dialog = new ProgressDialog(
                                                       context,
@@ -373,10 +331,10 @@ class _MyCustomFormState extends State<CartPage> {
                                                         walletDiscount,
                                                     'coupon_code': couponCode,
                                                   };
-//                                              placeOrder(
-//                                                  response: response,
-//                                                  cartExtra: data,
-//                                                  contexte: context);
+//                                          placeOrder(
+//                                              response: response,
+//                                              cartExtra: data,
+//                                              contexte: context);
                                                   Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
@@ -395,35 +353,123 @@ class _MyCustomFormState extends State<CartPage> {
                                                   goToLogin();
                                                 }
                                               } else {
-                                                Map<String, dynamic> data = {
-                                                  'total': checkoutTotal,
-                                                  'address': address,
-                                                  'city': profile.city,
-                                                  'area': profile.area,
-                                                  'type': profile.type,
-                                                  'discount': discount,
-                                                  'wallet_use_amount':
-                                                      walletDiscount,
-                                                  'coupon_code': couponCode,
-                                                };
-                                                Navigator.push(
+                                                Toast.show(
+                                                    "Not connected to internet",
                                                     context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          PaymentSuccessPage(
-                                                              response:
-                                                                  response,
-                                                              cartExtra: data,
-                                                              from: "0"),
-                                                    )).then((value) {
-                                                  dialog.hide();
-                                                  bloc.fetchData();
-                                                });
+                                                    duration:
+                                                        Toast.LENGTH_SHORT,
+                                                    gravity: Toast.BOTTOM);
                                               }
-                                            } else {
-                                              // showAlertMessage(context);
-                                              goToLogin();
-                                            }
+                                            });
+
+//                                        Map<String, dynamic> data = {
+//                                          'total': checkoutTotal,
+//                                          'address': address,
+//                                          'city': profile.city,
+//                                          'area': profile.area,
+//                                          'type': profile.type,
+//                                          'discount': discount,
+//                                          'wallet_use_amount':
+//                                          walletDiscount,
+//                                          'coupon_code': couponCode,
+//                                        };
+
+                                          } else {
+                                            Utils.checkInternet()
+                                                .then((connected) {
+                                              if (connected != null &&
+                                                  connected) {
+                                                if (profile != null) {
+                                                  if (checkoutTotal > 0) {
+                                                    getCheckSum(context);
+                                                  } else if (walletDiscount >
+                                                          0 &&
+                                                      checkoutTotal == 0) {
+                                                    if (profile != null) {
+                                                      dialog =
+                                                          new ProgressDialog(
+                                                              context,
+                                                              ProgressDialogType
+                                                                  .Normal);
+                                                      dialog.setMessage(
+                                                          "Please wait...");
+                                                      dialog.show();
+                                                      Map<String, dynamic>
+                                                          data = {
+                                                        'total': checkoutTotal,
+                                                        'address': address,
+                                                        'city': profile.city,
+                                                        'area': profile.area,
+                                                        'type': profile.type,
+                                                        'discount': discount,
+                                                        'wallet_use_amount':
+                                                            walletDiscount,
+                                                        'coupon_code':
+                                                            couponCode,
+                                                      };
+//                                              placeOrder(
+//                                                  response: response,
+//                                                  cartExtra: data,
+//                                                  contexte: context);
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                PaymentSuccessPage(
+                                                                    response:
+                                                                        response,
+                                                                    cartExtra:
+                                                                        data,
+                                                                    from: "0"),
+                                                          )).then((value) {
+                                                        dialog.hide();
+                                                        bloc.fetchData();
+                                                      });
+                                                    } else {
+                                                      // showAlertMessage(context);
+                                                      goToLogin();
+                                                    }
+                                                  } else {
+                                                    Map<String, dynamic> data =
+                                                        {
+                                                      'total': checkoutTotal,
+                                                      'address': address,
+                                                      'city': profile.city,
+                                                      'area': profile.area,
+                                                      'type': profile.type,
+                                                      'discount': discount,
+                                                      'wallet_use_amount':
+                                                          walletDiscount,
+                                                      'coupon_code': couponCode,
+                                                    };
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              PaymentSuccessPage(
+                                                                  response:
+                                                                      response,
+                                                                  cartExtra:
+                                                                      data,
+                                                                  from: "0"),
+                                                        )).then((value) {
+                                                      dialog.hide();
+                                                      bloc.fetchData();
+                                                    });
+                                                  }
+                                                } else {
+                                                  // showAlertMessage(context);
+                                                  goToLogin();
+                                                }
+                                              } else {
+                                                Toast.show(
+                                                    "Not connected to internet",
+                                                    context,
+                                                    duration:
+                                                        Toast.LENGTH_SHORT,
+                                                    gravity: Toast.BOTTOM);
+                                              }
+                                            });
                                           }
                                         },
                                       ),
@@ -951,9 +997,9 @@ class _MyCustomFormState extends State<CartPage> {
                             });
 //                            });
 
-                            setState(() {
-                              walletDiscount = int.parse(value);
-                            });
+//                            setState(() {
+//                              walletDiscount = int.parse(value);
+//                            });
                           });
                         } else {
 //                    Toast.show("Insufficiant Balance in Wallet.", context,
@@ -1214,7 +1260,14 @@ class _MyCustomFormState extends State<CartPage> {
                 // showAlertMessage(context);
                 goToLogin();
               } else {
-                _showAddressDialog(context);
+                Utils.checkInternet().then((connected) {
+                  if (connected != null && connected) {
+                    _showAddressDialog(context);
+                  } else {
+                    Toast.show("Not connected to internet", context,
+                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                  }
+                });
               }
             },
           ),
@@ -1433,9 +1486,9 @@ class _MyCustomFormState extends State<CartPage> {
       product.count = product.count + 1;
       _database.update(product);
     } else {
-      Scaffold.of(context).showSnackBar(new SnackBar(
-        content: new Text("Available inventory : ${product.inventory}"),
-      ));
+      Toast.show(
+          "Available quantity : " + product.inventory.toString(), context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
   }
 
@@ -1544,7 +1597,16 @@ class _MyCustomFormState extends State<CartPage> {
       mapPayTm['CALLBACK_URL'] =
           "https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
     });
-    blocCheck.fetchData(mapPayTm);
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        blocCheck.fetchData(mapPayTm);
+      } else {
+        dialog.hide();
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+
 //    });
     blocCheck.checksum.listen((res) {
       print("CHECKSUM: $res");
@@ -1630,7 +1692,16 @@ class _MyCustomFormState extends State<CartPage> {
                                   selectedCity = newValue;
                                   getCityAreas(newValue);
                                   Navigator.of(context).pop();
-                                  _showAddressDialog(context);
+                                  Utils.checkInternet().then((connected) {
+                                    if (connected != null && connected) {
+                                      _showAddressDialog(context);
+                                    } else {
+                                      Toast.show(
+                                          "Not connected to internet", context,
+                                          duration: Toast.LENGTH_SHORT,
+                                          gravity: Toast.BOTTOM);
+                                    }
+                                  });
                                 });
                               },
                             ),
@@ -1672,7 +1743,16 @@ class _MyCustomFormState extends State<CartPage> {
                                 setState(() {
                                   selectedArea = newValue;
                                   Navigator.of(context).pop();
-                                  _showAddressDialog(context);
+                                  Utils.checkInternet().then((connected) {
+                                    if (connected != null && connected) {
+                                      _showAddressDialog(context);
+                                    } else {
+                                      Toast.show(
+                                          "Not connected to internet", context,
+                                          duration: Toast.LENGTH_SHORT,
+                                          gravity: Toast.BOTTOM);
+                                    }
+                                  });
                                 });
                               },
                             ),
@@ -2090,15 +2170,16 @@ class _DynamicDialogState extends State<DynamicDialog> {
   void initState() {
 //    _title = widget.title;
     super.initState();
-    saveToPrefs("0");
+    //saveToPrefs("0");
   }
 
   @override
   Widget build(BuildContext context) {
+    textFieldController.text = widget.walletBalance.toString();
     return Container(
       child: GestureDetector(
         onTap: () {
-          saveToPrefs("0");
+          // saveToPrefs("0");
           Navigator.of(context).pop();
         },
         child: Container(
@@ -2164,27 +2245,46 @@ class _DynamicDialogState extends State<DynamicDialog> {
                   padding: const EdgeInsets.fromLTRB(0, 16, 0, 16),
                   child: GestureDetector(
                     onTap: () {
-                      if (textFieldController.text.toString().isNotEmpty &&
-                          !textFieldController.text.toString().contains(",") &&
-                          !textFieldController.text.toString().contains(".")) {
-                        int enteredAmount =
-                            int.parse(textFieldController.text.toString());
-                        if (widget.checkoutTotal < enteredAmount) {
-                          SystemChannels.textInput
-                              .invokeMethod('TextInput.hide');
-                          setState(() {
-                            textFieldController.text = "";
-                          });
+                      if (_value) {
+                        saveToPrefs("0");
+                      } else {
+                        if (textFieldController.text.toString().isNotEmpty &&
+                            !textFieldController.text
+                                .toString()
+                                .contains(",") &&
+                            !textFieldController.text
+                                .toString()
+                                .contains(".")) {
+                          int enteredAmount =
+                              int.parse(textFieldController.text.toString());
+                          if (widget.checkoutTotal < enteredAmount) {
+                            SystemChannels.textInput
+                                .invokeMethod('TextInput.hide');
+                            setState(() {
+                              textFieldController.text = "";
+                            });
 
-                          Toast.show(
-                              "You cannot add amount more than cart total.",
-                              context,
-                              duration: Toast.LENGTH_LONG,
-                              gravity: Toast.BOTTOM);
-                          return;
+                            Toast.show(
+                                "You cannot add amount more than cart total.",
+                                context,
+                                duration: Toast.LENGTH_LONG,
+                                gravity: Toast.BOTTOM);
+                            return;
+                          }
+                          if (waletb.walletCredits < enteredAmount) {
+                            SystemChannels.textInput
+                                .invokeMethod('TextInput.hide');
+                            Toast.show(
+                                "Entered amount is more than available balance in wallet.",
+                                context,
+                                duration: Toast.LENGTH_LONG,
+                                gravity: Toast.BOTTOM);
+                            return;
+                          }
                         }
+
+                        saveToPrefs(textFieldController.text.toString());
                       }
-                      saveToPrefs(textFieldController.text.toString());
                       Navigator.pop(context);
                       // textFieldController.toString();
                     },
@@ -2210,10 +2310,10 @@ class _DynamicDialogState extends State<DynamicDialog> {
                         padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
                         child: GestureDetector(
                           onTap: () {
+                            saveToPrefs(textFieldController.text.toString());
                             if (_value) {
                               saveToPrefs("0");
                             }
-                            saveToPrefs(textFieldController.text.toString());
                             Navigator.pop(context);
                             // textFieldController.toString();
                           },
@@ -2272,12 +2372,10 @@ class _DynamicDialogState extends State<DynamicDialog> {
   void saveToPrefs(String string) async {
     if (string.isEmpty) {
     } else {
-      setState(() async {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
+      SharedPreferences prefs = await SharedPreferences.getInstance();
 //    int counter = (prefs.getInt('counter') ?? 0) + 1;
 //    print('Pressed $counter times.');
-        await prefs.setString('walletBal', string);
-      });
+      await prefs.setString('walletBal', string);
     }
   }
 }

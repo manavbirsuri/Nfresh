@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/notifications_bloc.dart';
 import 'package:nfresh/models/notification.dart';
+import 'package:toast/toast.dart';
 
+import '../utils.dart';
 import 'OrderPage.dart';
 import 'WalletPage.dart';
 
@@ -21,7 +23,18 @@ class NotificationState extends State<NotificationPage> {
   @override
   void initState() {
     super.initState();
-    bloc.fetchNotifications();
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        bloc.fetchNotifications();
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+
     bloc.notificationData.listen((res) {
       setState(() {
         isLoading = false;

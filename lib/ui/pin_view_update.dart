@@ -202,7 +202,7 @@ class PinState extends State<PinViewUpdatePage> {
 //        });
 //        var obj = jsonDecode(res);
 //        if (obj['status'] == "true") {
-    Navigator.of(context).pop();
+    Navigator.pop(context, "yes");
 //        }
 //        Toast.show(obj['msg'], context,
 //            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
