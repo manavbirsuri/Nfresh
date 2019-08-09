@@ -54,7 +54,8 @@ class _MyCustomFormState extends State<CartPage> {
   List<CityModel> cities = [];
   List<AreaModel> areas = [];
   List<AreaModel> cityAreas = [];
-  CityModel selectedCity;
+  static Map<String, dynamic> map = {'id': -1, 'name': "Select City"};
+  CityModel selectedCity = CityModel(map);
   AreaModel selectedArea;
 
   var blocCity = CityBloc();
@@ -90,6 +91,9 @@ class _MyCustomFormState extends State<CartPage> {
   @override
   void initState() {
     super.initState();
+    setState(() {
+      selectedCity = CityModel(map);
+    });
     checkIfPromoSaved();
     checkAvailableProducts();
 
@@ -100,7 +104,6 @@ class _MyCustomFormState extends State<CartPage> {
 //      });
     getProfileDetail();
 
-    bloc.fetchData();
     bloc.catProductsList.listen((list) {
       setState(() {
         isLoadingCart = false;
@@ -110,6 +113,7 @@ class _MyCustomFormState extends State<CartPage> {
     //blocInventory.fetchData(map);
     Utils.checkInternet().then((connected) {
       if (connected != null && connected) {
+        bloc.fetchData();
         blocCity.fetchData();
       } else {
         Toast.show("Not connected to internet", context,
@@ -123,7 +127,9 @@ class _MyCustomFormState extends State<CartPage> {
         for (int i = 0; i < cities.length; i++) {
           var city = cities[i];
           if (profile.city == city.id) {
-            selectedCity = city;
+            setState(() {
+              selectedCity = city;
+            });
           }
         }
 
@@ -2176,6 +2182,8 @@ class _DynamicDialogState extends State<DynamicDialog> {
   @override
   Widget build(BuildContext context) {
     textFieldController.text = widget.walletBalance.toString();
+    textFieldController.selection =
+        TextSelection.collapsed(offset: widget.walletBalance.toString().length);
     return Container(
       child: GestureDetector(
         onTap: () {
@@ -2236,7 +2244,8 @@ class _DynamicDialogState extends State<DynamicDialog> {
                     child: TextFormField(
                       keyboardType: TextInputType.number,
                       controller: textFieldController,
-                      textInputAction: TextInputAction.next,
+                      enableInteractiveSelection: true,
+                      textInputAction: TextInputAction.done,
                       decoration: InputDecoration(labelText: 'Enter Amount'),
                     ),
                   ),
@@ -2285,7 +2294,13 @@ class _DynamicDialogState extends State<DynamicDialog> {
 
                         saveToPrefs(textFieldController.text.toString());
                       }
-                      Navigator.pop(context);
+                      if (textFieldController.text.trim().toString().isEmpty) {
+                        saveToPrefs("0");
+                        SystemChannels.textInput.invokeMethod('TextInput.hide');
+                        Navigator.pop(context);
+                      } else {
+                        Navigator.pop(context);
+                      }
                       // textFieldController.toString();
                     },
                     child: Container(

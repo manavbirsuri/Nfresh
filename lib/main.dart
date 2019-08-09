@@ -414,10 +414,13 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: <Widget>[
-                                Text(
-                                  "Network Error! Please check your network connection.",
-                                  style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
+                                Center(
+                                  child: Text(
+                                    "Network Error! Please check your network connection.",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        fontSize: 18, color: Colors.white),
+                                  ),
                                 ),
                                 GestureDetector(
                                     onTap: () {
@@ -451,11 +454,15 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       //  OneSignal.shared.init("fddecd6c-3940-472d-a65d-4200ae829891");
                                       firebaseCloudMessagingListeners();
                                     },
-                                    child: Text(
-                                      "Click here to reload",
-                                      style: TextStyle(
-                                          fontSize: 18, color: Colors.white),
-                                    ))
+                                    child: Padding(
+                                        padding: EdgeInsets.all(16),
+                                        child: Text(
+                                          "Click here to reload",
+                                          style: TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold),
+                                        )))
                               ],
                             ),
                           ),
@@ -550,7 +557,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                     });
                   },
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
+                    //padding: EdgeInsets.fromLTRB(8, 16, 16, 0),
+                    padding:
+                        EdgeInsets.only(left: 8, top: 16, right: 16, bottom: 0),
                     child: Stack(
                       children: <Widget>[
                         new Image.asset(
@@ -1133,6 +1142,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         key: _refreshIndicatorKey,
         onRefresh: _refreshStockPrices,
         child: new SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Container(
                 color: Colors.colorlightgreyback,
                 child: Stack(children: <Widget>[
@@ -1370,6 +1380,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     return PageIndicatorContainer(
       pageView: new PageView.builder(
         controller: _pageController,
+        physics: AlwaysScrollableScrollPhysics(),
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
             onTap: () {
@@ -1407,6 +1418,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   Widget showTopPagerOffer(List<BannerModel> banners) {
     return new PageIndicatorContainer(
       pageView: new PageView.builder(
+        physics: AlwaysScrollableScrollPhysics(),
         controller: _pageControllerOffers,
         itemBuilder: (BuildContext context, int index) {
           return Container(
@@ -1434,6 +1446,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         padding: EdgeInsets.only(top: 8),
         child: ListView.builder(
           shrinkWrap: true,
+          physics: AlwaysScrollableScrollPhysics(),
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, position) {
             return Padding(
@@ -1526,6 +1539,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         padding: EdgeInsets.only(top: 8),
         child: ListView.builder(
           shrinkWrap: true,
+          physics: AlwaysScrollableScrollPhysics(),
           scrollDirection: Axis.horizontal,
           itemBuilder: (context, position) {
             var product = products[position];
@@ -1884,7 +1898,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         padding: EdgeInsets.only(top: 0),
         child: ListView.builder(
           shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
+          physics: AlwaysScrollableScrollPhysics(),
+          //physics: const NeverScrollableScrollPhysics(),
           itemBuilder: (context, position) {
             return Column(
               mainAxisSize: MainAxisSize.min,
@@ -2056,6 +2071,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         padding: EdgeInsets.only(bottom: 42),
         child: ListView.builder(
           shrinkWrap: true,
+          physics: AlwaysScrollableScrollPhysics(),
           scrollDirection: Axis.vertical,
           itemBuilder: (context, position) {
             var product = products[position];
@@ -2657,6 +2673,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     mainProduct = products;
     return ListView.builder(
       shrinkWrap: true,
+      physics: AlwaysScrollableScrollPhysics(),
       scrollDirection: Axis.vertical,
       itemBuilder: (context, position) {
         var product = mainProduct[position];
