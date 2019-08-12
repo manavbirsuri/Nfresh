@@ -5,7 +5,9 @@ import 'package:nfresh/bloc/signup_bloc.dart';
 import 'package:nfresh/models/area_model.dart';
 import 'package:nfresh/models/city_model.dart';
 import 'package:nfresh/ui/PinView.dart';
+import 'package:toast/toast.dart';
 
+import '../utils.dart';
 import 'TermAndPrivacy.dart';
 
 class SignUp extends StatelessWidget {
@@ -728,17 +730,29 @@ class stateProfilePage extends State<stateProfile> {
     setState(() {
       showLoader = true;
     });
-    var profile = ProfileSend(
-        name,
-        email,
-        phone,
-        password,
-        selectedArea.name,
-        selectedType.userTypeId,
-        selectedCity.id,
-        selectedArea.id,
-        refralController.text.toString());
-    bloc.doSignUp(profile);
+    Utils.checkInternet().then((connected) {
+      if (connected != null && connected) {
+        setState(() {
+          var profile = ProfileSend(
+              name,
+              email,
+              phone,
+              password,
+              selectedArea.name,
+              selectedType.userTypeId,
+              selectedCity.id,
+              selectedArea.id,
+              refralController.text.toString());
+          bloc.doSignUp(profile);
+        });
+      } else {
+        setState(() {
+          showLoader = false;
+        });
+        Toast.show("Not connected to internet", context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
   }
 
   void showMessage(String message) {

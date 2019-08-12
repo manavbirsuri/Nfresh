@@ -55,6 +55,11 @@ class _MyCustomFormState extends State<CartPage> {
   List<AreaModel> areas = [];
   List<AreaModel> cityAreas = [];
   static Map<String, dynamic> map = {'id': -1, 'name': "Select City"};
+  static Map<String, dynamic> map1 = {
+    'id': -1,
+    'name': "Select City",
+    'city_id': -1
+  };
   CityModel selectedCity = CityModel(map);
   AreaModel selectedArea;
 
@@ -93,6 +98,8 @@ class _MyCustomFormState extends State<CartPage> {
     super.initState();
     setState(() {
       selectedCity = CityModel(map);
+      bloc.fetchData();
+      blocCity.fetchData();
     });
     checkIfPromoSaved();
     checkAvailableProducts();
@@ -137,7 +144,9 @@ class _MyCustomFormState extends State<CartPage> {
         for (int i = 0; i < areas.length; i++) {
           var area = areas[i];
           if (profile.area == area.id) {
-            selectedArea = area;
+            setState(() {
+              selectedArea = area;
+            });
           }
         }
 
@@ -755,7 +764,9 @@ class _MyCustomFormState extends State<CartPage> {
                                                     const Duration(
                                                         milliseconds: 2000),
                                                     () {
-                                                  calculateTotal(products);
+                                                  setState(() {
+                                                    calculateTotal(products);
+                                                  });
                                                 });
                                               },
                                               child: Container(
@@ -1268,7 +1279,19 @@ class _MyCustomFormState extends State<CartPage> {
               } else {
                 Utils.checkInternet().then((connected) {
                   if (connected != null && connected) {
-                    _showAddressDialog(context);
+                    Future.delayed(const Duration(milliseconds: 500), () {
+                      setState(() {
+                        bloc.fetchData();
+                        blocCity.fetchData();
+                      });
+                    });
+
+                    if (selectedArea != null && selectedCity != null) {
+                      _showAddressDialog(context);
+                    } else {
+                      Toast.show("Please wait Loading Data", context,
+                          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                    }
                   } else {
                     Toast.show("Not connected to internet", context,
                         duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
@@ -1500,8 +1523,10 @@ class _MyCustomFormState extends State<CartPage> {
 
   void decrementCount(Product product, List<Product> products, position) {
     if (product.count > 1) {
-      product.count = product.count - 1;
-      _database.update(product);
+      setState(() {
+        product.count = product.count - 1;
+        _database.update(product);
+      });
     } else if (product.count == 1) {
       // product.count = product.count - 1;
       showMessage(context, product, products, position);
@@ -1625,10 +1650,14 @@ class _MyCustomFormState extends State<CartPage> {
 
   void _showAddressDialog(context) {
     // flutter defined function
+    //  if (selectedCity.name == null) {
+
+    //}
     showDialog(
       context: context,
       builder: (BuildContext context) {
         // return object of type Dialog
+
         return Center(
             child: SingleChildScrollView(
           child: AlertDialog(
@@ -1700,7 +1729,23 @@ class _MyCustomFormState extends State<CartPage> {
                                   Navigator.of(context).pop();
                                   Utils.checkInternet().then((connected) {
                                     if (connected != null && connected) {
-                                      _showAddressDialog(context);
+                                      Future.delayed(
+                                          const Duration(milliseconds: 500),
+                                          () {
+                                        setState(() {
+                                          bloc.fetchData();
+                                          blocCity.fetchData();
+                                        });
+                                      });
+                                      if (selectedArea != null &&
+                                          selectedCity != null) {
+                                        _showAddressDialog(context);
+                                      } else {
+                                        Toast.show(
+                                            "Please wait Loading Data", context,
+                                            duration: Toast.LENGTH_SHORT,
+                                            gravity: Toast.BOTTOM);
+                                      }
                                     } else {
                                       Toast.show(
                                           "Not connected to internet", context,
@@ -1751,7 +1796,23 @@ class _MyCustomFormState extends State<CartPage> {
                                   Navigator.of(context).pop();
                                   Utils.checkInternet().then((connected) {
                                     if (connected != null && connected) {
-                                      _showAddressDialog(context);
+                                      Future.delayed(
+                                          const Duration(milliseconds: 500),
+                                          () {
+                                        setState(() {
+                                          bloc.fetchData();
+                                          blocCity.fetchData();
+                                        });
+                                      });
+                                      if (selectedArea != null &&
+                                          selectedCity != null) {
+                                        _showAddressDialog(context);
+                                      } else {
+                                        Toast.show(
+                                            "Please wait Loading Data", context,
+                                            duration: Toast.LENGTH_SHORT,
+                                            gravity: Toast.BOTTOM);
+                                      }
                                     } else {
                                       Toast.show(
                                           "Not connected to internet", context,
