@@ -3,11 +3,13 @@ import 'package:nfresh/resources/database.dart';
 
 class Section {
   var _database = DatabaseHelper.instance;
-  String title;
+  String title = "";
+  int id = 0;
   List<Product> products = [];
 
   Section(json) {
     title = json['title'];
+    id = json['id'];
 
     List<Product> objList = [];
     for (int i = 0; i < json['products'].length; i++) {
@@ -19,6 +21,7 @@ class Section {
 
   Section.fromJson(json) {
     title = json['title'];
+    id = json['id'];
 
     // List<Product> objList = [];
     for (int i = 0; i < json['products'].length; i++) {

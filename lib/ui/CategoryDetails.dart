@@ -153,11 +153,19 @@ class _CategoryDetailsState extends State<CategoryDetails> {
               return Text(snapshot.error.toString());
             }
             return !network
-                ? Center(child: CircularProgressIndicator())
-                : Center(
-                    child: Text(
-                      "No Data",
-                      style: TextStyle(color: Colors.white, fontSize: 18),
+                ? Container(
+                    color: Colors.white,
+                    child: Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+                : Container(
+                    color: Colors.white,
+                    child: Center(
+                      child: Text(
+                        "Connection error!",
+                        style: TextStyle(color: Colors.white, fontSize: 18),
+                      ),
                     ),
                   );
           },

@@ -1,10 +1,10 @@
 import 'banner_model.dart';
 
 class Category {
-  int id;
-  String name;
-  String image;
-  String icon;
+  int id = 0;
+  String name = "";
+  String image = "";
+  String icon = "";
   Category(json) {
     id = json['id'];
     icon = json['icon'];
@@ -19,5 +19,10 @@ class Category {
       icon = jsonEncode.image;
       name = jsonEncode.name;
     }
+  }
+
+  Category.fromName(name, id) {
+    this.name = name;
+    this.id = id;
   }
 }

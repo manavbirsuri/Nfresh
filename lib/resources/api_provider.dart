@@ -554,4 +554,20 @@ class ApiProvider {
       throw Exception('NFresh: Failed to load get_notifications service');
     }
   }
+
+  // Webservice call to get products based on tag
+  Future<ResponseCatProducts> getTagProducts(auth, tagId) async {
+    Map map = {
+      'auth_code': auth,
+      'tag_id': tagId.toString(),
+    };
+    final response = await client.post("$baseUrl/gettagproducts", body: map);
+    print("gettagproducts: " + response.body.toString());
+    if (response.statusCode == 200) {
+      return ResponseCatProducts.fromJson(json.decode(response.body));
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('NFresh: Failed to load gettagproducts service');
+    }
+  }
 }

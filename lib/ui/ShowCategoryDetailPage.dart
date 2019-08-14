@@ -3,6 +3,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:grouped_buttons/grouped_buttons.dart';
 import 'package:nfresh/bloc/cat_products_bloc.dart';
 import 'package:nfresh/bloc/set_fav_bloc.dart';
+import 'package:nfresh/bloc/tag_products_bloc.dart';
 import 'package:nfresh/models/category_model.dart';
 import 'package:nfresh/models/packing_model.dart';
 import 'package:nfresh/models/product_model.dart';
@@ -30,6 +31,7 @@ class ShowCategoryDetailPage extends StatefulWidget {
 
 class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
   var bloc = CatProductsBloc();
+  var blocTag = TagProductsBloc();
   var viewList = false;
   var viewGrid = true;
   var network = false;
@@ -59,7 +61,12 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
     getCartTotal();
     Utils.checkInternet().then((connected) {
       if (connected != null && connected) {
-        bloc.fetchData(widget.subCategory.id.toString());
+        if (widget.subCategory.icon == "ii") {
+          // get product based on tag
+          blocTag.fetchData(widget.subCategory.id.toString());
+        } else {
+          bloc.fetchData(widget.subCategory.id.toString());
+        }
       } else {
         setState(() {
           network = true;
@@ -76,6 +83,14 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
       productResponse = res;
       updateProducts();
     });
+    blocTag.catProductsList.listen((res) {
+      setState(() {
+        showLoader = false;
+      });
+      productResponse = res;
+      updateProducts();
+    });
+
     getProfileDetail();
   }
 
@@ -204,16 +219,27 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
               ),
             ),
             body: showLoader
-                ? Center(
-                    child: !network
-                        ? CircularProgressIndicator()
-                        : Center(
-                            child: Text(
-                              "No Data",
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 18),
-                            ),
-                          ))
+                ? Container(
+                    color: Colors.white,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Center(
+                          child: !network
+                              ? CircularProgressIndicator()
+                              : Center(
+                                  child: Text(
+                                    "Connection error!",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                ),
+                        ),
+                      ],
+                    ),
+                  )
                 : mainContent(productResponse)
 //    !network
 //    ? Center(child: CircularProgressIndicator())
@@ -1672,8 +1698,16 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
 
   Widget noDataView() {
     return Container(
+      color: Colors.white,
       child: Column(
-        children: <Widget>[Text("No product available")],
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[Text("No product available")],
+          )
+        ],
       ),
     );
   }

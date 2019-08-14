@@ -197,10 +197,15 @@ class PromoCodeState extends State<PromoCodePage> {
           ),
           Padding(
             padding: EdgeInsets.only(top: 8, bottom: 16),
-            child: Text(
-              coupon.name,
-              style: TextStyle(color: Colors.black),
-            ),
+            child: coupon.type == 2
+                ? Text(
+                    coupon.name + "- " + coupon.discount.toString() + "%",
+                    style: TextStyle(color: Colors.black),
+                  )
+                : Text(
+                    coupon.name + "- Rs " + coupon.discount.toString(),
+                    style: TextStyle(color: Colors.black),
+                  ),
           ),
 //          Padding(
 //            padding: EdgeInsets.only(top: 8, ),

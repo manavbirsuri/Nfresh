@@ -346,7 +346,7 @@ class stateProfilePage extends State<referEarnProfile> {
                             onTap: () {
                               Share.plainText(
                                       text:
-                                          "You can refer your friends and earn bonus credits when they join using your referral code $code. Visit our website at http://nfreshonline.com/",
+                                          "You can refer your friends and earn bonus credits when they join using your referral code <$code>. Visit our website at http://nfreshonline.com/",
                                       title: "Share")
                                   .share();
                             },

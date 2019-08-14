@@ -185,22 +185,24 @@ class OfferOrderPage extends State<OfferOrder> {
                               onTap: () {
                                 snapshot.data.coupons[position].type == 1
                                     ? Share.plainText(
-                                            text: "Use this " +
+                                            text: "Use this <" +
                                                 coupon.couponCode +
-                                                " to get discount Rs." +
-                                                snapshot.data.coupons[position]
-                                                    .discount
-                                                    .toString(),
-                                            title: "Share")
-                                        .share()
-                                    : Share.plainText(
-                                            text: "Use this " +
-                                                coupon.couponCode +
-                                                " to get discount " +
+                                                "> to get discount Rs." +
                                                 snapshot.data.coupons[position]
                                                     .discount
                                                     .toString() +
-                                                "%",
+                                                " on purchase on NFresh.Visit our website at http://nfreshonline.com/",
+                                            title: "Share")
+                                        .share()
+                                    : Share.plainText(
+                                            text: "Use this <" +
+                                                coupon.couponCode +
+                                                "> to get discount " +
+                                                snapshot.data.coupons[position]
+                                                    .discount
+                                                    .toString() +
+                                                "%" +
+                                                " on purchase on NFresh.Visit our website at http://nfreshonline.com/",
                                             title: "Share")
                                         .share();
 //                            Share.share(

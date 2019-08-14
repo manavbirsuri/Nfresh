@@ -91,4 +91,7 @@ class Repository {
       apiProvider.resendOtp(auth, phoneNo);
   Future<String> CancelOrder(auth, orderId) =>
       apiProvider.CancelOrder(auth, orderId);
+
+  Future<ResponseCatProducts> getTagProducts(auth, tagId) =>
+      apiProvider.getTagProducts(auth, tagId);
 }
