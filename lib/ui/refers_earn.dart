@@ -290,7 +290,7 @@ class stateProfilePage extends State<referEarnProfile> {
                                             ],
                                           ),
                                         ),
-                                        GestureDetector(
+                                        /* GestureDetector(
                                           onTap: () {
                                             Share.plainText(
                                                     text:
@@ -328,7 +328,7 @@ class stateProfilePage extends State<referEarnProfile> {
                                               ],
                                             ),
                                           ),
-                                        )
+                                        )*/
                                       ],
                                     ),
                                   ),
@@ -341,7 +341,7 @@ class stateProfilePage extends State<referEarnProfile> {
                       Align(
                         alignment: Alignment.bottomCenter,
                         child: Padding(
-                          padding: const EdgeInsets.fromLTRB(32, 8, 32, 0),
+                          padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
                           child: GestureDetector(
                             onTap: () {
                               Share.plainText(
@@ -353,6 +353,7 @@ class stateProfilePage extends State<referEarnProfile> {
                             child: Container(
                               height: 40,
                               width: 120,
+                              margin: EdgeInsets.only(bottom: 40),
                               decoration: new BoxDecoration(
                                   borderRadius: new BorderRadius.all(
                                       new Radius.circular(100.0)),

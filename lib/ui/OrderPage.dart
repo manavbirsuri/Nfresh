@@ -32,6 +32,8 @@ class StateOrderPage extends State<OrderPage> {
   String customerType = "";
 
   bool showLoader = false;
+
+  bool isSuccess = false;
   @override
   void initState() {
     super.initState();
@@ -49,6 +51,36 @@ class StateOrderPage extends State<OrderPage> {
         }
         //  cityController.text = profile.city;
         //  areaController.text = profile.name;
+      });
+    });
+  }
+
+  void showSuccessDialog() {
+    setState(() {
+      isSuccess = true;
+    });
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        // return object of type Dialog
+        return AlertDialog(
+          title: new Text("Alert!"),
+          content: new Text(
+              "Your products has been added to the cart successfully."),
+          actions: <Widget>[
+            // usually buttons at the bottom of the dialog
+            new FlatButton(
+              child: new Text("OK"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    ).then((value) {
+      setState(() {
+        isSuccess = false;
       });
     });
   }
@@ -333,9 +365,15 @@ class StateOrderPage extends State<OrderPage> {
       _database.update(products[i]);
     }
 
-    Toast.show(
-        'Your products has been added to the cart successfully.', context,
-        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    /* setState(() {
+      isSuccess = true;
+    });*/
+    if (!isSuccess) {
+      showSuccessDialog();
+    }
+//    Toast.show(
+//        'Your products has been added to the cart successfully.', context,
+//        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
   }
 
   void observeReorder(context) {

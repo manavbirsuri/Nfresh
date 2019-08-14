@@ -1523,8 +1523,12 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                 }));
                           },
                           child: Container(
-                              child: Image.asset('assets/sort.png',
-                                  height: 20, width: 20))),
+                              child: Image.asset(
+                            'assets/sort.png',
+                            height: 20,
+                            width: 20,
+                            color: Colors.colororange,
+                          ))),
                     ],
                   ),
                 ),

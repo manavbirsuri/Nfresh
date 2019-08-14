@@ -650,7 +650,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                             },
                             child: Row(
                               children: <Widget>[
-                                Container(
+                                /* Container(
                                   margin: EdgeInsets.all(12),
                                   padding: EdgeInsets.all(5),
                                   height: 75,
@@ -659,6 +659,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                   child: Image.asset(
                                     'assets/logo.png',
                                   ),
+                                ),*/
+                                Container(
+                                  width: 16,
                                 ),
                                 Expanded(
                                   child: Column(
@@ -667,8 +670,16 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                         CrossAxisAlignment.start,
                                     children: <Widget>[
                                       Text(
+                                        "NFresh",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 45,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      Text(
                                         profile == null
-                                            ? "Login here"
+                                            ? "Please login"
                                             : profile.name,
                                         style: TextStyle(
                                           fontSize: 18,
