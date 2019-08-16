@@ -91,7 +91,7 @@ class _MyCustomFormState extends State<CartPage> {
 
   ProgressDialog dialog;
 
-  var selectedMethod = "Select Payment method";
+  var selectedMethod = "Pay online";
 
   @override
   void initState() {
@@ -160,11 +160,33 @@ class _MyCustomFormState extends State<CartPage> {
     for (int i = 0; i < areas.length; i++) {
       var modelArea = areas[i];
       if (modelArea.cityId == selectedCity.id) {
+        setState(() {
+          cityAreas.add(modelArea);
+        });
+      }
+    }
+//    if (cityAreas.length > 0) {
+//      setState(() {
+//        selectedArea = cityAreas[0];
+//      });
+//    } else {
+//      selectedArea = null;
+//    }
+  }
+
+  void getCityAreas2(CityModel selectedCity) {
+    cityAreas = [];
+    for (int i = 0; i < areas.length; i++) {
+      var modelArea = areas[i];
+      if (modelArea.cityId == selectedCity.id) {
         cityAreas.add(modelArea);
       }
     }
+
     if (cityAreas.length > 0) {
-      selectedArea = cityAreas[0];
+      setState(() {
+        selectedArea = cityAreas[0];
+      });
     } else {
       selectedArea = null;
     }
@@ -871,12 +893,22 @@ class _MyCustomFormState extends State<CartPage> {
   //Middle Portion of cart below products list
   Widget getCartDetailView(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 8, top: 0),
+      padding: EdgeInsets.only(left: 8, top: 0, right: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
+          Padding(
+            padding: EdgeInsets.only(left: 16, top: 8),
+            child: Text(
+              'Payment method',
+              style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.colorgreen,
+                  fontWeight: FontWeight.bold),
+            ),
+          ),
           Container(
-            padding: EdgeInsets.only(left: 0, top: 0, right: 0),
+            padding: EdgeInsets.only(left: 16, top: 8, right: 16),
             child: DropdownButton<String>(
               isExpanded: true,
               value: selectedMethod,
@@ -891,11 +923,8 @@ class _MyCustomFormState extends State<CartPage> {
                   }
                 });
               },
-              items: <String>[
-                'Select Payment method',
-                'Pay online',
-                'Cash on delivery'
-              ].map<DropdownMenuItem<String>>((String value) {
+              items: <String>['Pay online', 'Cash on delivery']
+                  .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Padding(
@@ -915,8 +944,11 @@ class _MyCustomFormState extends State<CartPage> {
 //          ),
           ListTile(
             title: Text(
-              'COUPONS',
-              style: TextStyle(fontSize: 16, color: Colors.colorgreen),
+              'Coupons',
+              style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.colorgreen,
+                  fontWeight: FontWeight.bold),
             ),
             subtitle: GestureDetector(
               onTap: () {
@@ -1101,8 +1133,12 @@ class _MyCustomFormState extends State<CartPage> {
             child: ListTile(
               //contentPadding: EdgeInsets.only(top: 0),
               title: Text(
-                'PRICE DETAILS',
-                style: TextStyle(fontSize: 16, color: Colors.colorgreen),
+                'Price Details',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.colorgreen,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               subtitle: Column(
                 children: <Widget>[
@@ -1263,8 +1299,11 @@ class _MyCustomFormState extends State<CartPage> {
           ListTile(
             // contentPadding: EdgeInsets.only(bottom: 0),
             title: Text(
-              'SHIPPING ADDRESS',
-              style: TextStyle(fontSize: 16, color: Colors.colorgreen),
+              'Shipping Address',
+              style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.colorgreen,
+                  fontWeight: FontWeight.bold),
             ),
             trailing: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -1279,19 +1318,21 @@ class _MyCustomFormState extends State<CartPage> {
               } else {
                 Utils.checkInternet().then((connected) {
                   if (connected != null && connected) {
-                    Future.delayed(const Duration(milliseconds: 500), () {
-                      setState(() {
-                        bloc.fetchData();
-                        blocCity.fetchData();
-                      });
+                    //Future.delayed(const Duration(milliseconds: 500), () {
+                    setState(() {
+                      bloc.fetchData();
+                      blocCity.fetchData();
                     });
-
-                    if (selectedArea != null && selectedCity != null) {
-                      _showAddressDialog(context);
-                    } else {
-                      Toast.show("Please wait Loading Data", context,
-                          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-                    }
+                    // });
+                    Future.delayed(const Duration(milliseconds: 500), () {
+                      if (selectedArea != null && selectedCity != null) {
+                        _showAddressDialog(context);
+                      } else {
+                        Toast.show("Please wait Loading Data", context,
+                            duration: Toast.LENGTH_SHORT,
+                            gravity: Toast.BOTTOM);
+                      }
+                    });
                   } else {
                     Toast.show("Not connected to internet", context,
                         duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
@@ -1689,6 +1730,7 @@ class _MyCustomFormState extends State<CartPage> {
                                     BorderSide(color: Colors.colorgreen)),
                             hasFloatingPlaceholder: true,
                           ),
+                          textCapitalization: TextCapitalization.sentences,
                           textInputAction: TextInputAction.done,
                           keyboardType: TextInputType.multiline,
                           maxLines: 3,
@@ -1725,34 +1767,34 @@ class _MyCustomFormState extends State<CartPage> {
                               onChanged: (newValue) {
                                 setState(() {
                                   selectedCity = newValue;
-                                  getCityAreas(newValue);
+                                  getCityAreas2(newValue);
                                   Navigator.of(context).pop();
-                                  Utils.checkInternet().then((connected) {
-                                    if (connected != null && connected) {
-                                      Future.delayed(
-                                          const Duration(milliseconds: 500),
-                                          () {
-                                        setState(() {
-                                          bloc.fetchData();
-                                          blocCity.fetchData();
-                                        });
-                                      });
-                                      if (selectedArea != null &&
-                                          selectedCity != null) {
-                                        _showAddressDialog(context);
-                                      } else {
-                                        Toast.show(
-                                            "Please wait Loading Data", context,
-                                            duration: Toast.LENGTH_SHORT,
-                                            gravity: Toast.BOTTOM);
-                                      }
-                                    } else {
-                                      Toast.show(
-                                          "Not connected to internet", context,
-                                          duration: Toast.LENGTH_SHORT,
-                                          gravity: Toast.BOTTOM);
-                                    }
-                                  });
+//                                  Utils.checkInternet().then((connected) {
+//                                    if (connected != null && connected) {
+//                                      Future.delayed(
+//                                          const Duration(milliseconds: 500),
+//                                          () {
+//                                        setState(() {
+//                                          bloc.fetchData();
+//                                          blocCity.fetchData();
+//                                        });
+//                                      });
+                                  if (selectedArea != null &&
+                                      selectedCity != null) {
+                                    _showAddressDialog(context);
+                                  } else {
+                                    Toast.show(
+                                        "Please wait Loading Data", context,
+                                        duration: Toast.LENGTH_SHORT,
+                                        gravity: Toast.BOTTOM);
+                                  }
+//                                    } else {
+//                                      Toast.show(
+//                                          "Not connected to internet", context,
+//                                          duration: Toast.LENGTH_SHORT,
+//                                          gravity: Toast.BOTTOM);
+//                                    }
+//                                  });
                                 });
                               },
                             ),
@@ -1794,32 +1836,32 @@ class _MyCustomFormState extends State<CartPage> {
                                 setState(() {
                                   selectedArea = newValue;
                                   Navigator.of(context).pop();
-                                  Utils.checkInternet().then((connected) {
-                                    if (connected != null && connected) {
-                                      Future.delayed(
-                                          const Duration(milliseconds: 500),
-                                          () {
-                                        setState(() {
-                                          bloc.fetchData();
-                                          blocCity.fetchData();
-                                        });
-                                      });
-                                      if (selectedArea != null &&
-                                          selectedCity != null) {
-                                        _showAddressDialog(context);
-                                      } else {
-                                        Toast.show(
-                                            "Please wait Loading Data", context,
-                                            duration: Toast.LENGTH_SHORT,
-                                            gravity: Toast.BOTTOM);
-                                      }
-                                    } else {
-                                      Toast.show(
-                                          "Not connected to internet", context,
-                                          duration: Toast.LENGTH_SHORT,
-                                          gravity: Toast.BOTTOM);
-                                    }
-                                  });
+//                                  Utils.checkInternet().then((connected) {
+//                                    if (connected != null && connected) {
+//                                      Future.delayed(
+//                                          const Duration(milliseconds: 500),
+//                                          () {
+//                                        setState(() {
+//                                          bloc.fetchData();
+//                                          blocCity.fetchData();
+//                                        });
+//                                      });
+                                  if (selectedArea != null &&
+                                      selectedCity != null) {
+                                    _showAddressDialog(context);
+                                  } else {
+                                    Toast.show(
+                                        "Please wait Loading Data", context,
+                                        duration: Toast.LENGTH_SHORT,
+                                        gravity: Toast.BOTTOM);
+                                  }
+//                                    } else {
+//                                      Toast.show(
+//                                          "Not connected to internet", context,
+//                                          duration: Toast.LENGTH_SHORT,
+//                                          gravity: Toast.BOTTOM);
+//                                    }
+//                                  });
                                 });
                               },
                             ),
@@ -1859,6 +1901,8 @@ class _MyCustomFormState extends State<CartPage> {
                             Toast.show(response.msg, context,
                                 duration: Toast.LENGTH_SHORT,
                                 gravity: Toast.BOTTOM);
+                            bloc.fetchData();
+                            blocCity.fetchData();
                             dialog.hide();
                           });
                         } else {

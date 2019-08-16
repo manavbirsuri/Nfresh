@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
 #include "GeneratedPluginRegistrant.h"
+#include <Firebase.h>
 
 @implementation AppDelegate
 
@@ -18,6 +19,12 @@
 
 - (BOOL)application:(UIApplication *)application
 didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    
+   // [Fabric with:@[[Crashlytics class]]];
+    
+  //  [FIRAnalytics setAnalyticsCollectionEnabled:YES];
+    
+    [FIRApp configure];
     
     FlutterViewController* controller = (FlutterViewController*)self.window.rootViewController;
     FlutterMethodChannel* nativeChannel = [FlutterMethodChannel
@@ -84,6 +91,8 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     txnController.merchant = [PGMerchantConfiguration defaultConfiguration];
     txnController.delegate = self;
     
+   // [self.window.rootViewController.navigationController pushViewController:txnController animated:true];
+    
     [self.window.rootViewController presentViewController:txnController animated:YES completion:NULL];
     
     //[self.window.rootViewController.navigationController pushViewController:txnController animated:YES];
@@ -97,7 +106,9 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     
     NSLog(@"Response: %@", responseString);
 
-    [controller.navigationController popViewControllerAnimated:YES];
+    [controller dismissViewControllerAnimated:true completion:nil];
+    
+    //[controller.navigationController popViewControllerAnimated:YES];
 }
 //this function triggers when transaction gets cancelled
 -(void)didCancelTrasaction:(PGTransactionViewController *)controller {
@@ -105,11 +116,16 @@ didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     NSString *msg = [NSString stringWithFormat:@"UnSuccessful"];
     
     [[[UIAlertView alloc] initWithTitle:@"Transaction Cancel" message:msg delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-    [controller.navigationController popViewControllerAnimated:YES];
+    
+    [controller dismissViewControllerAnimated:true completion:nil];
+    
+    //[controller.navigationController popViewControllerAnimated:YES];
 }
 //Called when a required parameter is missing.
 -(void)errorMisssingParameter:(PGTransactionViewController *)controller error:(NSError *) error {
-    [controller.navigationController popViewControllerAnimated:YES];
+    //[controller.navigationController popViewControllerAnimated:YES];
+    
+    [controller dismissViewControllerAnimated:true completion:nil];
 }
 
 

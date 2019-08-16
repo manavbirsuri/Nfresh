@@ -22,7 +22,7 @@ class PinViewPage extends StatefulWidget {
 
 class PinState extends State<PinViewPage> {
   var bloc = OtpBloc();
-
+  TextEditingController emailController = new TextEditingController();
   bool showLoader = false;
 
   String enteredPin = "";
@@ -76,23 +76,43 @@ class PinState extends State<PinViewPage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(86, 16, 86, 0),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
                 child: Center(
-                  child: PinView(
-                      count: 4, // count of the fields, excluding dashes
-                      autoFocusFirstField: false,
-                      obscureText: true,
-                      submit: (String pin) {
-                        setState(() {
-                          enteredPin = pin;
-                        });
-                      } // gets triggered when all the fields are filled
-
-                      // gets triggered when all the fields are filled
-                      ),
+                  child: TextField(
+                    controller: emailController,
+                    textAlign: TextAlign.center,
+                    decoration: new InputDecoration(
+                        border: new OutlineInputBorder(
+                          borderRadius: const BorderRadius.all(
+                            const Radius.circular(10.0),
+                          ),
+                        ),
+                        filled: true,
+                        hintStyle: new TextStyle(color: Colors.grey[800]),
+                        hintText: "OTP",
+                        fillColor: Colors.white70),
+                  ),
                   // end onSubmit
                 ),
               ),
+//              Padding(
+//                padding: EdgeInsets.fromLTRB(86, 16, 86, 0),
+//                child: Center(
+//                  child: PinView(
+//                      count: 4, // count of the fields, excluding dashes
+//                      autoFocusFirstField: false,
+//                      obscureText: true,
+//                      submit: (String pin) {
+//                        setState(() {
+//                          enteredPin = pin;
+//                        });
+//                      } // gets triggered when all the fields are filled
+//
+//                      // gets triggered when all the fields are filled
+//                      ),
+//                  // end onSubmit
+//                ),
+//              ),
               Padding(
                 padding: EdgeInsets.only(top: 32),
                 child: Center(
@@ -131,6 +151,7 @@ class PinState extends State<PinViewPage> {
               padding: const EdgeInsets.fromLTRB(64, 8, 64, 16),
               child: GestureDetector(
                 onTap: () {
+                  enteredPin = emailController.text.toString();
                   if (enteredPin.length == 4) {
                     verifyOtpWebservice(enteredPin, widget.id, context);
                   } else {

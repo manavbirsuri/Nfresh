@@ -41,8 +41,8 @@ android {
         //applicationId "com.nfresh"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode flutterVersionCode.toInteger()
-        versionName flutterVersionName
+        versionCode 6 //flutterVersionCode.toInteger()
+        versionName "1.0.5" //flutterVersionName
 //        renderscriptSupportModeEnabled false
 //        ndk {
 //            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86","x86_64", "mips"

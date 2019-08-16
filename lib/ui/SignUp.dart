@@ -111,10 +111,11 @@ class stateProfilePage extends State<stateProfile> {
       children: <Widget>[
         new Scaffold(
           appBar: new AppBar(
+            leading: BackButton(color: Colors.green),
 //            leading: new IconButton(
 //                icon: new Icon(
 //                  Icons.arrow_back,
-//                  color: Colors.black,
+//                  color: Colors.green,
 //                ),
 //                onPressed: () => Navigator.pop(context)),
             elevation: 0.0,
@@ -122,18 +123,22 @@ class stateProfilePage extends State<stateProfile> {
             backgroundColor: Colors.white,
           ),
           backgroundColor: Colors.white,
-          body: Stack(
-            children: <Widget>[
-              Container(
-                margin: EdgeInsets.only(top: 0, right: 20, left: 20),
-                child: Material(
-                  child: Container(
-                    child: Padding(
-                      padding: EdgeInsets.all(0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
+          body: new GestureDetector(
+            onTap: () {
+              FocusScope.of(context).requestFocus(new FocusNode());
+            },
+            child: Stack(
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(top: 0, right: 20, left: 20),
+                  child: Material(
+                    child: Container(
+                      child: Padding(
+                        padding: EdgeInsets.all(0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.max,
+                          children: <Widget>[
 //                          Stack(children: <Widget>[
 //                            Padding(
 //                              padding: EdgeInsets.only(top: 0),
@@ -145,401 +150,414 @@ class stateProfilePage extends State<stateProfile> {
 //                              ),
 //                            )
 //                          ]),
-                          Container(
-                            margin: EdgeInsets.only(top: 0),
-                            decoration: BoxDecoration(
-                              image: DecorationImage(
-                                image: AssetImage('assets/logo.png'),
+                            Container(
+                              margin: EdgeInsets.only(top: 0),
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: AssetImage('assets/logo.png'),
+                                ),
                               ),
+                              height: 80,
                             ),
-                            height: 80,
-                          ),
-                          Expanded(
-                            child: SingleChildScrollView(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "Name",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.colorgreen),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                    child: Center(
-                                      child: TextFormField(
-                                        controller: nameController,
-                                        keyboardType: TextInputType.text,
-                                        textInputAction: TextInputAction.next,
-                                        onFieldSubmitted: (term) {
-                                          FocusScope.of(context)
-                                              .requestFocus(focus);
-                                        },
-                                        decoration:
-                                            new InputDecoration.collapsed(
-                                                hintText: 'Enter Name'),
-                                      ),
-                                    ),
-                                  ),
-                                  Divider(height: 1, color: Colors.black),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "Email",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.colorgreen),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                    child: Center(
-                                      child: TextFormField(
-                                        focusNode: focus,
-                                        controller: emailController,
-                                        keyboardType: TextInputType.text,
-                                        textInputAction: TextInputAction.next,
-                                        onFieldSubmitted: (term) {
-                                          FocusScope.of(context)
-                                              .requestFocus(focus1);
-                                        },
-                                        decoration:
-                                            new InputDecoration.collapsed(
-                                                hintText: 'Enter Email'),
-                                      ),
-                                    ),
-                                  ),
-                                  Divider(height: 1, color: Colors.black),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "Mobile Number",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.colorgreen),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                    child: Center(
-                                      child: TextFormField(
-                                        focusNode: focus1,
-                                        inputFormatters: [
-                                          LengthLimitingTextInputFormatter(10),
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: <Widget>[
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 32, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "Name",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colorgreen),
+                                          ),
                                         ],
-                                        controller: mobileController,
-                                        keyboardType: TextInputType.phone,
-                                        textInputAction: TextInputAction.next,
-                                        onFieldSubmitted: (term) {
-                                          FocusScope.of(context)
-                                              .requestFocus(focus2);
-                                        },
-                                        decoration:
-                                            new InputDecoration.collapsed(
-                                          hintText: 'Enter Mobile Number',
-                                          border: InputBorder.none,
-                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Divider(height: 1, color: Colors.black),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "Password",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.colorgreen),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
+                                    Padding(
                                       padding:
                                           const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                      child: Row(children: <Widget>[
-                                        Flexible(
-                                          child: Container(
-                                            child: Center(
-                                              child: TextFormField(
-                                                focusNode: focus2,
-                                                obscureText: showText,
-                                                controller: passwordController,
-                                                keyboardType:
-                                                    TextInputType.text,
-                                                textInputAction:
-                                                    TextInputAction.next,
-                                                onFieldSubmitted: (term) {},
-                                                decoration: new InputDecoration
-                                                        .collapsed(
-                                                    hintText: 'Enter Password'),
-                                              ),
-                                            ),
-                                          ),
-                                          flex: 15,
+                                      child: Center(
+                                        child: TextFormField(
+                                          controller: nameController,
+                                          textCapitalization:
+                                              TextCapitalization.sentences,
+                                          keyboardType: TextInputType.text,
+                                          textInputAction: TextInputAction.next,
+                                          onFieldSubmitted: (term) {
+                                            FocusScope.of(context)
+                                                .requestFocus(focus);
+                                          },
+                                          decoration:
+                                              new InputDecoration.collapsed(
+                                                  hintText: 'Enter Name'),
                                         ),
-                                        Flexible(
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                if (passwordController.text
-                                                        .toString()
-                                                        .length >
-                                                    0) {
-                                                  if (showText) {
-                                                    showText = false;
-                                                    valueShow = "Hide";
-                                                  } else {
-                                                    showText = true;
-                                                    valueShow = "Show";
-                                                  }
-                                                }
-                                              });
-                                            },
+                                      ),
+                                    ),
+                                    Divider(height: 1, color: Colors.black),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 32, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "Email",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colorgreen),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      child: Center(
+                                        child: TextFormField(
+                                          focusNode: focus,
+                                          controller: emailController,
+                                          keyboardType: TextInputType.text,
+                                          textInputAction: TextInputAction.next,
+                                          onFieldSubmitted: (term) {
+                                            FocusScope.of(context)
+                                                .requestFocus(focus1);
+                                          },
+                                          decoration:
+                                              new InputDecoration.collapsed(
+                                                  hintText: 'Enter Email'),
+                                        ),
+                                      ),
+                                    ),
+                                    Divider(height: 1, color: Colors.black),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 32, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "Mobile Number",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colorgreen),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      child: Center(
+                                        child: TextFormField(
+                                          focusNode: focus1,
+                                          inputFormatters: [
+                                            LengthLimitingTextInputFormatter(
+                                                10),
+                                          ],
+                                          controller: mobileController,
+                                          keyboardType: TextInputType.phone,
+                                          textInputAction: TextInputAction.next,
+                                          onFieldSubmitted: (term) {
+                                            FocusScope.of(context)
+                                                .requestFocus(focus2);
+                                          },
+                                          decoration:
+                                              new InputDecoration.collapsed(
+                                            hintText: 'Enter Mobile Number',
+                                            border: InputBorder.none,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Divider(height: 1, color: Colors.black),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 32, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "Password",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colorgreen),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            0, 8, 0, 0),
+                                        child: Row(children: <Widget>[
+                                          Flexible(
                                             child: Container(
-                                              child: Padding(
-                                                padding: EdgeInsets.only(
-                                                    bottom: 0, left: 0),
-                                                child: valueShow == "Hide"
-                                                    ? Icon(
-                                                        Icons.visibility,
-                                                        size: 20,
-                                                      )
-                                                    : Icon(
-                                                        Icons.visibility_off,
-                                                        size: 20,
-                                                      ),
+                                              child: Center(
+                                                child: TextFormField(
+                                                  focusNode: focus2,
+                                                  obscureText: showText,
+                                                  controller:
+                                                      passwordController,
+                                                  keyboardType:
+                                                      TextInputType.text,
+                                                  textInputAction:
+                                                      TextInputAction.next,
+                                                  onFieldSubmitted: (term) {},
+                                                  decoration:
+                                                      new InputDecoration
+                                                              .collapsed(
+                                                          hintText:
+                                                              'Enter Password'),
+                                                ),
                                               ),
                                             ),
+                                            flex: 15,
                                           ),
-                                          flex: 1,
-                                        ),
-                                      ])),
-                                  Divider(height: 1, color: Colors.black),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "Type of User",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.colorgreen),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                    child: Center(
-                                      child: DropdownButtonFormField<UserType>(
-                                        decoration: InputDecoration.collapsed(
-                                            hintText: ''),
-                                        value: selectedType,
-                                        items: userTypes.map((UserType value) {
-                                          return new DropdownMenuItem<UserType>(
-                                            value: value,
-                                            child: new Text(value.userType),
-                                          );
-                                        }).toList(),
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            selectedType = newValue;
-                                          });
-                                        },
+                                          Flexible(
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                setState(() {
+                                                  if (passwordController.text
+                                                          .toString()
+                                                          .length >
+                                                      0) {
+                                                    if (showText) {
+                                                      showText = false;
+                                                      valueShow = "Hide";
+                                                    } else {
+                                                      showText = true;
+                                                      valueShow = "Show";
+                                                    }
+                                                  }
+                                                });
+                                              },
+                                              child: Container(
+                                                child: Padding(
+                                                  padding: EdgeInsets.only(
+                                                      bottom: 0, left: 0),
+                                                  child: valueShow == "Hide"
+                                                      ? Icon(
+                                                          Icons.visibility,
+                                                          size: 20,
+                                                        )
+                                                      : Icon(
+                                                          Icons.visibility_off,
+                                                          size: 20,
+                                                        ),
+                                                ),
+                                              ),
+                                            ),
+                                            flex: 1,
+                                          ),
+                                        ])),
+                                    Divider(height: 1, color: Colors.black),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 32, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "Type of User",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colorgreen),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  Divider(height: 1, color: Colors.black),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "City",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.colorgreen),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      child: Center(
+                                        child:
+                                            DropdownButtonFormField<UserType>(
+                                          decoration: InputDecoration.collapsed(
+                                              hintText: ''),
+                                          value: selectedType,
+                                          items:
+                                              userTypes.map((UserType value) {
+                                            return new DropdownMenuItem<
+                                                UserType>(
+                                              value: value,
+                                              child: new Text(value.userType),
+                                            );
+                                          }).toList(),
+                                          onChanged: (newValue) {
+                                            setState(() {
+                                              selectedType = newValue;
+                                            });
+                                          },
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                    child: Center(
-                                      child: DropdownButtonFormField<CityModel>(
-                                        decoration: InputDecoration.collapsed(
-                                            hintText: ''),
-                                        value: selectedCity,
-                                        items: cities.map((CityModel value) {
-                                          return new DropdownMenuItem<
-                                              CityModel>(
-                                            value: value,
-                                            child: new Text(value.name),
-                                          );
-                                        }).toList(),
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            selectedCity = newValue;
-                                            getCityAreas(newValue);
-                                          });
-                                        },
                                       ),
                                     ),
-                                  ),
-                                  Divider(height: 1, color: Colors.black),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "Area",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.colorgreen),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                    child: Center(
-                                      child: DropdownButtonFormField<AreaModel>(
-                                        decoration: InputDecoration.collapsed(
-                                            hintText: ''),
-                                        value: selectedArea,
-                                        items: cityAreas.map((AreaModel value) {
-                                          return new DropdownMenuItem<
-                                              AreaModel>(
-                                            value: value,
-                                            child: new Text(value.name),
-                                          );
-                                        }).toList(),
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            selectedArea = newValue;
-                                          });
-                                        },
+                                    Divider(height: 1, color: Colors.black),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 32, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "City",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colorgreen),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ),
-                                  Divider(height: 1, color: Colors.black),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.start,
-                                      children: <Widget>[
-                                        Text(
-                                          "Referral code",
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.colorgreen),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      child: Center(
+                                        child:
+                                            DropdownButtonFormField<CityModel>(
+                                          decoration: InputDecoration.collapsed(
+                                              hintText: ''),
+                                          value: selectedCity,
+                                          items: cities.map((CityModel value) {
+                                            return new DropdownMenuItem<
+                                                CityModel>(
+                                              value: value,
+                                              child: new Text(value.name),
+                                            );
+                                          }).toList(),
+                                          onChanged: (newValue) {
+                                            setState(() {
+                                              selectedCity = newValue;
+                                              getCityAreas(newValue);
+                                            });
+                                          },
                                         ),
-                                      ],
+                                      ),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 8, 0, 0),
-                                    child: Center(
-                                      child: TextFormField(
+                                    Divider(height: 1, color: Colors.black),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 32, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "Area",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colorgreen),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      child: Center(
+                                        child:
+                                            DropdownButtonFormField<AreaModel>(
+                                          decoration: InputDecoration.collapsed(
+                                              hintText: ''),
+                                          value: selectedArea,
+                                          items:
+                                              cityAreas.map((AreaModel value) {
+                                            return new DropdownMenuItem<
+                                                AreaModel>(
+                                              value: value,
+                                              child: new Text(value.name),
+                                            );
+                                          }).toList(),
+                                          onChanged: (newValue) {
+                                            setState(() {
+                                              selectedArea = newValue;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                    Divider(height: 1, color: Colors.black),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 32, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: <Widget>[
+                                          Text(
+                                            "Referral code",
+                                            style: TextStyle(
+                                                fontSize: 14,
+                                                color: Colors.colorgreen),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.fromLTRB(0, 8, 0, 0),
+                                      child: Center(
+                                        child: TextFormField(
 //                                        focusNode: focus1,
-                                        controller: refralController,
-                                        keyboardType: TextInputType.text,
-                                        textInputAction: TextInputAction.next,
+                                          controller: refralController,
+                                          keyboardType: TextInputType.text,
+                                          textInputAction: TextInputAction.next,
 //                                        onFieldSubmitted: (term) {
 //                                          FocusScope.of(context)
 //                                              .requestFocus(focus2);
 //                                        },
-                                        decoration:
-                                            new InputDecoration.collapsed(
-                                                hintText:
-                                                    'Enter your referral code'),
+                                          decoration: new InputDecoration
+                                                  .collapsed(
+                                              hintText:
+                                                  'Enter your referral code'),
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Divider(height: 1, color: Colors.black),
-                                  Padding(
-                                    padding:
-                                        const EdgeInsets.fromLTRB(0, 32, 0, 0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        GestureDetector(
-                                          onTap: () {
-                                            setState(() {
-                                              if (_currValue == 0) {
-                                                _currValue = 1;
-                                              } else {
-                                                _currValue = 0;
-                                              }
+                                    Divider(height: 1, color: Colors.black),
+                                    Padding(
+                                      padding: const EdgeInsets.fromLTRB(
+                                          0, 32, 0, 0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                          GestureDetector(
+                                            onTap: () {
+                                              setState(() {
+                                                if (_currValue == 0) {
+                                                  _currValue = 1;
+                                                } else {
+                                                  _currValue = 0;
+                                                }
 
-                                              print("Accepted: $_currValue");
-                                            });
-                                          },
-                                          child: new Radio(
-                                            value: 1,
-                                            groupValue: _currValue,
-                                            activeColor: Colors.colorgreen,
+                                                print("Accepted: $_currValue");
+                                              });
+                                            },
+                                            child: new Radio(
+                                              value: 1,
+                                              groupValue: _currValue,
+                                              activeColor: Colors.colorgreen,
 
 //                                              onChanged: (int value) {
 //                                                onChanged(value);
 //                                              }
+                                            ),
                                           ),
-                                        ),
-                                        new Text(
-                                          'Agree to the ',
-                                          style: new TextStyle(fontSize: 14.0),
-                                        ),
+                                          new Text(
+                                            'Agree to the ',
+                                            style:
+                                                new TextStyle(fontSize: 14.0),
+                                          ),
 //                                        GestureDetector(
 //                                          onTap: () {
 //                                            Navigator.push(
@@ -562,94 +580,95 @@ class stateProfilePage extends State<stateProfile> {
 //                                          'and ',
 //                                          style: new TextStyle(fontSize: 14.0),
 //                                        ),
-                                        GestureDetector(
-                                          onTap: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    TermAndPrivacy(
-                                                        'Privacy Policy'),
-                                              ),
-                                            );
-                                          },
-                                          child: new Text(
-                                            'Terms of Use and Privacy Policy',
-                                            style: new TextStyle(
-                                                fontSize: 14.0,
-                                                color: Colors.colorgreen),
+                                          GestureDetector(
+                                            onTap: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      TermAndPrivacy(
+                                                          'Privacy Policy'),
+                                                ),
+                                              );
+                                            },
+                                            child: new Text(
+                                              'Terms of Use and Privacy Policy',
+                                              style: new TextStyle(
+                                                  fontSize: 14.0,
+                                                  color: Colors.colorgreen),
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  showLoader
-                                      ? Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              32, 8, 32, 16),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              createAccountWebservice();
-                                            },
-                                            child: Container(
-                                              decoration: new BoxDecoration(
-                                                  borderRadius:
-                                                      new BorderRadius.all(
-                                                          new Radius.circular(
-                                                              100.0)),
-                                                  color: Colors.colorgreen),
-                                              child: SizedBox(
-                                                width: double.infinity,
-                                                height: 60,
-                                                child: Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
+                                    showLoader
+                                        ? Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                32, 8, 32, 16),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                createAccountWebservice();
+                                              },
+                                              child: Container(
+                                                decoration: new BoxDecoration(
+                                                    borderRadius:
+                                                        new BorderRadius.all(
+                                                            new Radius.circular(
+                                                                100.0)),
+                                                    color: Colors.colorgreen),
+                                                child: SizedBox(
+                                                  width: double.infinity,
+                                                  height: 60,
+                                                  child: Center(
+                                                    child:
+                                                        CircularProgressIndicator(),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                32, 8, 32, 16),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                createAccountWebservice();
+                                              },
+                                              child: Container(
+                                                decoration: new BoxDecoration(
+                                                    borderRadius:
+                                                        new BorderRadius.all(
+                                                            new Radius.circular(
+                                                                100.0)),
+                                                    color: Colors.colorgreen),
+                                                child: SizedBox(
+                                                  width: double.infinity,
+                                                  height: 60,
+                                                  child: Center(
+                                                    child: new Text(
+                                                        "Create Account",
+                                                        style: new TextStyle(
+                                                          color: Colors.white,
+                                                          fontSize: 20,
+                                                        )),
+                                                  ),
                                                 ),
                                               ),
                                             ),
                                           ),
-                                        )
-                                      : Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              32, 8, 32, 16),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              createAccountWebservice();
-                                            },
-                                            child: Container(
-                                              decoration: new BoxDecoration(
-                                                  borderRadius:
-                                                      new BorderRadius.all(
-                                                          new Radius.circular(
-                                                              100.0)),
-                                                  color: Colors.colorgreen),
-                                              child: SizedBox(
-                                                width: double.infinity,
-                                                height: 60,
-                                                child: Center(
-                                                  child:
-                                                      new Text("Create Account",
-                                                          style: new TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 20,
-                                                          )),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
+                      color: Colors.white,
                     ),
-                    color: Colors.white,
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],

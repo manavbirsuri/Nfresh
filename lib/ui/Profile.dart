@@ -309,7 +309,17 @@ class StateProfilePage extends State<stateProfile> {
                                               .then((connected) {
                                             if (connected != null &&
                                                 connected) {
-                                              _showAddressDialog(context);
+                                              if (selectedArea != null &&
+                                                  selectedCity != null) {
+                                                _showAddressDialog(context);
+                                              } else {
+                                                Toast.show(
+                                                    "Please wait Loading Data",
+                                                    context,
+                                                    duration:
+                                                        Toast.LENGTH_SHORT,
+                                                    gravity: Toast.BOTTOM);
+                                              }
                                             } else {
                                               Toast.show(
                                                   "Not connected to internet",
@@ -415,7 +425,8 @@ class StateProfilePage extends State<stateProfile> {
                                       margin: EdgeInsets.only(top: 16),
                                       child: Text(
                                         customerType,
-                                        style: TextStyle(fontSize: 16),
+                                        style: TextStyle(
+                                            fontSize: 16, color: Colors.grey),
                                       ),
                                     ),
                                     Container(
@@ -452,11 +463,20 @@ class StateProfilePage extends State<stateProfile> {
         cityAreas.add(modelArea);
       }
     }
-    if (cityAreas.length > 0) {
-      selectedArea = cityAreas[0];
-    } else {
-      selectedArea = null;
-    }
+
+//    for (int i = 0; i < cityAreas.length; i++) {
+//      var cityAreas = areas[i];
+//      if (profile.area == cityAreas.id) {
+//        setState(() {
+//          selectedArea = cityAreas;
+//        });
+//      }
+//    }
+//    if (cityAreas.length > 0) {
+//      selectedArea = cityAreas[0];
+//    } else {
+//      selectedArea = null;
+//    }
   }
 
   void _showPasswordDialog(context) {

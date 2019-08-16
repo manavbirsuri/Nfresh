@@ -12,6 +12,8 @@ import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:toast/toast.dart';
 
+import 'cart.dart';
+
 class OrderPage extends StatefulWidget {
   final String title;
   OrderPage({Key key, @required this.title}) : super(key: key);
@@ -64,7 +66,7 @@ class StateOrderPage extends State<OrderPage> {
       builder: (BuildContext context) {
         // return object of type Dialog
         return AlertDialog(
-          title: new Text("Alert!"),
+          title: new Text("Success"),
           content: new Text(
               "Your products has been added to the cart successfully."),
           actions: <Widget>[
@@ -73,6 +75,19 @@ class StateOrderPage extends State<OrderPage> {
               child: new Text("OK"),
               onPressed: () {
                 Navigator.of(context).pop();
+              },
+            ),
+
+            new FlatButton(
+              child: new Text("Go to cart"),
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => CartPage(),
+                  ),
+                );
               },
             ),
           ],

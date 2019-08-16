@@ -25,6 +25,9 @@ class NotificationState extends State<NotificationPage> {
     super.initState();
     Utils.checkInternet().then((connected) {
       if (connected != null && connected) {
+        setState(() {
+          isLoading = true;
+        });
         bloc.fetchNotifications();
       } else {
         setState(() {
@@ -70,26 +73,25 @@ class NotificationState extends State<NotificationPage> {
             centerTitle: true,
           ),
           body: notifications.length > 0
-              ? Container(
-                  color: Colors.colorlightgreyback,
-                  child: isLoading
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : ListView.builder(
-                          itemBuilder: (context, position) {
-                            return notificationListItem(context, position);
-                          },
-                          itemCount: notifications.length,
-                        ),
+              ? ListView.builder(
+                  itemBuilder: (context, position) {
+                    return notificationListItem(context, position);
+                  },
+                  itemCount: notifications.length,
                 )
-              : Container(
-                  color: Colors.colorlightgreyback,
-                  child: Center(
-                    child: Text("No Notifications"),
-                  ),
-                ),
-        )
+              : isLoading
+                  ? Container(
+                      color: Colors.white,
+                      child: Center(
+                        child: CircularProgressIndicator(),
+                      ))
+                  : Container(
+                      color: Colors.colorlightgreyback,
+                      child: Center(
+                        child: Text("No Notifications"),
+                      ),
+                    ),
+        ),
       ],
     );
   }

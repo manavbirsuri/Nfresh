@@ -241,7 +241,7 @@ class stateProfilePage extends State<referEarnProfile> {
                                             children: <Widget>[
                                               Center(
                                                 child: GestureDetector(
-                                                  onLongPress: () {
+                                                  onTap: () {
                                                     // code to copy refer code
                                                     Clipboard.setData(
                                                         new ClipboardData(
