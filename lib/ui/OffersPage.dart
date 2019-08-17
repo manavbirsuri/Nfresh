@@ -148,19 +148,21 @@ class OfferOrderPage extends State<OfferOrder> {
                             ),
                           ]),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 16, top: 4),
-                      child: Row(children: <Widget>[
-                        Text(
-                          "Coupon Code : ",
-                          style: TextStyle(color: Colors.colorlightgrey),
-                        ),
-                        Text(
-                          coupon.couponCode,
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ]),
-                    ),
+                    1 < 0
+                        ? Padding(
+                            padding: EdgeInsets.only(left: 16, top: 4),
+                            child: Row(children: <Widget>[
+                              Text(
+                                "Coupon Code : ",
+                                style: TextStyle(color: Colors.colorlightgrey),
+                              ),
+                              Text(
+                                coupon.couponCode,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ]),
+                          )
+                        : Container(),
                     Padding(
                       padding: EdgeInsets.only(left: 16, bottom: 8, right: 16),
                       child: Row(
@@ -184,27 +186,42 @@ class OfferOrderPage extends State<OfferOrder> {
                             GestureDetector(
                               onTap: () {
                                 snapshot.data.coupons[position].type == 1
-                                    ? Share.plainText(
-                                        text: "Use <" +
+                                    ?
+//                                Share.share("Use <" +
+//                                        coupon.couponCode +
+//                                        "> to get  Rs." +
+//                                        snapshot.data.coupons[position].discount
+//                                            .toString() +
+//                                        " discount on your next purchase.Visit https://nfreshonline.com/")
+//
+                                    Share.share(
+                                        "Use <" +
                                             coupon.couponCode +
-                                            "> to get discount Rs." +
+                                            "> to get  Rs." +
                                             snapshot
                                                 .data.coupons[position].discount
                                                 .toString() +
-                                            " on purchase on NFresh.Visit our website at http://nfreshonline.com/",
+                                            " discount on your next purchase.Visit https://nfreshonline.com/",
                                         // title: "Share"
-                                      ).share()
-                                    : Share.plainText(
-                                        text: "Use <" +
+                                      )
+                                    : Share.share(
+                                        "Use <" +
                                             coupon.couponCode +
-                                            "> to get discount " +
+                                            "> to get " +
                                             snapshot
                                                 .data.coupons[position].discount
                                                 .toString() +
-                                            "%" +
-                                            " on purchase on NFresh.Visit our website at http://nfreshonline.com/",
+                                            "% discount on your next purchase.Visit https://nfreshonline.com/",
                                         // title: "Share"
-                                      ).share();
+                                      );
+//                                Share.share("Use <" +
+//                                        coupon.couponCode +
+//                                        "> to get" +
+//                                        snapshot.data.coupons[position].discount
+//                                            .toString() +
+//                                        "%" +
+//                                        "  discount  on your next purchase.Visit https://nfreshonline.com/");
+
 //                            Share.share(
 //                                'check out my website https://example.com');
                               },

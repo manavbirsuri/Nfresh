@@ -144,15 +144,21 @@ class MyHomePage extends State<LoginPage> {
                                             child: TextFormField(
                                               controller: emailController,
                                               inputFormatters: [
+                                                WhitelistingTextInputFormatter
+                                                    .digitsOnly,
                                                 LengthLimitingTextInputFormatter(
                                                     10),
+                                                BlacklistingTextInputFormatter(
+                                                    new RegExp('[\\.|\\,]')),
                                               ],
                                               decoration:
                                                   new InputDecoration.collapsed(
                                                       hintText:
                                                           'Enter Mobile No.'),
                                               textAlign: TextAlign.start,
-                                              keyboardType: TextInputType.phone,
+                                              keyboardType: TextInputType
+                                                  .numberWithOptions(
+                                                      decimal: false),
                                               textInputAction:
                                                   TextInputAction.next,
                                             ),
@@ -286,6 +292,9 @@ class MyHomePage extends State<LoginPage> {
                                                         32, 32, 32, 0),
                                                 child: GestureDetector(
                                                   onTap: () {
+                                                    FocusScope.of(context)
+                                                        .requestFocus(
+                                                            new FocusNode());
                                                     String phone =
                                                         emailController.text
                                                             .toString();

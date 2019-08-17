@@ -29,6 +29,7 @@ class PaymentState extends State<PaymentSuccessPage> {
   var dialog;
   var blocProfile = ProfileBloc();
   bool showLoader = false;
+  bool showLoaderee = false;
 
   @override
   void initState() {
@@ -66,6 +67,7 @@ class PaymentState extends State<PaymentSuccessPage> {
       String status = obj['status'];
       setState(() {
         showLoader = false;
+        showLoaderee = true;
         message = obj['msg'];
       });
       if (status == "true") {
@@ -101,34 +103,46 @@ class PaymentState extends State<PaymentSuccessPage> {
             color: Colors.white,
             alignment: Alignment.center,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(message),
-                    showLoader
-                        ? Center(child: CircularProgressIndicator())
-                        : FlatButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                              if (isSuccess) {
-                                Route route = MaterialPageRoute(
-                                  builder: (context) => DashBoard(),
-                                );
-                                Navigator.pushReplacement(context, route);
-                              }
-                            },
-                            child: Text(
-                              "Done",
-                              style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          )
-                  ],
-                )
+                // message == "Payment is successfull"
+                showLoaderee
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Image.asset("assets/placeorder.png"),
+                          Padding(
+                            padding: EdgeInsets.only(top: 16),
+                            child: Text(message),
+                          ),
+                          showLoader
+                              ? Center(child: CircularProgressIndicator())
+                              : FlatButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => DashBoard(),
+                                        ));
+//                                    Navigator.pop(context);
+//                                    //if (isSuccess) {
+//                                    Route route = MaterialPageRoute(
+//                                      builder: (context) => DashBoard(),
+//                                    );
+                                    //Navigator.pushReplacement(context, route);
+                                    //}
+                                  },
+                                  child: Text(
+                                    "Done",
+                                    style: TextStyle(
+                                        color: Colors.green,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                )
+                        ],
+                      )
+                    : Center(child: CircularProgressIndicator())
+                //: Text("")
               ],
             ),
           ),

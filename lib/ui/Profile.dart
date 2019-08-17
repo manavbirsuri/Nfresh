@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/cities_bloc.dart';
 import 'package:nfresh/bloc/update_address_bloc.dart';
 import 'package:nfresh/bloc/update_password_bloc.dart';
@@ -554,6 +555,7 @@ class StateProfilePage extends State<stateProfile> {
                       splashColor: Colors.black12,
                       color: Colors.colorgreen,
                       onPressed: () {
+                        FocusScope.of(context).requestFocus(new FocusNode());
                         Utils.checkInternet().then((connected) {
                           if (connected != null && connected) {
                             updatePasswordWebservice(
@@ -626,8 +628,14 @@ class StateProfilePage extends State<stateProfile> {
                             border: OutlineInputBorder(),
                           ),
                           textInputAction: TextInputAction.next,
-                          keyboardType: TextInputType.phone,
-                          maxLength: 10,
+                          inputFormatters: [
+                            WhitelistingTextInputFormatter.digitsOnly,
+                            LengthLimitingTextInputFormatter(10),
+                            BlacklistingTextInputFormatter(
+                                new RegExp('[\\.|\\,]')),
+                          ],
+                          keyboardType:
+                              TextInputType.numberWithOptions(decimal: false),
                           controller: phoneController,
                         ),
                       ],

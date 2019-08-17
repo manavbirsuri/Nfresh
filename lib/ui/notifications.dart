@@ -73,12 +73,14 @@ class NotificationState extends State<NotificationPage> {
             centerTitle: true,
           ),
           body: notifications.length > 0
-              ? ListView.builder(
-                  itemBuilder: (context, position) {
-                    return notificationListItem(context, position);
-                  },
-                  itemCount: notifications.length,
-                )
+              ? Container(
+                  color: Colors.white,
+                  child: ListView.builder(
+                    itemBuilder: (context, position) {
+                      return notificationListItem(context, position);
+                    },
+                    itemCount: notifications.length,
+                  ))
               : isLoading
                   ? Container(
                       color: Colors.white,
@@ -88,8 +90,17 @@ class NotificationState extends State<NotificationPage> {
                   : Container(
                       color: Colors.colorlightgreyback,
                       child: Center(
-                        child: Text("No Notifications"),
-                      ),
+                          child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Image.asset('assets/nonoti.png'),
+                          Padding(
+                            padding: EdgeInsets.only(top: 16),
+                            child: Text("No Notifications"),
+                          ),
+                        ],
+                      )),
                     ),
         ),
       ],

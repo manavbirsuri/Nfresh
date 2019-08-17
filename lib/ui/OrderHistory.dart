@@ -171,7 +171,7 @@ class OrderHistoryState extends State<OrderState> {
                       children: <Widget>[
                         Text("Total  "),
                         Text(
-                          "₹${order.orderTotal}",
+                          "₹${order.orderTotal.toInt()}",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16),
                         ),

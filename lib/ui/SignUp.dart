@@ -261,11 +261,17 @@ class stateProfilePage extends State<stateProfile> {
                                         child: TextFormField(
                                           focusNode: focus1,
                                           inputFormatters: [
+                                            WhitelistingTextInputFormatter
+                                                .digitsOnly,
                                             LengthLimitingTextInputFormatter(
                                                 10),
+                                            BlacklistingTextInputFormatter(
+                                                new RegExp('[\\.|\\,]')),
                                           ],
                                           controller: mobileController,
-                                          keyboardType: TextInputType.phone,
+                                          keyboardType:
+                                              TextInputType.numberWithOptions(
+                                                  decimal: false),
                                           textInputAction: TextInputAction.next,
                                           onFieldSubmitted: (term) {
                                             FocusScope.of(context)

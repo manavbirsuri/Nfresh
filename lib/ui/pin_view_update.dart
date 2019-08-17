@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/forgot_password_bloc.dart';
 import 'package:nfresh/bloc/update_phone2_bloc.dart';
 import 'package:nfresh/bloc/update_phone_bloc.dart';
@@ -26,6 +27,7 @@ class PinState extends State<PinViewUpdatePage> {
   var bloc = UpdatePhone2Bloc();
   var blocPassword = ForgotPasswordBloc();
   bool showLoader = false;
+  bool resendLoader = false;
   String enteredPin = "";
   var _prefs = SharedPrefs();
   TextEditingController emailController = new TextEditingController();
@@ -49,53 +51,56 @@ class PinState extends State<PinViewUpdatePage> {
           FocusScope.of(context).requestFocus(new FocusNode());
         },
         child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  Stack(children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 0),
-                      child: Align(
-                        alignment: Alignment.topCenter,
-                        child: Image.asset(
-                          'assets/otp.png',
-                        ),
-                      ),
-                    )
-                  ]),
+            child: Column(
+          children: <Widget>[
+            Column(
+              children: <Widget>[
+                Stack(children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: Center(
-                      child: Text(
-                        "OTP Verification",
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold),
+                    padding: EdgeInsets.only(top: 0),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Image.asset(
+                        'assets/otp.png',
                       ),
                     ),
+                  )
+                ]),
+                Padding(
+                  padding: EdgeInsets.only(top: 16),
+                  child: Center(
+                    child: Text(
+                      "OTP Verification",
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold),
+                    ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-                    child: Center(
-                      child: TextField(
-                        controller: emailController,
-                        textAlign: TextAlign.center,
-                        decoration: new InputDecoration(
-                            border: new OutlineInputBorder(
-                              borderRadius: const BorderRadius.all(
-                                const Radius.circular(10.0),
-                              ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: Center(
+                    child: TextField(
+                      controller: emailController,
+                      textAlign: TextAlign.center,
+                      inputFormatters: [
+                        LengthLimitingTextInputFormatter(4),
+                      ],
+                      decoration: new InputDecoration(
+                          border: new OutlineInputBorder(
+                            borderRadius: const BorderRadius.all(
+                              const Radius.circular(10.0),
                             ),
-                            filled: true,
-                            hintStyle: new TextStyle(color: Colors.grey[800]),
-                            hintText: "OTP",
-                            fillColor: Colors.white70),
-                      ),
-                      // end onSubmit
+                          ),
+                          filled: true,
+                          hintStyle: new TextStyle(color: Colors.grey[800]),
+                          hintText: "OTP",
+                          fillColor: Colors.white70),
                     ),
+                    // end onSubmit
                   ),
+                ),
 //                  Padding(
 //                    padding: EdgeInsets.fromLTRB(86, 16, 86, 0),
 //                    child: Center(
@@ -112,81 +117,100 @@ class PinState extends State<PinViewUpdatePage> {
 //                      // end onSubmit
 //                    ),
 //                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 32),
-                    child: Center(
-                      child: Text(
-                        "Didn't receive the OTP?",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                        ),
+                Padding(
+                  padding: EdgeInsets.only(top: 32),
+                  child: Center(
+                    child: Text(
+                      "Didn't receive the OTP?",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 16),
-                    child: GestureDetector(
-                      onTap: () {
-                        var bloc = UpdatePhoneBloc();
-                        bloc.fetchData(widget.phone);
-                      },
-                      child: Center(
-                        child: Text(
-                          "RESEND",
-                          style: TextStyle(
-                              color: Colors.colorgreen,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(64, 8, 64, 16),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 16),
                   child: GestureDetector(
                     onTap: () {
-                      if (enteredPin.length == 4) {
-                        verifyOtpWebservice(enteredPin, widget.otp,
-                            widget.phone, widget.password);
-                      } else {
-                        Toast.show("Enter valid OTP", context,
-                            duration: Toast.LENGTH_SHORT,
-                            gravity: Toast.BOTTOM);
-                      }
+                      setState(() {
+                        resendLoader = true;
+                      });
+                      var bloc = UpdatePhoneBloc();
+                      bloc.fetchData(widget.phone);
+                      bloc.phoneData.listen((value) {
+                        setState(() {
+                          resendLoader = false;
+                        });
+                      });
                     },
-                    child: showLoader
-                        ? Container(
-                            decoration: new BoxDecoration(
-                                borderRadius: new BorderRadius.all(
-                                    new Radius.circular(100.0)),
-                                color: Colors.colorgreen),
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 60,
-                              child: Center(
-                                child: CircularProgressIndicator(),
+                    child: Center(
+                      child: !resendLoader
+                          ? Text(
+                              "RESEND",
+                              style: TextStyle(
+                                  color: Colors.colorgreen,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          : Container(
+                              color: Colors.white,
+                              child: SizedBox(
+                                width: double.infinity,
+                                height: 60,
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
                               ),
                             ),
-                          )
-                        : Container(
-                            decoration: new BoxDecoration(
-                                borderRadius: new BorderRadius.all(
-                                    new Radius.circular(100.0)),
-                                color: Colors.colorgreen),
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 60,
-                              child: Center(
-                                child: new Text("Verify",
-                                    style: new TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                    )),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(64, 8, 64, 16),
+                child: GestureDetector(
+                  onTap: () {
+                    enteredPin = emailController.text.toString();
+                    if (enteredPin.length == 4) {
+                      verifyOtpWebservice(enteredPin, widget.otp, widget.phone,
+                          widget.password);
+                    } else {
+                      Toast.show("Enter valid OTP", context,
+                          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                    }
+                  },
+                  child: showLoader
+                      ? Container(
+                          decoration: new BoxDecoration(
+                              borderRadius: new BorderRadius.all(
+                                  new Radius.circular(100.0)),
+                              color: Colors.colorgreen),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 60,
+                            child: Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                          ),
+                        )
+                      : Container(
+                          decoration: new BoxDecoration(
+                              borderRadius: new BorderRadius.all(
+                                  new Radius.circular(100.0)),
+                              color: Colors.colorgreen),
+                          child: SizedBox(
+                            width: double.infinity,
+                            height: 60,
+                            child: Center(
+                              child: new Text("Verify",
+                                  style: new TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                  )),
 //                                colorBrightness: Brightness.dark,
 //                                onPressed: () {
 //                                  if (emailController.text == "" &&
@@ -201,15 +225,14 @@ class PinState extends State<PinViewUpdatePage> {
 //                                  }
 //                                },
 //                                color: Colors.green,
-                              ),
                             ),
                           ),
-                  ),
+                        ),
                 ),
-              )
-            ],
-          ),
-        ),
+              ),
+            )
+          ],
+        )),
       ),
     );
   }
@@ -233,7 +256,7 @@ class PinState extends State<PinViewUpdatePage> {
 //        });
 //        var obj = jsonDecode(res);
 //        if (obj['status'] == "true") {
-    Navigator.pop(context, "yes");
+
 //        }
 //        Toast.show(obj['msg'], context,
 //            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
@@ -247,12 +270,13 @@ class PinState extends State<PinViewUpdatePage> {
       if (res.status == "true") {
         String data = jsonEncode(res.profile);
         _prefs.saveProfile(data);
-        Navigator.of(context).pop();
-      } //else {
+        Navigator.pop(context, "yes");
+      } else {
+        Navigator.pop(context, "yes");
+      }
       Toast.show(res.msg, context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       // }
     });
-//    }
   }
 }

@@ -344,11 +344,11 @@ class stateProfilePage extends State<referEarnProfile> {
                           padding: const EdgeInsets.fromLTRB(32, 32, 32, 0),
                           child: GestureDetector(
                             onTap: () {
-                              Share.plainText(
-                                      text:
-                                          "You can refer your friends and earn bonus credits when they join using your referral code <$code>. Visit our website at http://nfreshonline.com/",
-                                      title: "Share")
-                                  .share();
+//                              Share.share(
+//                                  'Hey! Use referral code <$code> to join NFresh and earn bonus credits. Visit https://nfreshonline.com/ to join now.');
+                              Share.share(
+                                "Hey! Use referral code <$code> to join NFresh and earn bonus credits. Visit https://nfreshonline.com/ to join now.",
+                              );
                             },
                             child: Container(
                               height: 40,

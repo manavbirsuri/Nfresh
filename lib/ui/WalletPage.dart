@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:nfresh/bloc/checksum_bloc.dart';
+import 'package:nfresh/bloc/profile_bloc.dart';
+import 'package:nfresh/bloc/update_profile_bloc.dart';
 import 'package:nfresh/bloc/wallet_bloc.dart';
 import 'package:nfresh/bloc/wallet_update_bloc.dart';
 import 'package:nfresh/models/profile_model.dart';
@@ -38,6 +40,7 @@ class stateProfilePage extends State<stateProfile> {
   var blocCheck = ChecksumBloc();
   var prefs = SharedPrefs();
   var blocWallet = UpdateWalletBloc();
+  var blocProfile = ProfileBloc();
   String checksum = "";
   String orderId = "";
 //  Map<String, dynamic> mapPayTm = {
@@ -96,11 +99,25 @@ class stateProfilePage extends State<stateProfile> {
   }
 
   getProfileDetail() {
-    prefs.getProfile().then((profile) {
-      setState(() {
-        profileModel = profile;
-        credits = profileModel.walletCredits;
-      });
+    blocProfile.fetchData();
+    blocProfile.profileData.listen((res) {
+      print("Profile Status = " + res.status);
+      if (res.status == "true") {
+        setState(() {
+          profileModel = res.profile;
+        });
+
+        String profileData = jsonEncode(res.profile);
+        prefs.saveProfile(profileData);
+
+        // getProfileDetail();
+        prefs.getProfile().then((profile) {
+          setState(() {
+            profileModel = profile;
+            credits = profileModel.walletCredits;
+          });
+        });
+      }
     });
   }
 
@@ -183,7 +200,7 @@ class stateProfilePage extends State<stateProfile> {
                   textBaseline: TextBaseline.alphabetic,
                   children: <Widget>[
                     Text(
-                      credits.toString(),
+                      credits.toInt().toString(),
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 52,
@@ -254,7 +271,7 @@ class stateProfilePage extends State<stateProfile> {
                                       Container(
                                         margin: EdgeInsets.only(top: 16),
                                         child: Text(
-                                          'Select Amount to Add Credits',
+                                          'Select Amount (in Rs.) to Add Credits',
                                           style: TextStyle(
                                               fontSize: 16,
                                               color: Colors.colorgreen),
@@ -611,7 +628,7 @@ class stateProfilePage extends State<stateProfile> {
         });
       } else {
         // payment failure
-        _showDialog("Payment payment processing error.");
+        _showDialog("Payment processing error.");
       }
     }
   }

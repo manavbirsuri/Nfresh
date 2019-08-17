@@ -28,7 +28,6 @@ import 'package:share/share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import 'bloc/get_fav_bloc.dart';
 import 'bloc/home_bloc.dart';
 import 'bloc/logout_bloc.dart';
@@ -323,6 +322,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 //    if (pos != 3) {
 //      mainProduct.clear();
 //    }
+
     switch (pos) {
       case 0:
         return Container(
@@ -377,7 +377,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         );
       case 1:
         return Text(
-          'WishList',
+          'Wishlist',
           style: TextStyle(fontWeight: FontWeight.bold),
         );
       case 2:
@@ -755,10 +755,21 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               ),
                               onTap: () {
                                 Navigator.of(context).pop();
-                                Navigator.push(
+                                if (profile == null) {
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => WalletPage()));
+                                      builder: (context) => LoginPage(
+                                        from: 0,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => WalletPage()));
+                                }
                               },
                             ),
                             Divider(
@@ -779,23 +790,34 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               ),
                               onTap: () {
                                 Navigator.pop(context);
-                                Utils.checkInternet().then((connected) {
-                                  if (connected != null && connected) {
-                                    blocFavGet.fetchFavData();
-                                    changeTabs(1, snapshot);
-                                    setState(() {
-                                      network = true;
-                                    });
-                                  } else {
-                                    setState(() {
-                                      showLoader = false;
-                                    });
-                                    Toast.show(
-                                        "Not connected to internet", context,
-                                        duration: Toast.LENGTH_SHORT,
-                                        gravity: Toast.BOTTOM);
-                                  }
-                                });
+                                if (profile == null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LoginPage(
+                                        from: 0,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  Utils.checkInternet().then((connected) {
+                                    if (connected != null && connected) {
+                                      blocFavGet.fetchFavData();
+                                      changeTabs(1, snapshot);
+                                      setState(() {
+                                        network = true;
+                                      });
+                                    } else {
+                                      setState(() {
+                                        showLoader = false;
+                                      });
+                                      Toast.show(
+                                          "Not connected to internet", context,
+                                          duration: Toast.LENGTH_SHORT,
+                                          gravity: Toast.BOTTOM);
+                                    }
+                                  });
+                                }
                               },
                             ),
                             Divider(
@@ -816,13 +838,24 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               ),
                               onTap: () {
                                 Navigator.of(context).pop();
-                                Navigator.push(
+                                if (profile == null) {
+                                  Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => OrderHistory(),
-                                    )).then((onValue) {
-                                  getCartCount();
-                                });
+                                      builder: (context) => LoginPage(
+                                        from: 0,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => OrderHistory(),
+                                      )).then((onValue) {
+                                    getCartCount();
+                                  });
+                                }
                               },
                             ),
                             Divider(
@@ -886,12 +919,12 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                             ),
                             ListTile(
                               leading: Image.asset(
-                                'assets/help.png',
+                                'assets/referearn.png',
                                 width: 30.0,
                                 height: 30.0,
                               ),
                               title: Text(
-                                "Refers & Earn",
+                                "Refer & Earn",
                                 style: TextStyle(
                                   fontSize: 18,
                                 ),
@@ -1369,11 +1402,36 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                               child: GestureDetector(
                                 onTap: () {
                                   if (profile != null) {
-                                    Share.plainText(
-                                            text:
-                                                "You can refer your friends and earn bonus credits when they join using your referral code <$codee>. Visit our website at http://nfreshonline.com/",
-                                            title: "Share")
-                                        .share();
+//                                    WcFlutterShare.share(
+//                                        sharePopupTitle: 'Share',
+//                                        subject: 'This is subject',
+//                                        text: 'This is text',
+//                                        mimeType: 'text/plain');
+//                                    Share.share(
+//                                        'Hey! Use referral code <$codee> to join NFresh and earn bonus credits. Visit https://nfreshonline.com/ to join now.');
+//
+
+//                                    Share.text(
+//                                        'my text title',
+//                                        'This is my text to share with other applications.',
+//                                        'text/plain');
+                                    if (Platform.isIOS) {
+                                      Share.share(
+                                          ('Hey! Use referral code <$codee> to join NFresh and earn bonus credits. Visit https://nfreshonline.com/ to join now.'));
+                                    } else {
+                                      Share.share(
+                                          'Hey! Use referral code <$codee> to join NFresh and earn bonus credits. Visit https://nfreshonline.com/ to join now.');
+                                    }
+
+//                                    final RenderBox box =
+//                                        context.findRenderObject();
+//                                    Share.plainText(
+//                                      text:
+//                                          "Hey!",
+//                                    ).share(
+//                                        sharePositionOrigin:
+//                                            box.localToGlobal(Offset.zero) &
+//                                                box.size);
                                   } else {
                                     goToLogin();
                                     // showAlertMessage(context);
@@ -2521,14 +2579,20 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 
   Widget noDataViewFav() {
     return Container(
+      width: double.infinity,
       child: Column(
         mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text(
-            "No products in your wishlist",
-            textAlign: TextAlign.center,
+          Image.asset('assets/noproduct.png'),
+          Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+              "No products in your wishlist",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
           ),
         ],
       ),
@@ -3696,8 +3760,15 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     });
   }
 
+//mailto:smith@example.org?subject=News&body=New%20Flutter%20plugin
   void openEmailComposer() async {
-    var url = 'mailto:"support@nfreshonline.com"?subject="Get in touch"&body=';
+    var url = "";
+    if (Platform.isIOS) {
+      url = 'mailto:support@nfreshonline.com?subject=Get%20in%20touch&body=';
+    } else {
+      url = 'mailto:support@nfreshonline.com?subject=Get in touch&body=';
+    }
+
     if (await canLaunch(url)) {
       await launch(url);
     } else {

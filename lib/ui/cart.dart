@@ -908,40 +908,44 @@ class _MyCustomFormState extends State<CartPage> {
             ),
           ),
           Container(
-            padding: EdgeInsets.only(left: 16, top: 8, right: 16),
-            child: DropdownButton<String>(
-              isExpanded: true,
-              value: selectedMethod,
-              onChanged: (String newValue) {
-                setState(() {
-                  selectedMethod = newValue;
-                  if (newValue == "Cash on delivery" ||
-                      newValue == "Select Payment method") {
+            padding: EdgeInsets.only(left: 0, top: 8, right: 16),
+            child: DropdownButtonHideUnderline(
+              child: ButtonTheme(
+                alignedDropdown: false,
+                child: DropdownButton<String>(
+                  isExpanded: true,
+                  value: selectedMethod,
+                  onChanged: (String newValue) {
                     setState(() {
-                      walletDiscount = 0;
+                      selectedMethod = newValue;
+                      if (newValue == "Cash on delivery" ||
+                          newValue == "Select Payment method") {
+                        setState(() {
+                          walletDiscount = 0;
+                        });
+                      }
                     });
-                  }
-                });
-              },
-              items: <String>['Pay online', 'Cash on delivery']
-                  .map<DropdownMenuItem<String>>((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Padding(
-                      padding: EdgeInsets.only(left: 16), child: Text(value)),
-                );
-              }).toList(),
+                  },
+                  items: <String>['Pay online', 'Cash on delivery']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Padding(
+                          padding: EdgeInsets.only(left: 16),
+                          child: Text(value)),
+                    );
+                  }).toList(),
+                ),
+              ),
             ),
           ),
-//          Padding(
-//            padding: EdgeInsets.only(
-//              top: 0,
-//            ),
-//            child: Divider(
-//              color: Colors.grey,
-//              height: 1,
-//            ),
-//          ),
+          Padding(
+            padding: EdgeInsets.only(top: 0, left: 16, right: 16),
+            child: Divider(
+              color: Colors.grey,
+              height: 1,
+            ),
+          ),
           ListTile(
             title: Text(
               'Coupons',
@@ -1080,7 +1084,7 @@ class _MyCustomFormState extends State<CartPage> {
                           ),
                           Text(
                             walletBalance > 0
-                                ? walletBalance.toString()
+                                ? walletBalance.toInt().toString()
                                 : "Add",
                             style: TextStyle(
                               fontSize: 16,
@@ -1611,11 +1615,20 @@ class _MyCustomFormState extends State<CartPage> {
     return Container(
       color: Colors.white,
       child: Center(
-        child: Text(
-          "No item in your cart",
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-        ),
-      ),
+          child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Image.asset('assets/noproduct.png'),
+          Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+              "No products in your cart",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ),
+        ],
+      )),
     );
   }
 

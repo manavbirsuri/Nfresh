@@ -134,11 +134,17 @@ class ForgotPasswordState extends State<ForgotPasswordPage> {
                                                           'Enter Mobile No.'),
                                                   textAlign: TextAlign.start,
                                                   inputFormatters: [
+                                                    WhitelistingTextInputFormatter
+                                                        .digitsOnly,
                                                     LengthLimitingTextInputFormatter(
                                                         10),
+                                                    BlacklistingTextInputFormatter(
+                                                        new RegExp(
+                                                            '[\\.|\\,]')),
                                                   ],
-                                                  keyboardType:
-                                                      TextInputType.phone,
+                                                  keyboardType: TextInputType
+                                                      .numberWithOptions(
+                                                          decimal: false),
                                                   textInputAction:
                                                       TextInputAction.next,
                                                 ),

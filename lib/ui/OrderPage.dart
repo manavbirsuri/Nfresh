@@ -151,7 +151,7 @@ class StateOrderPage extends State<OrderPage> {
           children: <Widget>[
             ListTile(
               title: Text(
-                'Order No: ${orderDetail.order.orderId}',
+                'Order Id: ${orderDetail.order.orderId}',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               contentPadding: EdgeInsets.all(0),
@@ -159,6 +159,14 @@ class StateOrderPage extends State<OrderPage> {
                 orderDetail.order.status,
                 style:
                     TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+            ),
+            Container(
+              width: double.infinity,
+              child: Text(
+                "COD",
+                textAlign: TextAlign.end,
+                style: TextStyle(color: Colors.deepOrangeAccent),
               ),
             ),
             ListTile(
@@ -175,10 +183,15 @@ class StateOrderPage extends State<OrderPage> {
               ),
               trailing: Padding(
                 padding: EdgeInsets.only(top: 8),
-                child: Text(
-                  'Rs ${orderDetail.order.total} / ${orderDetail.order.products.length} Items',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
+                child: orderDetail.order.products.length < 2
+                    ? Text(
+                        '₹ ${orderDetail.order.total.toInt()} / ${orderDetail.order.products.length} Item',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      )
+                    : Text(
+                        '₹ ${orderDetail.order.total.toInt()} / ${orderDetail.order.products.length} Items',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
               ),
             ),
             Expanded(
