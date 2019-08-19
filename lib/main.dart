@@ -3774,22 +3774,10 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     } else {
       throw 'Could not launch $url';
     }
-//    final Email email = Email(
-//      body: '',
-//      subject: 'Get in touch',
-//      recipients: ['nfreshventures@gmail.com'],
-////      cc: ['cc@example.com'],
-////      bcc: ['bcc@example.com'],
-//      // attachmentPath: '/path/to/attachment.zip',
-//    );
-//
-//    await FlutterEmailSender.send(email);
+
   }
 
   Future<void> _refreshStockPrices() async {
-//    setState(() {
-//      showLoader = true;
-//    });
     Utils.checkInternet().then((connected) {
       if (connected != null && connected) {
         bloc.fetchHomeData(mToken);
