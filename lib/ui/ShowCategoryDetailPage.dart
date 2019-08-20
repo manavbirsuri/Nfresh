@@ -19,6 +19,7 @@ import 'package:toast/toast.dart';
 import '../utils.dart';
 import 'SearchPageActivity.dart';
 import 'login.dart';
+import 'notifications.dart';
 
 class ShowCategoryDetailPage extends StatefulWidget {
   final Category subCategory;
@@ -145,12 +146,21 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
               ),
               centerTitle: true,
               actions: [
-                Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Image.asset(
-                    "assets/noti.png",
-                    height: 25,
-                    width: 25,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NotificationPage(),
+                        ));
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.all(8),
+                    child: Image.asset(
+                      "assets/noti.png",
+                      height: 25,
+                      width: 25,
+                    ),
                   ),
                 ),
                 GestureDetector(
@@ -204,18 +214,21 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                 ),
               ],
             ),
-            floatingActionButton: Padding(
-              padding: const EdgeInsets.only(bottom: 50.0),
-              child: FloatingActionButton(
-                child: Icon(Icons.search),
-                backgroundColor: Colors.colorgreen,
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SearchPageActivity(),
-                      ));
-                },
+            floatingActionButton: Align(
+              alignment: Alignment.bottomLeft,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 50.0, left: 20),
+                child: FloatingActionButton(
+                  child: Icon(Icons.search),
+                  backgroundColor: Colors.colorgreen,
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => SearchPageActivity(),
+                        ));
+                  },
+                ),
               ),
             ),
             body: showLoader
@@ -1360,7 +1373,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
       // Future.delayed(const Duration(milliseconds: 500), () async {});
     } else {
       Toast.show(
-          "Available quantity : " + product.inventory.toString(), context,
+          "Cannot add more than " + product.inventory.toString(), context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
   }

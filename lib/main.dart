@@ -2165,7 +2165,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       });
     } else {
       Toast.show(
-          "Available quantity : " + product.inventory.toString(), context,
+          "Cannot add more than " + product.inventory.toString(), context,
           duration: 6, gravity: Toast.BOTTOM);
     }
   }

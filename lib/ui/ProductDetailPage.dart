@@ -1097,7 +1097,7 @@ class ProState extends State<ProductDetailPage> {
       // Future.delayed(const Duration(milliseconds: 500), () async {});
     } else {
       Toast.show(
-          "Available quantity : " + product.inventory.toString(), context,
+          "Cannot add more than " + product.inventory.toString(), context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
     }
   }

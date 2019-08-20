@@ -1469,7 +1469,7 @@ class _MyHomePageState extends State<SearchPage> {
       });
     } else {
       Toast.show(
-          "Available quantity : " + product.inventory.toString(), context,
+          "Cannot add more than " + product.inventory.toString(), context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
 //      Scaffold.of(context).showSnackBar(new SnackBar(
 //        content: new Text("Available inventory : ${product.inventory}"),
