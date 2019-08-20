@@ -810,7 +810,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                   decoration:
                                                       myBoxDecoration2(),
                                                   padding: EdgeInsets.fromLTRB(
-                                                      9, 0, 9, 0),
+                                                      8, 0, 8, 0),
                                                   child: Image.asset(
                                                     'assets/minus.png',
                                                     height: 10,
@@ -821,8 +821,8 @@ class _MyCustomFormState extends State<CartPage> {
                                             ),
                                             Container(
                                               margin: EdgeInsets.only(
-                                                  left: 8,
-                                                  right: 8,
+                                                  left: 4,
+                                                  right: 4,
                                                   top: 4,
                                                   bottom: 4),
                                               child: Center(
@@ -862,7 +862,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                   decoration:
                                                       myBoxDecoration2(),
                                                   padding: EdgeInsets.fromLTRB(
-                                                      9, 0, 9, 0),
+                                                      8, 0, 8, 0),
                                                   child: Image.asset(
                                                     'assets/plus.png',
                                                     height: 10,
@@ -1498,8 +1498,10 @@ class _MyCustomFormState extends State<CartPage> {
       _database.update(product);
     } else {
       Toast.show(
-          "Cannot add more than " + product.inventory.toString(), context,
-          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+          "Current available quantity is " + product.inventory.toString(),
+          context,
+          duration: Toast.LENGTH_SHORT,
+          gravity: Toast.BOTTOM);
     }
   }
 

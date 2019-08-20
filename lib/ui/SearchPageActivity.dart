@@ -1447,8 +1447,10 @@ class _MyHomePageState extends State<SearchPageActivity> {
       });
     } else {
       Toast.show(
-          "Cannot add more than " + product.inventory.toString(), context,
-          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+          "Current available quantity is " + product.inventory.toString(),
+          context,
+          duration: Toast.LENGTH_SHORT,
+          gravity: Toast.BOTTOM);
     }
   }
 

@@ -167,7 +167,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     });
 
     bloc.homeData.listen((response) {
-      homeResponse = response;
+      setState(() {
+        homeResponse = response;
+      });
 
       // initPlatformState();
       //blocFavGet.fetchFavData();
@@ -1949,14 +1951,14 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                     },
                                                     child: Container(
                                                       padding: EdgeInsets.only(
-                                                          left: 20),
+                                                          left: 17),
                                                       // color: Colors.white,
                                                       child: Container(
                                                         decoration:
                                                             myBoxDecoration2(),
                                                         padding:
                                                             EdgeInsets.fromLTRB(
-                                                                12, 0, 12, 0),
+                                                                8, 0, 8, 0),
                                                         child: Image.asset(
                                                           'assets/minus.png',
                                                           height: 12,
@@ -1996,17 +1998,17 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                     child: Container(
                                                       //  color: Colors.white,
                                                       padding: EdgeInsets.only(
-                                                          right: 20),
+                                                          right: 17),
                                                       child: Container(
                                                         decoration:
                                                             myBoxDecoration2(),
                                                         padding:
                                                             EdgeInsets.fromLTRB(
-                                                                12, 0, 12, 0),
+                                                                8, 0, 8, 0),
                                                         child: Image.asset(
                                                           'assets/plus.png',
-                                                          height: 12,
-                                                          width: 12,
+                                                          height: 10,
+                                                          width: 10,
                                                         ),
                                                       ),
                                                     ),
@@ -2162,11 +2164,14 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       _database.update(product);
       Future.delayed(const Duration(milliseconds: 500), () {
         onCartUpdate();
+        //updateProducts();
       });
     } else {
       Toast.show(
-          "Cannot add more than " + product.inventory.toString(), context,
-          duration: 6, gravity: Toast.BOTTOM);
+          "Current available quantity is " + product.inventory.toString(),
+          context,
+          duration: 6,
+          gravity: Toast.BOTTOM);
     }
   }
 
@@ -2180,6 +2185,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     }
     Future.delayed(const Duration(milliseconds: 500), () {
       onCartUpdate();
+      //updateProducts();
     });
   }
 
@@ -3802,11 +3808,45 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
   }
 
   Future<void> _refreshStockPrices() async {
+    List<Product> productss = List();
+    productss = await _database.queryAllProducts();
     Utils.checkInternet().then((connected) {
       if (connected != null && connected) {
         bloc.fetchHomeData(mToken);
-        _refreshController.refreshCompleted();
-        _refreshController.loadComplete();
+        bloc.homeData.listen((response) {
+          setState(() {
+            homeResponse = response;
+          });
+
+          for (int i = 0; i < homeResponse.sections.length; i++) {
+            // var products = snapshot.sections[i].products;
+            for (int j = 0; j < homeResponse.sections[i].products.length; j++) {
+//              var product =  _database
+//                  .queryConditionalProduct(homeResponse.sections[i].products[j]);
+              for (int k = 0; k < productss.length; k++) {
+                if (homeResponse.sections[i].products[j].id ==
+                    productss[k].id) {
+//                product.selectedDisplayPrice = getCalculatedPrice(product);
+                  setState(() {
+                    homeResponse.sections[i].products[j].count =
+                        productss[k].count;
+                    _database
+                        .updateQuantity(homeResponse.sections[i].products[j]);
+                    //homeResponse.sections[i].products[j] = product;
+                  });
+                }
+              }
+            }
+          }
+          // initPlatformState();
+          //blocFavGet.fetchFavData();
+          //favObserver();
+          updateProducts();
+//      _refreshController.refreshCompleted();
+//      _refreshController.loadComplete();
+          _refreshController.refreshCompleted();
+          _refreshController.loadComplete();
+        });
       } else {
         setState(() {
           showLoader = false;

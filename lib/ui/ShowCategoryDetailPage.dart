@@ -1373,8 +1373,10 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
       // Future.delayed(const Duration(milliseconds: 500), () async {});
     } else {
       Toast.show(
-          "Cannot add more than " + product.inventory.toString(), context,
-          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+          "Current available quantity is " + product.inventory.toString(),
+          context,
+          duration: Toast.LENGTH_SHORT,
+          gravity: Toast.BOTTOM);
     }
   }
 
@@ -1918,12 +1920,11 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                     decrementCount(products[index]);
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.only(left: 20),
+                                    padding: EdgeInsets.only(left: 18),
                                     // color: Colors.white,
                                     child: Container(
                                       decoration: myBoxDecoration2(),
-                                      padding:
-                                          EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                                       child: Image.asset(
                                         'assets/minus.png',
                                         height: 12,
@@ -1952,11 +1953,10 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                   },
                                   child: Container(
                                     //  color: Colors.white,
-                                    padding: EdgeInsets.only(right: 20),
+                                    padding: EdgeInsets.only(right: 18),
                                     child: Container(
                                       decoration: myBoxDecoration2(),
-                                      padding:
-                                          EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      padding: EdgeInsets.fromLTRB(8, 0, 8, 0),
                                       child: Image.asset(
                                         'assets/plus.png',
                                         height: 12,
