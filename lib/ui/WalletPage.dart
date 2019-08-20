@@ -219,7 +219,7 @@ class stateProfilePage extends State<stateProfile> {
               Center(
                 child: Padding(
                   padding: EdgeInsets.only(
-                    bottom: 0,
+                    bottom: 10,
                   ),
                   child: Text(
                     'available balance',
@@ -244,7 +244,7 @@ class stateProfilePage extends State<stateProfile> {
           ),
         ),
         Container(
-          margin: EdgeInsets.only(top: 95, right: 20, left: 20),
+          margin: EdgeInsets.only(top: 105, right: 20, left: 20),
           child: Material(
             elevation: 16.0,
             borderRadius: BorderRadius.only(

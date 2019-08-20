@@ -11,8 +11,10 @@ import '../main.dart';
 class PaymentSuccessPage extends StatefulWidget {
   final response;
   final cartExtra;
+  final method;
+
   const PaymentSuccessPage(
-      {Key key, this.response, this.cartExtra, String from})
+      {Key key, this.response, this.cartExtra, String from, this.method})
       : super(key: key);
   @override
   State<StatefulWidget> createState() {
@@ -30,10 +32,15 @@ class PaymentState extends State<PaymentSuccessPage> {
   var blocProfile = ProfileBloc();
   bool showLoader = false;
   bool showLoaderee = false;
-
+  var title = "Payment";
   @override
   void initState() {
     super.initState();
+    if (widget.method == "Cash on delivery") {
+      setState(() {
+        title = "Processing";
+      });
+    }
     if (widget.response != "") {
       print("JSON: ${widget.response}");
       var obj = jsonDecode(widget.response);
@@ -46,6 +53,7 @@ class PaymentState extends State<PaymentSuccessPage> {
         });
       } else {
         // payment failure
+        Navigator.pop(context);
         setState(() {
           isSuccess = false;
           message = "Payment processing error.";
@@ -68,10 +76,13 @@ class PaymentState extends State<PaymentSuccessPage> {
       setState(() {
         showLoader = false;
         showLoaderee = true;
+        title = "Payment";
         message = obj['msg'];
       });
       if (status == "true") {
         _database.clearCart();
+      } else {
+        Navigator.pop(context);
       }
     });
   }
@@ -90,63 +101,97 @@ class PaymentState extends State<PaymentSuccessPage> {
           ),
         ),
         Scaffold(
-          backgroundColor: Colors.colorgreen.withOpacity(0.5),
-          appBar: AppBar(
-            backgroundColor: Colors.colorgreen.withOpacity(0.0),
-            title: Text(
-              'Payment',
-              style: TextStyle(fontWeight: FontWeight.bold),
+            backgroundColor: Colors.colorgreen.withOpacity(0.5),
+            appBar: AppBar(
+              backgroundColor: Colors.colorgreen.withOpacity(0.0),
+              title: Text(
+                title,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              centerTitle: true,
             ),
-            centerTitle: true,
-          ),
-          body: Container(
-            color: Colors.white,
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
+            body:
                 // message == "Payment is successfull"
                 showLoaderee
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Image.asset("assets/placeorder.png"),
-                          Padding(
-                            padding: EdgeInsets.only(top: 16),
-                            child: Text(message),
-                          ),
-                          showLoader
-                              ? Center(child: CircularProgressIndicator())
-                              : FlatButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => DashBoard(),
-                                        ));
-//                                    Navigator.pop(context);
-//                                    //if (isSuccess) {
-//                                    Route route = MaterialPageRoute(
-//                                      builder: (context) => DashBoard(),
-//                                    );
-                                    //Navigator.pushReplacement(context, route);
-                                    //}
-                                  },
-                                  child: Text(
-                                    "Done",
-                                    style: TextStyle(
-                                        color: Colors.green,
-                                        fontWeight: FontWeight.bold),
+                    ? Container(
+                        color: Colors.white,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[
+                            Flexible(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.max,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Image.asset("assets/placeorder.png"),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 20),
+                                    child: Text(
+                                      message,
+                                      style: TextStyle(fontSize: 18),
+                                    ),
                                   ),
-                                )
-                        ],
-                      )
-                    : Center(child: CircularProgressIndicator())
-                //: Text("")
-              ],
+                                ],
+                              ),
+                              flex: 4,
+                            ),
+                            showLoader
+                                ? Center(child: CircularProgressIndicator())
+                                : Flexible(
+                                    child: Container(
+                                      child: Align(
+                                        alignment: Alignment.center,
+                                        child: FlatButton(
+                                          onPressed: () {
+                                            Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        DashBoard()),
+                                                ModalRoute.withName("/Home"));
+                                          },
+                                          child: Padding(
+                                            padding: EdgeInsets.only(top: 16),
+                                            child: Container(
+                                              decoration: new BoxDecoration(
+                                                  borderRadius:
+                                                      new BorderRadius.all(
+                                                          new Radius.circular(
+                                                              100.0)),
+                                                  color: Colors.colorgreen),
+                                              child: SizedBox(
+                                                width: 150,
+                                                height: 40,
+                                                child: Center(
+                                                  child:
+                                                      new Text("Back to Home",
+                                                          style: new TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 16,
+                                                          )),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+
+//                                  Text(
+//                                    "Done",
+//                                    style: TextStyle(
+//                                        color: Colors.green,
+//                                        fontWeight: FontWeight.bold),
+//                                  ),
+                                        ),
+                                      ),
+                                    ),
+                                    flex: 1,
+                                  )
+                          ],
+                        ))
+                    : Container(
+                        color: Colors.white,
+                        child: Center(child: CircularProgressIndicator()))
+            //: Text("")
             ),
-          ),
-        )
       ],
     );
   }

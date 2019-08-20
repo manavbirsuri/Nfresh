@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,7 +44,19 @@ import 'models/responses/response_getFavorite.dart';
 import 'models/responses/response_search.dart';
 import 'models/section_model.dart';
 
-void main() => runApp(MyApp());
+void backgroundFetchHeadlessTask() async {
+  BackgroundFetch.finish();
+}
+
+void main() {
+  // Enable integration testing with the Flutter Driver extension.
+  // See https://flutter.io/testing/ for more info.
+  runApp(new MyApp());
+
+  // Register to receive BackgroundFetch events after app is terminated.
+  // Requires {stopOnTerminate: false, enableHeadless: true}
+  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
+}
 
 class MyApp extends StatelessWidget {
   @override
@@ -139,7 +152,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         blocProfile.fetchData();
         profileObserver();
         // blocFavGet.fetchFavData();
-        favObserver();
+        //favObserver();
         setState(() {
           network = true;
         });
@@ -149,18 +162,16 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
           showLoader = false;
         });
         Toast.show("Not connected to internet", context,
-            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+            duration: 6, gravity: Toast.BOTTOM);
       }
     });
 
     bloc.homeData.listen((response) {
       homeResponse = response;
-      setState(() {
-        showLoader = false;
-      });
 
+      // initPlatformState();
       //blocFavGet.fetchFavData();
-      favObserver();
+      //favObserver();
       updateProducts();
 //      _refreshController.refreshCompleted();
 //      _refreshController.loadComplete();
@@ -196,27 +207,30 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         }
       }
     }
+    setState(() {
+      showLoader = false;
+    });
   }
 
   Future updateFavProducts() async {
-//    if (favResponse != null &&
-//        favResponse.products != null &&
-//        favResponse.products.length > 0) {
-//      for (int i = 0; i < favResponse.products.length; i++) {
-//        var product =
-//            await _database.queryConditionalProduct(favResponse.products[i]);
-//        if (product != null) {
-//          product.selectedDisplayPrice = getCalculatedPrice(product);
-//          setState(() {
-//            favResponse.products[i] = product;
-//          });
-//        } else {
-//          setState(() {
-//            favResponse.products[i].count = 0;
-//          });
-//        }
-//      }
-//    }
+    if (favResponse != null &&
+        favResponse.products != null &&
+        favResponse.products.length > 0) {
+      for (int i = 0; i < favResponse.products.length; i++) {
+        var product =
+            await _database.queryConditionalProduct(favResponse.products[i]);
+        if (product != null) {
+          product.selectedDisplayPrice = getCalculatedPrice(product);
+          setState(() {
+            favResponse.products[i] = product;
+          });
+        } else {
+          setState(() {
+            favResponse.products[i].count = 0;
+          });
+        }
+      }
+    }
   }
 
   Future updateSearchProducts() async {
@@ -246,7 +260,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         showLoaderFav = false;
       });
       favResponse = resFav;
-      updateFavProducts();
+      // updateFavProducts();
       List<Product> product1 = resFav.products;
       if (product1.length > 0) {
         for (int i = 0; i < product1.length; i++) {
@@ -259,6 +273,9 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
           }
         }
       }
+    });
+    setState(() {
+      showLoader = false;
     });
   }
 
@@ -342,7 +359,8 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         );
       // return new HomePage(data: snapshot, listener: this);
       case 1:
-        // blocFavGet.fetchFavData();
+        //blocFavGet.fetchFavData();
+        favObserver();
         return Container(
           color: Colors.white,
           child: Column(
@@ -813,8 +831,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                       });
                                       Toast.show(
                                           "Not connected to internet", context,
-                                          duration: Toast.LENGTH_SHORT,
-                                          gravity: Toast.BOTTOM);
+                                          duration: 6, gravity: Toast.BOTTOM);
                                     }
                                   });
                                 }
@@ -1014,7 +1031,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                           Toast.show(
                                               "Not connected to internet",
                                               context,
-                                              duration: Toast.LENGTH_SHORT,
+                                              duration: 6,
                                               gravity: Toast.BOTTOM);
                                         }
                                       });
@@ -1116,7 +1133,11 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         currentIndex: _curIndex,
         onTap: (index) {
           if (index == 1) {
-            blocFavGet.fetchFavData();
+            if (profile != null) {
+              blocFavGet.fetchFavData();
+            } else {
+              goToLogin();
+            }
           }
 
           setState(() {
@@ -1134,14 +1155,18 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                   profileObserver();
 
                   blocFavGet.fetchFavData();
-                  favObserver();
+                 favObserver();
                 });*/
                 _getDrawerItemWidget(0, snapshot);
                 updateProducts();
                 // homeWidget(homeResponse);
                 break;
               case 1:
-                _getDrawerItemWidget(1, snapshot);
+                if (profile != null) {
+                  _getDrawerItemWidget(1, snapshot);
+                } else {
+                  goToLogin();
+                }
                 break;
               case 2:
                 _getDrawerItemWidget(2, snapshot);
@@ -1415,13 +1440,13 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 //                                        'my text title',
 //                                        'This is my text to share with other applications.',
 //                                        'text/plain');
-                                    if (Platform.isIOS) {
-                                      Share.share(
-                                          ('Hey! Use referral code <$codee> to join NFresh and earn bonus credits. Visit https://nfreshonline.com/ to join now.'));
-                                    } else {
-                                      Share.share(
-                                          'Hey! Use referral code <$codee> to join NFresh and earn bonus credits. Visit https://nfreshonline.com/ to join now.');
-                                    }
+//                                    if (Platform.isIOS) {
+//                                       } else {
+//                                      Share.share(
+//                                          'Hey! Use referral code <$codee> to join NFresh and earn bonus credits. Visit https://nfreshonline.com/ to join now.');
+//                                    }
+                                    Share.share(
+                                        ('Hey! Use referral code <$codee> to join NFresh and earn bonus credits. Visit https://nfreshonline.com/ to join now.'));
 
 //                                    final RenderBox box =
 //                                        context.findRenderObject();
@@ -1557,13 +1582,12 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                           showLoader = false;
                         });
                         Toast.show("Not connected to internet", context,
-                            duration: Toast.LENGTH_SHORT,
-                            gravity: Toast.BOTTOM);
+                            duration: 6, gravity: Toast.BOTTOM);
                       }
                     });
 
                     onCartUpdate();
-                    // updateProducts();
+                    updateProducts();
                   });
                 },
                 child: Card(
@@ -1692,8 +1716,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                                             Toast.show(
                                                                 "Not connected to internet",
                                                                 context,
-                                                                duration: Toast
-                                                                    .LENGTH_SHORT,
+                                                                duration: 6,
                                                                 gravity: Toast
                                                                     .BOTTOM);
                                                           }
@@ -2028,7 +2051,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                           ShowCategoryDetailPage(subCategory: category)))
               .then((value) {
             onCartUpdate();
-            // updateProducts();
+            updateProducts();
           });
         },
         child: Column(
@@ -2143,7 +2166,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     } else {
       Toast.show(
           "Available quantity : " + product.inventory.toString(), context,
-          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+          duration: 6, gravity: Toast.BOTTOM);
     }
   }
 
@@ -2204,11 +2227,13 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 //***************************************************************
 
   Widget wishListWidget() {
+//
     return Container(
         color: Colors.white,
         child: showLoaderFav
             ? Column(
                 mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[Center(child: CircularProgressIndicator())],
               )
             : bodyViewFav()
@@ -2262,7 +2287,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                     showMessageFav2(context, products);
                   } else {
                     Toast.show("Not connected to internet", context,
-                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                        duration: 6, gravity: Toast.BOTTOM);
                   }
                 });
               },
@@ -2272,7 +2297,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                 color: Colors.colorgreen,
                 child: Center(
                   child: Text(
-                    "Clear WishList",
+                    "Clear Wishlist",
                     style: TextStyle(
                         color: Colors.white, fontWeight: FontWeight.bold),
                   ),
@@ -2462,8 +2487,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                                 } else {
                                   Toast.show(
                                       "Not connected to internet", context,
-                                      duration: Toast.LENGTH_SHORT,
-                                      gravity: Toast.BOTTOM);
+                                      duration: 6, gravity: Toast.BOTTOM);
                                 }
                               });
                             },
@@ -2628,7 +2652,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                       showLoader = false;
                     });
                     Toast.show("Not connected to internet", context,
-                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                        duration: 6, gravity: Toast.BOTTOM);
                   }
                 });
               },
@@ -2653,7 +2677,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         return AlertDialog(
           title: new Text("Alert!"),
           content: new Text(
-              "Would you like to remove all product from your Wishlist?"),
+              "Would you like to remove all the products from your Wishlist?"),
           actions: <Widget>[
             // usually buttons at the bottom of the dialog
             new FlatButton(
@@ -2677,7 +2701,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                       showLoader = false;
                     });
                     Toast.show("Not connected to internet", context,
-                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                        duration: 6, gravity: Toast.BOTTOM);
                   }
                 });
               },
@@ -3706,6 +3730,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       Utils.checkInternet().then((connected) {
         if (connected != null && connected) {
           bloc.fetchHomeData(mToken);
+
           setState(() {
             network = true;
           });
@@ -3715,7 +3740,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
             showLoader = false;
           });
           Toast.show("Not connected to internet", context,
-              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+              duration: 6, gravity: Toast.BOTTOM);
         }
       });
     });
@@ -3729,7 +3754,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 //          MaterialPageRoute(builder: (context) => NotificationPage()),
 //        );
         Toast.show(json.toString(), context,
-            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+            duration: 6, gravity: Toast.BOTTOM);
       },
       onResume: (Map<String, dynamic> message) async {
         print('on resume $message');
@@ -3774,7 +3799,6 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     } else {
       throw 'Could not launch $url';
     }
-
   }
 
   Future<void> _refreshStockPrices() async {
@@ -3788,7 +3812,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
           showLoader = false;
         });
         Toast.show("Not connected to internet", context,
-            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+            duration: 6, gravity: Toast.BOTTOM);
       }
     });
   }
@@ -3811,6 +3835,66 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     await prefs.setString('couponCode', "");
     await prefs.setInt('discount', 0);
     await prefs.setString('walletBal', "");
+  }
+
+  Future<void> initPlatformState() async {
+    // Configure BackgroundFetch.
+    BackgroundFetch.configure(
+        BackgroundFetchConfig(
+            minimumFetchInterval: 15,
+            stopOnTerminate: false,
+            enableHeadless: true), () async {
+      // This is the fetch-event callback.
+      print('[BackgroundFetch] Event received');
+      setState(() {});
+      // IMPORTANT:  You must signal completion of your fetch task or the OS can punish your app
+      // for taking too long in the background.
+      BackgroundFetch.finish();
+    }).then((int status) async {
+      print('[BackgroundFetch] SUCCESS: $status');
+      //setState(() {
+      for (int i = 0; i < homeResponse.sections.length; i++) {
+        // var products = snapshot.sections[i].products;
+        for (int j = 0; j < homeResponse.sections[i].products.length; j++) {
+          var product = await _database
+              .queryConditionalProduct(homeResponse.sections[i].products[j]);
+          if (product != null) {
+            product.selectedDisplayPrice = getCalculatedPrice(product);
+            setState(() {
+              homeResponse.sections[i].products[j] = product;
+            });
+          } else {
+            setState(() {
+              homeResponse.sections[i].products[j].count = 0;
+            });
+          }
+        }
+      }
+      setState(() {
+        showLoader = false;
+      });
+//      updateProducts().then((value) {
+//        print('[BackgroundFetch] Event received');
+//      });
+      //favObserver();
+      //});
+    }).catchError((e) {
+      print('[BackgroundFetch] ERROR: $e');
+      setState(() {
+        //_status = e;
+      });
+    });
+
+    // Optionally query the current BackgroundFetch status.
+    int status = await BackgroundFetch.status;
+    setState(() {
+      //  _status = status;
+    });
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
   }
 }
 

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:nfresh/bloc/cancel_order.dart';
 import 'package:nfresh/bloc/order_detail_bloc.dart';
+import 'package:nfresh/bloc/profile_bloc.dart';
 import 'package:nfresh/bloc/reorder_bloc.dart';
 import 'package:nfresh/models/order_product_model.dart';
 import 'package:nfresh/models/product_model.dart';
@@ -32,7 +33,7 @@ class StateOrderPage extends State<OrderPage> {
   var _prefs = SharedPrefs();
   ProfileModel profile;
   String customerType = "";
-
+  var blocProfile = ProfileBloc();
   bool showLoader = false;
 
   bool isSuccess = false;
@@ -162,13 +163,50 @@ class StateOrderPage extends State<OrderPage> {
               ),
             ),
             Container(
-              width: double.infinity,
-              child: Text(
-                "COD",
-                textAlign: TextAlign.end,
-                style: TextStyle(color: Colors.deepOrangeAccent),
-              ),
-            ),
+                width: double.infinity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(
+                      "Payment method:",
+                      textAlign: TextAlign.start,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    orderDetail.order.payment_method == 1
+                        ? Text(
+                            "Cash",
+                            textAlign: TextAlign.end,
+                            style: TextStyle(color: Colors.deepOrangeAccent),
+                          )
+                        : orderDetail.order.payment_method == 2
+                            ? Text(
+                                "Credit",
+                                textAlign: TextAlign.end,
+                                style:
+                                    TextStyle(color: Colors.deepOrangeAccent),
+                              )
+                            : orderDetail.order.payment_method == 3
+                                ? Text(
+                                    "Cash on Delivery",
+                                    textAlign: TextAlign.end,
+                                    style: TextStyle(
+                                        color: Colors.deepOrangeAccent),
+                                  )
+                                : orderDetail.order.payment_method == 4
+                                    ? Text(
+                                        "Wallet",
+                                        textAlign: TextAlign.end,
+                                        style: TextStyle(
+                                            color: Colors.deepOrangeAccent),
+                                      )
+                                    : Text(
+                                        "Paytm",
+                                        textAlign: TextAlign.end,
+                                        style: TextStyle(
+                                            color: Colors.deepOrangeAccent),
+                                      ),
+                  ],
+                )),
             ListTile(
               contentPadding: EdgeInsets.all(0),
               title: Column(
@@ -302,7 +340,8 @@ class StateOrderPage extends State<OrderPage> {
                   ? Center(child: CircularProgressIndicator())
                   : Expanded(
                       child: snapshot.data.order.status == "Pending" &&
-                              profile.type == 1
+                              profile.type == 1 &&
+                              snapshot.data.order.payment_method != 3
                           ? Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -454,6 +493,8 @@ class StateOrderPage extends State<OrderPage> {
       });
       var obj = jsonDecode(response);
       if (obj['status'] == "true") {
+        blocProfile.fetchData();
+        profileObserver();
         if (obj['msg'].length > 3) {
           showDialog(
             context: context,
@@ -489,6 +530,21 @@ class StateOrderPage extends State<OrderPage> {
       } else {
         Toast.show(obj['msg'], context,
             duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    });
+  }
+
+  void profileObserver() {
+    blocProfile.profileData.listen((res) {
+      print("Profile Status = " + res.status);
+      if (res.status == "true") {
+        setState(() {
+          profile = res.profile;
+        });
+
+        String profileData = jsonEncode(res.profile);
+        _prefs.saveProfile(profileData);
+        _prefs.saveFirstTime(false);
       }
     });
   }

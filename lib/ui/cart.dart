@@ -380,10 +380,17 @@ class _MyCustomFormState extends State<CartPage> {
                                                                 response:
                                                                     response,
                                                                 cartExtra: data,
-                                                                from: "0"),
+                                                                from: "0",
+                                                                method:
+                                                                    selectedMethod),
                                                       )).then((value) {
                                                     dialog.hide();
                                                     bloc.fetchData();
+                                                    if (value == "yes") {
+                                                      setState(() {
+                                                        Navigator.pop(context);
+                                                      });
+                                                    }
                                                   });
                                                 } else {
                                                   // showAlertMessage(context);
@@ -457,7 +464,9 @@ class _MyCustomFormState extends State<CartPage> {
                                                                         response,
                                                                     cartExtra:
                                                                         data,
-                                                                    from: "0"),
+                                                                    from: "0",
+                                                                    method:
+                                                                        selectedMethod),
                                                           )).then((value) {
                                                         dialog.hide();
                                                         bloc.fetchData();
@@ -488,7 +497,9 @@ class _MyCustomFormState extends State<CartPage> {
                                                                       response,
                                                                   cartExtra:
                                                                       data,
-                                                                  from: "0"),
+                                                                  from: "0",
+                                                                  method:
+                                                                      selectedMethod),
                                                         )).then((value) {
                                                       dialog.hide();
                                                       bloc.fetchData();
@@ -1107,29 +1118,6 @@ class _MyCustomFormState extends State<CartPage> {
               height: 1,
             ),
           ),
-//          GestureDetector(
-//            onTap: () {
-//              setState(() {
-//                code = showDialog(
-//                  context: context,
-//                  builder: (_) => LogoutOverlay(),
-//                ) as String;
-//              });
-//            },
-//            child: ListTile(
-//              title: Text('Apply Promo Code'),
-//              trailing: Icon(Icons.navigate_next),
-//            ),
-//          ),
-//          Padding(
-//            padding: EdgeInsets.only(
-//              bottom: 16,
-//            ),
-//            child: Divider(
-//              color: Colors.grey,
-//              height: 1,
-//            ),
-//          ),
           Padding(
             padding: EdgeInsets.only(
               top: 8,
@@ -1225,64 +1213,11 @@ class _MyCustomFormState extends State<CartPage> {
                       ],
                     ),
                   ),
-                  /*Padding(
-                    padding: EdgeInsets.only(top: 8, bottom: 8),
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          showDialog(
-                              context: context,
-                              builder: (BuildContext context) {
-                                return Material(
-                                  type: MaterialType.transparency,
-                                  child: Container(
-                                    child: DynamicDialog(),
-                                    padding:
-                                        EdgeInsets.only(top: 40, bottom: 40),
-                                  ),
-                                );
-                              }).then((value) {
-                            setState(() {
-                              getBalance().then((onValue) {
-                                walletBalance = onValue;
-                              });
-                            });
-                          });
-                        });
-                      },
-                      child: Container(
-                        color: Colors.white,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text(
-                              'Wallet Balance',
-                              style: TextStyle(
-                                  fontSize: 18, color: Colors.colorlightgrey),
-                            ),
-                            Text(
-                              walletBalance,
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.colorgreen,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),*/
                   Padding(
                     padding: EdgeInsets.only(top: 0),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-//                      Text(
-//                        'successfully applied',
-//                        style: TextStyle(fontSize: 14, color: Colors.colorgreen),
-//                      ),
-                      ],
+                      children: <Widget>[],
                     ),
                   ),
                 ],
@@ -1529,9 +1464,11 @@ class _MyCustomFormState extends State<CartPage> {
 
   Widget productContent(List<Product> products) {
     Future.delayed(const Duration(milliseconds: 2000), () {
-      setState(() {
-        calculateTotal(products);
-      });
+      if (products.length > 0) {
+        setState(() {
+          calculateTotal(products);
+        });
+      }
     });
     return products.length > 0
         ? Column(
@@ -1659,7 +1596,10 @@ class _MyCustomFormState extends State<CartPage> {
           context,
           MaterialPageRoute(
             builder: (context) => PaymentSuccessPage(
-                response: response, cartExtra: data, from: "1"),
+                response: response,
+                cartExtra: data,
+                from: "1",
+                method: selectedMethod),
           )).then((value) {
         bloc.fetchData();
         dialog.hide();
@@ -2333,7 +2273,7 @@ class _DynamicDialogState extends State<DynamicDialog> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               Text(
-                                waletb.walletCredits.toString(),
+                                waletb.walletCredits.toInt().toString(),
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 26),
                               ),

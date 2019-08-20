@@ -27,6 +27,7 @@
         android:name="io.flutter.app.FlutterApplication"
         android:label="NFresh"
         android:allowBackup="false"
+        tools:replace="android:label"
         android:icon="@mipmap/ic_launcher"
         tools:ignore="GoogleAppIndexingWarning">
         <activity

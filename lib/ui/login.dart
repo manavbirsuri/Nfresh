@@ -371,20 +371,6 @@ class MyHomePage extends State<LoginPage> {
                                                                   Colors.white,
                                                               fontSize: 20,
                                                             )),
-//                                colorBrightness: Brightness.dark,
-//                                onPressed: () {
-//                                  if (emailController.text == "" &&
-//                                      passwordController.text == "") {
-////                              Navigator.push(
-////                                context,
-////                                new MaterialPageRoute(
-////                                    builder: (context) => new DashBoard()),
-////                              );
-//                                  } else {
-//                                    //_showDialog(context);
-//                                  }
-//                                },
-//                                color: Colors.green,
                                                       ),
                                                     ),
                                                   ),

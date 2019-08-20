@@ -174,13 +174,14 @@ class PinState extends State<PinViewUpdatePage> {
                 padding: const EdgeInsets.fromLTRB(64, 8, 64, 16),
                 child: GestureDetector(
                   onTap: () {
+                    FocusScope.of(context).requestFocus(new FocusNode());
                     enteredPin = emailController.text.toString();
                     if (enteredPin.length == 4) {
                       verifyOtpWebservice(enteredPin, widget.otp, widget.phone,
                           widget.password);
                     } else {
                       Toast.show("Enter valid OTP", context,
-                          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                          duration: 6, gravity: Toast.BOTTOM);
                     }
                   },
                   child: showLoader
@@ -241,7 +242,7 @@ class PinState extends State<PinViewUpdatePage> {
       String pin, String otp, String phone, String password) {
     if (pin != otp) {
       Toast.show("You entered wrong OTP", context,
-          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+          duration: 6, gravity: Toast.BOTTOM);
       return;
     }
     setState(() {
@@ -272,10 +273,10 @@ class PinState extends State<PinViewUpdatePage> {
         _prefs.saveProfile(data);
         Navigator.pop(context, "yes");
       } else {
+        Toast.show(res.msg, context, duration: 6, gravity: Toast.BOTTOM);
         Navigator.pop(context, "yes");
       }
-      Toast.show(res.msg, context,
-          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      Toast.show(res.msg, context, duration: 6, gravity: Toast.BOTTOM);
       // }
     });
   }

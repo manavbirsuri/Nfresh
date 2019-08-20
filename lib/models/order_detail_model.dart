@@ -5,6 +5,7 @@ class OrderDetail {
   double total;
   String status;
   String createdAt;
+  int payment_method;
   int count;
   List<OrderProduct> products = [];
 
@@ -13,6 +14,7 @@ class OrderDetail {
     total = (json['total']).toDouble();
     status = json['status'];
     createdAt = json['created_at'];
+    payment_method = json['payment_method'];
     count = json['count'];
     for (int i = 0; i < json['products'].length; i++) {
       var product = OrderProduct(json['products'][i]);
