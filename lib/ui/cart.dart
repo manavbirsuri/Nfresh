@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:grouped_buttons/grouped_buttons.dart';
 import 'package:nfresh/bloc/cart_bloc.dart';
 import 'package:nfresh/bloc/check_inventory_bloc.dart';
 import 'package:nfresh/bloc/checksum_bloc.dart';
@@ -91,7 +92,7 @@ class _MyCustomFormState extends State<CartPage> {
 
   ProgressDialog dialog;
 
-  var selectedMethod = "Pay online";
+  var selectedMethod = "Cash on delivery";
 
   @override
   void initState() {
@@ -698,80 +699,6 @@ class _MyCustomFormState extends State<CartPage> {
                                 ),
                               ),
                             ),
-                            /*Padding(
-                              padding: EdgeInsets.only(right: 12, left: 12, top: 16),
-                              child: Container(
-                                width: 115,
-                                height: 30,
-                                decoration: myBoxDecoration2(),
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
-                                  child: IntrinsicHeight(
-                                    child: Center(
-                                      child: IntrinsicHeight(
-                                        child: Row(
-                                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                                          mainAxisAlignment: MainAxisAlignment.center,
-                                          children: <Widget>[
-                                            GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  decrementCount(product, products);
-                                                  calculateTotal(products);
-                                                });
-                                              },
-                                              child: Container(
-                                                color: Colors.transparent,
-                                                child: Center(
-                                                  child: Padding(
-                                                    padding: EdgeInsets.fromLTRB(10, 8, 15, 8),
-                                                    child: Image.asset(
-                                                      'assets/minus.png',
-                                                      height: 15,
-                                                      width: 15,
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                            Container(
-                                              child: Center(
-                                                child: Text(
-                                                  product.count.toString(),
-                                                  style: TextStyle(
-                                                      color: Colors.colorgreen,
-                                                      fontWeight: FontWeight.bold,
-                                                      fontSize: 20),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                            ),
-                                            GestureDetector(
-                                              onTap: () {
-                                                setState(() {
-                                                  incrementCount(product);
-                                                  calculateTotal(products);
-                                                });
-                                              },
-                                              child: Container(
-                                                child: Padding(
-                                                  padding: EdgeInsets.fromLTRB(15, 8, 10, 8),
-                                                  child: Image.asset(
-                                                    'assets/plus.png',
-                                                    height: 15,
-                                                    width: 15,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),*/
                             Padding(
                               padding:
                                   EdgeInsets.only(right: 8, left: 8, top: 16),
@@ -904,12 +831,13 @@ class _MyCustomFormState extends State<CartPage> {
   //Middle Portion of cart below products list
   Widget getCartDetailView(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 8, top: 0, right: 0),
+      padding: EdgeInsets.only(left: 0, top: 0, right: 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
           Padding(
-            padding: EdgeInsets.only(left: 16, top: 8),
+            padding: EdgeInsets.only(left: 26, top: 8),
             child: Text(
               'Payment method',
               style: TextStyle(
@@ -918,96 +846,109 @@ class _MyCustomFormState extends State<CartPage> {
                   fontWeight: FontWeight.bold),
             ),
           ),
-          Container(
-            padding: EdgeInsets.only(left: 0, top: 8, right: 16),
-            child: DropdownButtonHideUnderline(
-              child: ButtonTheme(
-                alignedDropdown: false,
-                child: DropdownButton<String>(
-                  isExpanded: true,
-                  value: selectedMethod,
-                  onChanged: (String newValue) {
-                    setState(() {
-                      selectedMethod = newValue;
-                      if (newValue == "Cash on delivery" ||
-                          newValue == "Select Payment method") {
-                        setState(() {
-                          walletDiscount = 0;
-                        });
-                      }
-                    });
-                  },
-                  items: <String>['Pay online', 'Cash on delivery']
-                      .map<DropdownMenuItem<String>>((String value) {
-                    return DropdownMenuItem<String>(
-                      value: value,
-                      child: Padding(
-                          padding: EdgeInsets.only(left: 16),
-                          child: Text(value)),
-                    );
-                  }).toList(),
-                ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              RadioButtonGroup(
+                onSelected: (String selected) => setState(() {
+                  selectedMethod = selected.trim();
+                }),
+                orientation: GroupedButtonsOrientation.VERTICAL,
+                labels: <String>["Cash on delivery", "Pay online"],
+                picked: selectedMethod,
               ),
-            ),
+            ],
+//            child: DropdownButtonHideUnderline(
+//              child: ButtonTheme(
+//                alignedDropdown: false,
+//                child: DropdownButton<String>(
+//                  isExpanded: true,
+//                  value: selectedMethod,
+//                  onChanged: (String newValue) {
+//                    setState(() {
+//                      selectedMethod = newValue;
+//                      if (newValue == "Cash on delivery" ||
+//                          newValue == "Select Payment method") {
+//                        setState(() {
+//                          walletDiscount = 0;
+//                        });
+//                      }
+//                    });
+//                  },
+//                  items: <String>['Pay online', 'Cash on delivery']
+//                      .map<DropdownMenuItem<String>>((String value) {
+//                    return DropdownMenuItem<String>(
+//                      value: value,
+//                      child: Padding(
+//                          padding: EdgeInsets.only(left: 16),
+//                          child: Text(value)),
+//                    );
+//                  }).toList(),
+//                ),
+//              ),
+//            ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 0, left: 16, right: 16),
+            padding: EdgeInsets.all(8),
             child: Divider(
               color: Colors.grey,
               height: 1,
             ),
           ),
-          ListTile(
-            title: Text(
-              'Coupons',
-              style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.colorgreen,
-                  fontWeight: FontWeight.bold),
-            ),
-            subtitle: GestureDetector(
-              onTap: () {
-                setState(() {
-                  if (check.isEmpty) {
-                    Navigator.push(
-                      context,
-                      new MaterialPageRoute(
-                          builder: (context) => new PromoCodePage(
-                                total: totalAmount,
-                              )),
-                    ).then((value) {
-                      checkIfPromoSaved();
+          Padding(
+            padding: EdgeInsets.only(top: 0, left: 10, right: 0),
+            child: ListTile(
+              title: Text(
+                'Coupons',
+                style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.colorgreen,
+                    fontWeight: FontWeight.bold),
+              ),
+              subtitle: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    if (check.isEmpty) {
+                      Navigator.push(
+                        context,
+                        new MaterialPageRoute(
+                            builder: (context) => new PromoCodePage(
+                                  total: totalAmount,
+                                )),
+                      ).then((value) {
+                        checkIfPromoSaved();
 //                        checkIfPromoSaved().then((value) {
 //                          check = value;
 //                          // discount = 20;
 //                        });
-                    });
-                  } else {
-                    removePromoFromPrefs();
-                  }
-                });
-              },
-              child: Container(
-                color: Colors.white,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      appliedValue,
-                      style: TextStyle(fontSize: 18),
-                    ),
+                      });
+                    } else {
+                      removePromoFromPrefs();
+                    }
+                  });
+                },
+                child: Container(
+                  color: Colors.white,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        appliedValue,
+                        style: TextStyle(fontSize: 18),
+                      ),
 
-                    check.isEmpty
-                        ? Icon(
-                            Icons.navigate_next,
-                            color: Colors.black38,
-                            size: 30.0,
-                          )
-                        : Image.asset(
-                            "assets/delete.png",
-                            height: 20,
-                            width: 20,
-                          ),
+                      check.isEmpty
+                          ? Icon(
+                              Icons.navigate_next,
+                              color: Colors.black38,
+                              size: 30.0,
+                            )
+                          : Image.asset(
+                              "assets/delete.png",
+                              height: 20,
+                              width: 20,
+                            ),
 //                    !check.isEmpty
 //                        ? Image.asset(
 //                            "assets/delete.png",
@@ -1021,7 +962,8 @@ class _MyCustomFormState extends State<CartPage> {
 //                  height: 20,
 //                  width: 20,
 //                )
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -1029,7 +971,7 @@ class _MyCustomFormState extends State<CartPage> {
           selectedMethod == "Pay online"
               ? Padding(
                   padding:
-                      EdgeInsets.only(top: 8, bottom: 8, left: 16, right: 16),
+                      EdgeInsets.only(top: 8, bottom: 8, left: 26, right: 16),
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
@@ -1110,8 +1052,8 @@ class _MyCustomFormState extends State<CartPage> {
                 )
               : Container(),
           Padding(
-            padding: EdgeInsets.only(
-              top: 8,
+            padding: EdgeInsets.all(
+              8,
             ),
             child: Divider(
               color: Colors.grey,
@@ -1119,9 +1061,7 @@ class _MyCustomFormState extends State<CartPage> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(
-              top: 8,
-            ),
+            padding: EdgeInsets.only(top: 8, left: 10),
             child: ListTile(
               //contentPadding: EdgeInsets.only(top: 0),
               title: Text(
@@ -1226,59 +1166,59 @@ class _MyCustomFormState extends State<CartPage> {
           ),
 
           Padding(
-            padding: EdgeInsets.only(
-              top: 0,
-              bottom: 0,
-            ),
+            padding: EdgeInsets.all(8),
             child: Divider(
               color: Colors.grey,
               height: 1,
             ),
           ),
-          ListTile(
-            // contentPadding: EdgeInsets.only(bottom: 0),
-            title: Text(
-              'Shipping Address',
-              style: TextStyle(
-                  fontSize: 18,
-                  color: Colors.colorgreen,
-                  fontWeight: FontWeight.bold),
+          Padding(
+            padding: EdgeInsets.only(left: 10),
+            child: ListTile(
+              // contentPadding: EdgeInsets.only(bottom: 0),
+              title: Text(
+                'Shipping Address',
+                style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.colorgreen,
+                    fontWeight: FontWeight.bold),
+              ),
+              trailing: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Icon(Icons.edit),
+                ],
+              ),
+              onTap: () {
+                if (profile == null) {
+                  // showAlertMessage(context);
+                  goToLogin();
+                } else {
+                  Utils.checkInternet().then((connected) {
+                    if (connected != null && connected) {
+                      //Future.delayed(const Duration(milliseconds: 500), () {
+                      setState(() {
+                        bloc.fetchData();
+                        blocCity.fetchData();
+                      });
+                      // });
+                      Future.delayed(const Duration(milliseconds: 500), () {
+                        if (selectedArea != null && selectedCity != null) {
+                          _showAddressDialog(context);
+                        } else {
+                          Toast.show("Please wait Loading Data", context,
+                              duration: Toast.LENGTH_SHORT,
+                              gravity: Toast.BOTTOM);
+                        }
+                      });
+                    } else {
+                      Toast.show("Not connected to internet", context,
+                          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+                    }
+                  });
+                }
+              },
             ),
-            trailing: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Icon(Icons.edit),
-              ],
-            ),
-            onTap: () {
-              if (profile == null) {
-                // showAlertMessage(context);
-                goToLogin();
-              } else {
-                Utils.checkInternet().then((connected) {
-                  if (connected != null && connected) {
-                    //Future.delayed(const Duration(milliseconds: 500), () {
-                    setState(() {
-                      bloc.fetchData();
-                      blocCity.fetchData();
-                    });
-                    // });
-                    Future.delayed(const Duration(milliseconds: 500), () {
-                      if (selectedArea != null && selectedCity != null) {
-                        _showAddressDialog(context);
-                      } else {
-                        Toast.show("Please wait Loading Data", context,
-                            duration: Toast.LENGTH_SHORT,
-                            gravity: Toast.BOTTOM);
-                      }
-                    });
-                  } else {
-                    Toast.show("Not connected to internet", context,
-                        duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
-                  }
-                });
-              }
-            },
           ),
 //          Padding(
 //            padding: EdgeInsets.only(
@@ -1290,12 +1230,15 @@ class _MyCustomFormState extends State<CartPage> {
 //              height: 1,
 //            ),
 //          ),
-          ListTile(
-            //  contentPadding: EdgeInsets.only(top: 0),
-            title: Text(
-              address,
-              style: TextStyle(color: Colors.colorlightgrey),
-              // style: TextStyle(color: Colors.black),
+          Padding(
+            padding: EdgeInsets.only(left: 10),
+            child: ListTile(
+              //  contentPadding: EdgeInsets.only(top: 0),
+              title: Text(
+                address,
+                style: TextStyle(color: Colors.colorlightgrey),
+                // style: TextStyle(color: Colors.black),
+              ),
             ),
           ),
 //          Padding(
@@ -2452,5 +2395,136 @@ class _DynamicDialogState extends State<DynamicDialog> {
 //    print('Pressed $counter times.');
       await prefs.setString('walletBal', string);
     }
+  }
+}
+
+class showCustomDialog2 extends StatefulWidget {
+  var SelectedLanguage = "Cash on delivery";
+
+  showCustomDialog2(String selectedLanguage) {
+    this.SelectedLanguage = selectedLanguage;
+  }
+
+  @override
+  _MyDialogState createState() => new _MyDialogState(SelectedLanguage);
+}
+
+class _MyDialogState extends State<showCustomDialog2> {
+  Color _c = Colors.redAccent;
+  var SelectedLanguage = "Cash on delivery";
+  String _picked1 = "Cash on delivery";
+
+  _MyDialogState(String selectedLanguage) {
+    this.SelectedLanguage = selectedLanguage;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // ignore: unnecessary_statements
+//    _read().then((result) {
+//      print(result);
+    setState(() {
+      ///SelectedLanguage = result;
+      _picked1 = SelectedLanguage;
+    });
+//    });
+//    build(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: new Text("Select Payment method"),
+      content: new Container(
+        width: 260.0,
+        height: 180.0,
+        decoration: new BoxDecoration(
+          shape: BoxShape.rectangle,
+          color: const Color(0xFFFFFF),
+          borderRadius: new BorderRadius.all(new Radius.circular(32.0)),
+        ),
+        child: new Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            // dialog top
+            new Expanded(
+              child: new Column(
+                children: <Widget>[
+                  Center(
+                      child: RadioButtonGroup(
+                    onSelected: (String selected) => setState(() {
+                      _picked1 = selected.trim();
+                    }),
+                    margin: EdgeInsets.only(left: 14),
+                    orientation: GroupedButtonsOrientation.VERTICAL,
+                    labels: <String>["Cash on delivery", "Pay online"],
+                    picked: _picked1,
+                  ))
+                ],
+              ),
+            ),
+
+            new Container(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: GestureDetector(
+                  onTap: () {
+                    if (Navigator.canPop(context)) {
+                      setState(() {
+                        SelectedLanguage = _picked1;
+                        //_save(SelectedLanguage);
+                      });
+
+//                      Navigator.pushReplacement(
+//                          context, MaterialPageRoute(builder: (BuildContext context) => MyHome()));
+                      Navigator.pop(context, SelectedLanguage);
+//                      Navigator.push(
+//                        context,
+//                        new MaterialPageRoute(builder: (context) => new MyHome()),
+//                      );
+//                      SystemNavigator.pop();
+
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 12.0),
+                    child: Container(
+                      height: 40.0,
+                      color: Colors.transparent,
+                      child: new Container(
+                          decoration: new BoxDecoration(
+                              color: Colors.mygreen,
+                              borderRadius: new BorderRadius.only(
+                                  topLeft: const Radius.circular(40.0),
+                                  bottomLeft: const Radius.circular(40.0),
+                                  bottomRight: const Radius.circular(40.0),
+                                  topRight: const Radius.circular(40.0))),
+                          child: new Center(
+                            child: new Text(("Done"),
+                                style: new TextStyle(
+                                    color: Colors.white, fontSize: 20)),
+                          )),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            //),
+          ],
+        ),
+      ),
+//                          actions: <Widget>[
+//                            new FlatButton(
+//                              onPressed: () => Navigator.of(context).pop(false),
+//                              child: new Text('No'),
+//                            ),
+//                            new FlatButton(
+//                              onPressed: () => Navigator.of(context).pop(true),
+//                              child: new Text('Yes'),
+//                            ),
+//                          ],
+    );
   }
 }

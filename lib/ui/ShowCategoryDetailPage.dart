@@ -1542,7 +1542,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                             'assets/sort.png',
                             height: 20,
                             width: 20,
-                            color: Colors.colororange,
+                            color: Colors.grey,
                           ))),
                     ],
                   ),
@@ -1557,7 +1557,7 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
               totalAmount > 0
                   ? Column(children: <Widget>[
                       Container(
-                        color: Colors.colorlightgreyback,
+                        color: Colors.colorlightgreybackt,
                         height: 55,
                         // padding: EdgeInsets.all(0),
                         child: Row(

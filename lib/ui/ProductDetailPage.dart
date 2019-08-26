@@ -243,7 +243,7 @@ class ProState extends State<ProductDetailPage> {
                                   ),
                                   Padding(
                                       padding:
-                                          EdgeInsets.fromLTRB(16, 0, 16, 0),
+                                          EdgeInsets.fromLTRB(16, 0, 32, 0),
                                       child: Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.spaceBetween,
@@ -362,11 +362,11 @@ class ProState extends State<ProductDetailPage> {
                                                   ),
                                                   Padding(
                                                     padding: EdgeInsets.only(
-                                                        right: 8,
+                                                        right: 0,
                                                         left: 8,
                                                         top: 8),
                                                     child: Container(
-                                                      width: 120,
+                                                      width: 140,
 //                                                      color: Colors.grey,
                                                       child: Padding(
                                                         padding:
@@ -560,7 +560,7 @@ class ProState extends State<ProductDetailPage> {
                   totalAmount > 0
                       ? Column(children: <Widget>[
                           Container(
-                            color: Colors.colorlightgreyback,
+                            color: Colors.colorlightgreybackt,
                             height: 55,
                             // padding: EdgeInsets.all(0),
                             child: Row(
@@ -969,7 +969,7 @@ class ProState extends State<ProductDetailPage> {
                                                         myBoxDecoration2(),
                                                     padding:
                                                         EdgeInsets.fromLTRB(
-                                                            12, 0, 12, 0),
+                                                            8, 0, 8, 0),
                                                     child: Image.asset(
                                                       'assets/minus.png',
                                                       height: 12,
@@ -1011,7 +1011,7 @@ class ProState extends State<ProductDetailPage> {
                                                         myBoxDecoration2(),
                                                     padding:
                                                         EdgeInsets.fromLTRB(
-                                                            12, 0, 12, 0),
+                                                            8, 0, 8, 0),
                                                     child: Image.asset(
                                                       'assets/plus.png',
                                                       height: 12,

@@ -1229,8 +1229,7 @@ class _MyHomePageState extends State<SearchPageActivity> {
                                     // color: Colors.white,
                                     child: Container(
                                       decoration: myBoxDecoration2(),
-                                      padding:
-                                          EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      padding: EdgeInsets.fromLTRB(7, 0, 7, 0),
                                       child: Image.asset(
                                         'assets/minus.png',
                                         height: 12,
@@ -1241,7 +1240,7 @@ class _MyHomePageState extends State<SearchPageActivity> {
                                 ),
                                 Container(
                                   margin: EdgeInsets.only(
-                                      left: 8, right: 8, top: 4, bottom: 4),
+                                      left: 4, right: 4, top: 4, bottom: 4),
                                   child: Center(
                                     child: Text(
                                       product.count.toString(),
@@ -1262,8 +1261,7 @@ class _MyHomePageState extends State<SearchPageActivity> {
                                     padding: EdgeInsets.only(right: 20),
                                     child: Container(
                                       decoration: myBoxDecoration2(),
-                                      padding:
-                                          EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      padding: EdgeInsets.fromLTRB(6, 0, 6, 0),
                                       child: Image.asset(
                                         'assets/plus.png',
                                         height: 12,

@@ -9,11 +9,12 @@ class TermAndPrivacy extends StatelessWidget {
   var link;
   TermAndPrivacy(String s) {
     this.title = s;
-    if (title == "Privacy Policy") {
-      link = api.baseUrl + "/page_link/4";
-    } else {
-      link = api.baseUrl + "/page_link/3";
-    }
+    link = api.baseUrl + "/page_link/4";
+//    if (title == "Privacy Policy") {
+//      link = api.baseUrl + "/page_link/4";
+//    } else {
+//      link = api.baseUrl + "/page_link/3";
+//    }
   }
 
   @override
@@ -21,7 +22,7 @@ class TermAndPrivacy extends StatelessWidget {
     return Scaffold(
       body: Center(
           child: WebviewScaffold(
-        url: "https://nfreshonline.com/api/Data_v1/page_link/4",
+        url: link,
         appBar: new AppBar(
           title: new Text(
             "$title",

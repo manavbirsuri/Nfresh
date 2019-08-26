@@ -564,28 +564,6 @@ class stateProfilePage extends State<stateProfile> {
                                             style:
                                                 new TextStyle(fontSize: 14.0),
                                           ),
-//                                        GestureDetector(
-//                                          onTap: () {
-//                                            Navigator.push(
-//                                              context,
-//                                              MaterialPageRoute(
-//                                                builder: (context) =>
-//                                                    TermAndPrivacy(
-//                                                        'Terms of Use'),
-//                                              ),
-//                                            );
-//                                          },
-//                                          child: new Text(
-//                                            'Terms of Use ',
-//                                            style: new TextStyle(
-//                                                fontSize: 14.0,
-//                                                color: Colors.colorgreen),
-//                                          ),
-//                                        ),
-//                                        new Text(
-//                                          'and ',
-//                                          style: new TextStyle(fontSize: 14.0),
-//                                        ),
                                           GestureDetector(
                                             onTap: () {
                                               Navigator.push(

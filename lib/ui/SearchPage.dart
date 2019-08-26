@@ -1232,7 +1232,7 @@ class _MyHomePageState extends State<SearchPage> {
                 Padding(
                   padding: EdgeInsets.only(right: 8, left: 8, top: 16),
                   child: Container(
-                    width: 150,
+                    width: 160,
                     //color: Colors.grey,
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
@@ -1248,12 +1248,11 @@ class _MyHomePageState extends State<SearchPage> {
                                     decrementCount(products[index]);
                                   },
                                   child: Container(
-                                    padding: EdgeInsets.only(left: 20),
+                                    padding: EdgeInsets.only(left: 18),
                                     // color: Colors.white,
                                     child: Container(
                                       decoration: myBoxDecoration2(),
-                                      padding:
-                                          EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                                       child: Image.asset(
                                         'assets/minus.png',
                                         height: 12,
@@ -1264,7 +1263,7 @@ class _MyHomePageState extends State<SearchPage> {
                                 ),
                                 Container(
                                   margin: EdgeInsets.only(
-                                      left: 8, right: 8, top: 4, bottom: 4),
+                                      left: 4, right: 4, top: 4, bottom: 4),
                                   child: Center(
                                     child: Text(
                                       product.count.toString(),
@@ -1282,11 +1281,10 @@ class _MyHomePageState extends State<SearchPage> {
                                   },
                                   child: Container(
                                     //  color: Colors.white,
-                                    padding: EdgeInsets.only(right: 20),
+                                    padding: EdgeInsets.only(right: 18),
                                     child: Container(
                                       decoration: myBoxDecoration2(),
-                                      padding:
-                                          EdgeInsets.fromLTRB(10, 0, 10, 0),
+                                      padding: EdgeInsets.fromLTRB(5, 0, 5, 0),
                                       child: Image.asset(
                                         'assets/plus.png',
                                         height: 12,
