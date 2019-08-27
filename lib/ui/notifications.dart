@@ -94,7 +94,14 @@ class NotificationState extends State<NotificationPage> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          Image.asset('assets/nonoti.png'),
+                          Container(
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage('assets/nonoti.png'),
+                              ),
+                            ),
+                            height: 150,
+                          ),
                           Padding(
                             padding: EdgeInsets.only(top: 16),
                             child: Text("No Notifications"),

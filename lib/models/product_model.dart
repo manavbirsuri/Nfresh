@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:nfresh/models/packing_model.dart';
+import 'package:nfresh/resources/database.dart';
 
 class Product {
   int id;
@@ -14,7 +15,7 @@ class Product {
   int inventory;
   String fav = '0';
   List<Packing> packing = [];
-
+  var _database = DatabaseHelper.instance;
   // Extra local fields
   int count = 0;
   String off = "20% off";
@@ -43,6 +44,15 @@ class Product {
       count = json['qty'];
     } else {
       selectedPacking = packing[0];
+      //count = json['qty'];
+      List<Product> productsnew = List();
+      _database.queryAllProducts().then((products) {
+        for (int i = 0; i < products.length; i++) {
+          if (id == products[i].id) {
+            count = products[i].count;
+          }
+        }
+      });
     }
     selectedDisplayPrice = displayPrice.toDouble();
   }
@@ -59,7 +69,8 @@ class Product {
       'inventory': this.inventory,
       'fav': this.fav,
       'packings': jsonEncode(packing),
-      'selected_packing': jsonEncode(selectedPacking), //selectedPacking.toJson(),
+      'selected_packing':
+          jsonEncode(selectedPacking), //selectedPacking.toJson(),
       'count': this.count
     };
   }

@@ -1501,7 +1501,14 @@ class _MyCustomFormState extends State<CartPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Image.asset('assets/noproduct.png'),
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/noproduct.png'),
+              ),
+            ),
+            height: 150,
+          ),
           Padding(
             padding: EdgeInsets.only(top: 16),
             child: Text(

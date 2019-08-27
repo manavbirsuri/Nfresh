@@ -123,7 +123,15 @@ class PaymentState extends State<PaymentSuccessPage> {
                                 mainAxisSize: MainAxisSize.max,
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: <Widget>[
-                                  Image.asset("assets/placeorder.png"),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      image: DecorationImage(
+                                        image:
+                                            AssetImage('assets/placeorder.png'),
+                                      ),
+                                    ),
+                                    height: 150,
+                                  ),
                                   Padding(
                                     padding: EdgeInsets.only(top: 20),
                                     child: Text(

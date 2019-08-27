@@ -235,6 +235,27 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
     }
   }
 
+  Future updateSearchProducts2() async {
+    if (responseSearch != null &&
+        responseSearch.products != null &&
+        responseSearch.products.length > 0) {
+      for (int i = 0; i < responseSearch.products.length; i++) {
+        var product =
+            await _database.queryConditionalProduct(responseSearch.products[i]);
+        if (product != null) {
+          product.selectedDisplayPrice = getCalculatedPrice(product);
+          setState(() {
+            responseSearch.products[i] = product;
+          });
+        } else {
+          setState(() {
+            responseSearch.products[i].count = 0;
+          });
+        }
+      }
+    }
+  }
+
   Future updateSearchProducts() async {
 //    if (responseSearch != null &&
 //        responseSearch.products != null &&
@@ -587,10 +608,12 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                         builder: (context) => CartPage(),
                       ),
                     ).then((value) {
+                      // blocFavGet.fetchFavData();
                       getCartCount();
                       updateProducts();
                       updateFavProducts();
                       updateSearchProducts();
+                      updateSearchProducts2();
                       getProfileDetail();
                     });
                   },
@@ -2618,7 +2641,15 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Image.asset('assets/noproduct.png'),
+//          Image.asset('assets/noproduct.png'),
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/noproduct.png'),
+              ),
+            ),
+            height: 150,
+          ),
           Padding(
             padding: EdgeInsets.only(top: 16),
             child: Text(
@@ -2731,6 +2762,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 // Methods for Search page
 //***************************************************************
   searchViewWidget() {
+    updateSearchProducts2();
     return Scaffold(
       body: Container(
         child: Column(

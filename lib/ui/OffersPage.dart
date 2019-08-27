@@ -74,12 +74,28 @@ class OfferOrderPage extends State<OfferOrder> {
       child: Column(
         mainAxisSize: MainAxisSize.max,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text(
-            "No offer available right now",
-            textAlign: TextAlign.center,
+          Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/nooffer.png'),
+              ),
+            ),
+            height: 150,
           ),
+          Padding(
+            padding: EdgeInsets.only(top: 16),
+            child: Text(
+              "No offer available right now",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            ),
+          ),
+//          Text(
+//            "No offer available right now",
+//            textAlign: TextAlign.center,
+//          ),
         ],
       ),
     );
