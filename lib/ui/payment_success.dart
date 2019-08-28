@@ -12,9 +12,11 @@ class PaymentSuccessPage extends StatefulWidget {
   final response;
   final cartExtra;
   final method;
+  final slot;
+  final date;
 
   const PaymentSuccessPage(
-      {Key key, this.response, this.cartExtra, String from, this.method})
+      {Key key, this.response, this.cartExtra, String from, this.method, this.date, this.slot})
       : super(key: key);
   @override
   State<StatefulWidget> createState() {
@@ -222,7 +224,8 @@ class PaymentState extends State<PaymentSuccessPage> {
         };
         lineItems.add(map);
       });
-      bloc.fetchData(lineItems, cartExtra, widget.response);
+      var slots=widget.slot.split("-");
+      bloc.fetchData(lineItems, cartExtra, widget.response,widget.date,slots[0],slots[1]);
     });
   }
 

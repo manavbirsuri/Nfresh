@@ -317,7 +317,7 @@ class ApiProvider {
   }
 
   Future<String> placeOrder(auth, List<Map<String, dynamic>> data,
-      Map<String, dynamic> cart, paytmRes) async {
+      Map<String, dynamic> cart, paytmRes, date, time_from, time_to) async {
     Map map = {
       'auth_code': auth,
       'line_items': jsonEncode(data),
@@ -328,6 +328,9 @@ class ApiProvider {
       'type': cart['type'].toString(),
       'discount': cart['discount'].toString(),
       'paytm_response': paytmRes,
+      'delivery_date': date,
+      'time_from': time_from,
+      'time_to': time_to,
       'wallet_use_amount': cart['wallet_use_amount'].toString(),
       'coupon_code': cart['coupon_code'].toString()
     };

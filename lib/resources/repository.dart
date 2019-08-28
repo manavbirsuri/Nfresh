@@ -63,8 +63,10 @@ class Repository {
       apiProvider.getPayTmChecksum(auth, map);
   Future<ModelInventory> checkInventory(auth, map) =>
       apiProvider.checkInventory(auth, map);
-  Future<String> placeOrder(auth, map, cart, paytmRes) =>
-      apiProvider.placeOrder(auth, map, cart, paytmRes);
+  Future<String> placeOrder(
+          auth, map, cart, paytmRes, date, time_from, time_to) =>
+      apiProvider.placeOrder(
+          auth, map, cart, paytmRes, date, time_from, time_to);
   Future<ResponseReorder> reorder(auth, orderId) =>
       apiProvider.reOrder(auth, orderId);
   Future<String> applyCoupon(auth, total, couponCode) =>

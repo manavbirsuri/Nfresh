@@ -8,12 +8,14 @@ import 'package:nfresh/bloc/check_inventory_bloc.dart';
 import 'package:nfresh/bloc/checksum_bloc.dart';
 import 'package:nfresh/bloc/cities_bloc.dart';
 import 'package:nfresh/bloc/create_order_bloc.dart';
+import 'package:nfresh/bloc/profile_bloc.dart';
 import 'package:nfresh/bloc/update_address_bloc.dart';
 import 'package:nfresh/models/area_model.dart';
 import 'package:nfresh/models/city_model.dart';
 import 'package:nfresh/models/product_invent_model.dart';
 import 'package:nfresh/models/product_model.dart';
 import 'package:nfresh/models/profile_model.dart';
+import 'package:nfresh/models/time_slot.dart';
 import 'package:nfresh/resources/database.dart';
 import 'package:nfresh/resources/prefrences.dart';
 import 'package:nfresh/ui/PromoCodePage.dart';
@@ -21,6 +23,8 @@ import 'package:nfresh/ui/payment_success.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:intl/intl.dart';
 
 import '../utils.dart';
 import 'WalletPage.dart';
@@ -39,6 +43,8 @@ class _MyCustomFormState extends State<CartPage> {
   String code;
   String couponCode;
   var pos = 0;
+  int diffDays = 0;
+  bool validSlot = false;
   String check = "";
   double walletBalance = 0;
   String appliedValue = "Apply promo code";
@@ -87,16 +93,21 @@ class _MyCustomFormState extends State<CartPage> {
   List<Product> mProducts = [];
   bool isLoadingCart = true;
   var address = "No Address";
-
+  var blocProfile = ProfileBloc();
   var addressController = TextEditingController();
 
   ProgressDialog dialog;
 
   var selectedMethod = "Cash on delivery";
-
+  var date = "Select Date";
+  var slot = 'Select Slot';
+  final format = DateFormat("yyyy-MM-dd");
+  List<TimeSlot> timeslot = [];
   @override
   void initState() {
     super.initState();
+    blocProfile.fetchData();
+    profileObserver();
     setState(() {
       selectedCity = CityModel(map);
       bloc.fetchData();
@@ -373,6 +384,22 @@ class _MyCustomFormState extends State<CartPage> {
 //                                              response: response,
 //                                              cartExtra: data,
 //                                              contexte: context);
+                                                  if (date == "" ||
+                                                      date == "Select Date") {
+                                                    Toast.show(
+                                                        "Select date", context,
+                                                        duration: 3,
+                                                        gravity: Toast.BOTTOM);
+                                                    return;
+                                                  }
+                                                  if (slot == "" ||
+                                                      slot == "Select Slot") {
+                                                    Toast.show(
+                                                        "Select Slot", context,
+                                                        duration: 3,
+                                                        gravity: Toast.BOTTOM);
+                                                    return;
+                                                  }
                                                   Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
@@ -383,7 +410,9 @@ class _MyCustomFormState extends State<CartPage> {
                                                                 cartExtra: data,
                                                                 from: "0",
                                                                 method:
-                                                                    selectedMethod),
+                                                                    selectedMethod,
+                                                                date: date,
+                                                                slot: slot),
                                                       )).then((value) {
                                                     dialog.hide();
                                                     bloc.fetchData();
@@ -456,6 +485,28 @@ class _MyCustomFormState extends State<CartPage> {
 //                                                  response: response,
 //                                                  cartExtra: data,
 //                                                  contexte: context);
+                                                      if (date == "" ||
+                                                          date ==
+                                                              "Select Date") {
+                                                        Toast.show(
+                                                            "Select date",
+                                                            context,
+                                                            duration: 3,
+                                                            gravity:
+                                                                Toast.BOTTOM);
+                                                        return;
+                                                      }
+                                                      if (slot == "" ||
+                                                          slot ==
+                                                              "Select Slot") {
+                                                        Toast.show(
+                                                            "Select Slot",
+                                                            context,
+                                                            duration: 3,
+                                                            gravity:
+                                                                Toast.BOTTOM);
+                                                        return;
+                                                      }
                                                       Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
@@ -467,7 +518,9 @@ class _MyCustomFormState extends State<CartPage> {
                                                                         data,
                                                                     from: "0",
                                                                     method:
-                                                                        selectedMethod),
+                                                                        selectedMethod,
+                                                                    date: date,
+                                                                    slot: slot),
                                                           )).then((value) {
                                                         dialog.hide();
                                                         bloc.fetchData();
@@ -489,6 +542,24 @@ class _MyCustomFormState extends State<CartPage> {
                                                           walletDiscount,
                                                       'coupon_code': couponCode,
                                                     };
+                                                    if (date == "" ||
+                                                        date == "Select Date") {
+                                                      Toast.show("Select date",
+                                                          context,
+                                                          duration: 3,
+                                                          gravity:
+                                                              Toast.BOTTOM);
+                                                      return;
+                                                    }
+                                                    if (slot == "" ||
+                                                        slot == "Select Slot") {
+                                                      Toast.show("Select Slot",
+                                                          context,
+                                                          duration: 3,
+                                                          gravity:
+                                                              Toast.BOTTOM);
+                                                      return;
+                                                    }
                                                     Navigator.push(
                                                         context,
                                                         MaterialPageRoute(
@@ -500,7 +571,9 @@ class _MyCustomFormState extends State<CartPage> {
                                                                       data,
                                                                   from: "0",
                                                                   method:
-                                                                      selectedMethod),
+                                                                      selectedMethod,
+                                                                  date: date,
+                                                                  slot: slot),
                                                         )).then((value) {
                                                       dialog.hide();
                                                       bloc.fetchData();
@@ -1065,6 +1138,131 @@ class _MyCustomFormState extends State<CartPage> {
             child: ListTile(
               //contentPadding: EdgeInsets.only(top: 0),
               title: Text(
+                'Select Delivery Slot',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.colorgreen,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              subtitle: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Flexible(
+                          child: GestureDetector(
+                            onTap: () {
+                              _selectDate();
+                            },
+                            child: Row(
+                              children: <Widget>[
+                                new Text(
+                                  date,
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.black),
+                                ),
+                                Icon(
+                                  Icons.navigate_next,
+                                  color: Colors.black38,
+                                  size: 30.0,
+                                ),
+                              ],
+                            ),
+                          ),
+                          flex: 1,
+                        ),
+                        Flexible(
+                          child: GestureDetector(
+                            onTap: () {
+                              if (date == "Select Date") {
+                                Toast.show("Please select date.", context,
+                                    duration: Toast.LENGTH_LONG,
+                                    gravity: Toast.BOTTOM);
+                              } else {
+                                showDialog(
+                                    context: context,
+                                    builder: (BuildContext context) {
+                                      return Material(
+                                        type: MaterialType.transparency,
+                                        child: Container(
+                                          child:
+                                              showCustomDialog2(timeslot, date),
+                                          padding: EdgeInsets.only(
+                                              top: 40, bottom: 40),
+                                        ),
+                                      );
+                                    }).then((value) async {
+                                  setState(() {
+                                    if (value != null &&
+                                        value != "" &&
+                                        value != "Select Slot") {
+                                      if (diffDays == 0) {
+                                        validSlot =
+                                            checkTimeSlotValidity(value);
+                                        if (!validSlot) {
+                                          Toast.show(
+                                              "Time slot you have selected is over, please select next slot if available or you can select next date for avialable slots.",
+                                              context,
+                                              duration: 6,
+                                              gravity: Toast.BOTTOM);
+                                          return;
+                                        }
+                                        slot = value;
+                                      } else {
+                                        slot = value;
+                                      }
+                                    }
+//                              setState(() {
+//                                walletDiscount = onValue as int;
+                                  });
+                                });
+                              }
+                            },
+                            child: Container(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: <Widget>[
+                                  Text(
+                                    slot,
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.black),
+                                  ),
+                                  Icon(
+                                    Icons.navigate_next,
+                                    color: Colors.black38,
+                                    size: 30.0,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          flex: 1,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.all(
+              8,
+            ),
+            child: Divider(
+              color: Colors.grey,
+              height: 1,
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 8, left: 10),
+            child: ListTile(
+              //contentPadding: EdgeInsets.only(top: 0),
+              title: Text(
                 'Price Details',
                 style: TextStyle(
                   fontSize: 18,
@@ -1544,6 +1742,14 @@ class _MyCustomFormState extends State<CartPage> {
         'wallet_use_amount': walletDiscount,
         'coupon_code': couponCode,
       };
+      if (date == "" || date == "Select Date") {
+        Toast.show("Select date", context, duration: 3, gravity: Toast.BOTTOM);
+        return;
+      }
+      if (slot == "" || slot == "Select Slot") {
+        Toast.show("Select Slot", context, duration: 3, gravity: Toast.BOTTOM);
+        return;
+      }
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -1551,7 +1757,9 @@ class _MyCustomFormState extends State<CartPage> {
                 response: response,
                 cartExtra: data,
                 from: "1",
-                method: selectedMethod),
+                method: selectedMethod,
+                date: date,
+                slot: slot),
           )).then((value) {
         bloc.fetchData();
         dialog.hide();
@@ -1980,7 +2188,17 @@ class _MyCustomFormState extends State<CartPage> {
         };
         lineItems1.add(map);
       });
-      bloc2.fetchData(lineItems1, cartExtra, response);
+      if (date == "" || date == "Select Date") {
+        Toast.show("Select date", context, duration: 3, gravity: Toast.BOTTOM);
+        return;
+      }
+      if (slot == "" || slot == "Select Slot") {
+        Toast.show("Select Slot", context, duration: 3, gravity: Toast.BOTTOM);
+        return;
+      }
+      var slots = slot.split("-");
+      bloc2.fetchData(
+          lineItems1, cartExtra, response, date, slots[0], slots[1]);
     });
     bloc2.createOrderResponse.listen((res) {
       var obj = jsonDecode(res);
@@ -1995,6 +2213,68 @@ class _MyCustomFormState extends State<CartPage> {
         Navigator.pop(contexte);
       }
     });
+  }
+
+  Future _selectDate() async {
+    DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: new DateTime.now(),
+        firstDate: new DateTime(2019),
+        lastDate: new DateTime(2999));
+    if (picked != null) {
+      var now1 = new DateTime.now();
+      DateTime aprilFirst = DateTime.utc(picked.year, picked.month, picked.day);
+      DateTime marchThirty = DateTime.utc(now1.year, now1.month, now1.day);
+      var diffDays2 = aprilFirst.difference(marchThirty).inDays;
+      if (diffDays < 0) {
+        Toast.show("You cannot select past date.", context,
+            duration: 6, gravity: Toast.BOTTOM);
+        return;
+      }
+      if (diffDays2 > 7) {
+        Toast.show(
+            "You cannot select date beyond 7 days from current date.", context,
+            duration: 6, gravity: Toast.BOTTOM);
+        return;
+      }
+      setState(() {
+        slot = "Select Slot";
+        diffDays = diffDays2;
+        date = new DateFormat("yyyy-MM-dd").format(picked).toString();
+      });
+    }
+  }
+
+  void profileObserver() {
+    blocProfile.profileData.listen((res) {
+      print("Profile Status = " + res.status);
+      if (res.status == "true") {
+        setState(() {
+          timeslot = res.timeslot;
+          profile = res.profile;
+        });
+
+        String profileData = jsonEncode(res.profile);
+//        _prefs.saveProfile(profileData);
+//        _prefs.saveFirstTime(false);
+      }
+    });
+  }
+
+  bool checkTimeSlotValidity(value) {
+    var aw = value.split("-");
+    final dateFormat = DateFormat("hh:mm a");
+    DateTime now = DateTime.now();
+    DateTime open = dateFormat.parse(aw[0]);
+    open = new DateTime(now.year, now.month, now.day, open.hour, open.minute);
+
+    int ff = open.difference(DateTime.now()).inMinutes;
+    if (ff <= 0) {
+      return false;
+    } else {
+      return true;
+    }
+    return false;
   }
 }
 
@@ -2406,47 +2686,44 @@ class _DynamicDialogState extends State<DynamicDialog> {
 }
 
 class showCustomDialog2 extends StatefulWidget {
-  var SelectedLanguage = "Cash on delivery";
-
-  showCustomDialog2(String selectedLanguage) {
-    this.SelectedLanguage = selectedLanguage;
+  List<TimeSlot> timeslot = [];
+  String date = "";
+  showCustomDialog2(List<TimeSlot> timeslot, String date) {
+    this.timeslot = timeslot;
+    //this.date = date;
   }
-
   @override
-  _MyDialogState createState() => new _MyDialogState(SelectedLanguage);
+  _MyDialogState createState() => _MyDialogState(timeslot);
 }
 
 class _MyDialogState extends State<showCustomDialog2> {
-  Color _c = Colors.redAccent;
-  var SelectedLanguage = "Cash on delivery";
-  String _picked1 = "Cash on delivery";
-
-  _MyDialogState(String selectedLanguage) {
-    this.SelectedLanguage = selectedLanguage;
+  String _picked = "Select Slot";
+  String SelectedLanguage = "Select Slot";
+  var array = <String>[];
+  double width = 40;
+  List<TimeSlot> timeslot = [];
+  _MyDialogState(List<TimeSlot> timeslot) {
+    this.timeslot = timeslot;
   }
-
   @override
   void initState() {
     super.initState();
-
-    // ignore: unnecessary_statements
-//    _read().then((result) {
-//      print(result);
     setState(() {
-      ///SelectedLanguage = result;
-      _picked1 = SelectedLanguage;
+      if (timeslot.length > 1) {
+        width = 150;
+      }
     });
-//    });
-//    build(context);
+    for (int i = 0; i < timeslot.length; i++) {
+      array.add(timeslot[i].time_from + " - " + timeslot[i].time_to);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: new Text("Select Payment method"),
-      content: new Container(
+      title: new Text("Select Time Slot"),
+      content: Container(
         width: 260.0,
-        height: 180.0,
         decoration: new BoxDecoration(
           shape: BoxShape.rectangle,
           color: const Color(0xFFFFFF),
@@ -2454,84 +2731,112 @@ class _MyDialogState extends State<showCustomDialog2> {
         ),
         child: new Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             // dialog top
-            new Expanded(
-              child: new Column(
-                children: <Widget>[
-                  Center(
-                      child: RadioButtonGroup(
-                    onSelected: (String selected) => setState(() {
-                      _picked1 = selected.trim();
-                    }),
-                    margin: EdgeInsets.only(left: 14),
-                    orientation: GroupedButtonsOrientation.VERTICAL,
-                    labels: <String>["Cash on delivery", "Pay online"],
-                    picked: _picked1,
-                  ))
-                ],
+            Container(
+              height: width,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.vertical,
+                physics: AlwaysScrollableScrollPhysics(),
+                child: new Column(
+                  children: <Widget>[
+                    Center(
+                        child: RadioButtonGroup(
+                      onSelected: (String selected) => setState(() {
+                        _picked = selected.trim();
+                      }),
+                      margin: EdgeInsets.only(left: 14),
+                      orientation: GroupedButtonsOrientation.VERTICAL,
+                      labels: array,
+                      picked: _picked,
+                    ))
+                  ],
+                ),
               ),
             ),
 
             new Container(
               child: Align(
-                alignment: Alignment.bottomCenter,
-                child: GestureDetector(
-                  onTap: () {
-                    if (Navigator.canPop(context)) {
-                      setState(() {
-                        SelectedLanguage = _picked1;
-                        //_save(SelectedLanguage);
-                      });
+                  alignment: Alignment.bottomCenter,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisSize: MainAxisSize.max,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        child: GestureDetector(
+                          onTap: () {
+                            if (Navigator.canPop(context)) {
+                              setState(() {
+                                SelectedLanguage = _picked;
+                              });
+                              if (SelectedLanguage == "Select Slot") {
+                                Toast.show("Please select time slot.", context,
+                                    duration: 3, gravity: Toast.BOTTOM);
+                                return;
+                              }
+                              Navigator.pop(context, SelectedLanguage);
+                            }
+                          },
+                          child: Container(
+                            height: 40.0,
+                            width: 80,
+                            color: Colors.transparent,
+                            child: new Container(
+                                decoration: new BoxDecoration(
+                                    color: Colors.mygreen,
+                                    borderRadius: new BorderRadius.only(
+                                        topLeft: const Radius.circular(2.0),
+                                        bottomLeft: const Radius.circular(2.0),
+                                        bottomRight: const Radius.circular(2.0),
+                                        topRight: const Radius.circular(2.0))),
+                                child: new Center(
+                                  child: new Text(("Done"),
+                                      style: new TextStyle(
+                                          color: Colors.white, fontSize: 20)),
+                                )),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
+                        child: GestureDetector(
+                          onTap: () {
+                            if (Navigator.canPop(context)) {
+                              setState(() {
+                                SelectedLanguage = _picked;
+                              });
 
-//                      Navigator.pushReplacement(
-//                          context, MaterialPageRoute(builder: (BuildContext context) => MyHome()));
-                      Navigator.pop(context, SelectedLanguage);
-//                      Navigator.push(
-//                        context,
-//                        new MaterialPageRoute(builder: (context) => new MyHome()),
-//                      );
-//                      SystemNavigator.pop();
-
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(12.0, 12.0, 12.0, 12.0),
-                    child: Container(
-                      height: 40.0,
-                      color: Colors.transparent,
-                      child: new Container(
-                          decoration: new BoxDecoration(
-                              color: Colors.mygreen,
-                              borderRadius: new BorderRadius.only(
-                                  topLeft: const Radius.circular(40.0),
-                                  bottomLeft: const Radius.circular(40.0),
-                                  bottomRight: const Radius.circular(40.0),
-                                  topRight: const Radius.circular(40.0))),
-                          child: new Center(
-                            child: new Text(("Done"),
-                                style: new TextStyle(
-                                    color: Colors.white, fontSize: 20)),
-                          )),
-                    ),
-                  ),
-                ),
-              ),
+                              Navigator.pop(context, "");
+                            }
+                          },
+                          child: Container(
+                            height: 40.0,
+                            width: 80,
+                            color: Colors.transparent,
+                            child: new Container(
+                                decoration: new BoxDecoration(
+                                    color: Colors.mygreen,
+                                    borderRadius: new BorderRadius.only(
+                                        topLeft: const Radius.circular(2.0),
+                                        bottomLeft: const Radius.circular(2.0),
+                                        bottomRight: const Radius.circular(2.0),
+                                        topRight: const Radius.circular(2.0))),
+                                child: new Center(
+                                  child: new Text(("Cancel"),
+                                      style: new TextStyle(
+                                          color: Colors.white, fontSize: 20)),
+                                )),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )),
             ),
-            //),
           ],
         ),
       ),
-//                          actions: <Widget>[
-//                            new FlatButton(
-//                              onPressed: () => Navigator.of(context).pop(false),
-//                              child: new Text('No'),
-//                            ),
-//                            new FlatButton(
-//                              onPressed: () => Navigator.of(context).pop(true),
-//                              child: new Text('Yes'),
-//                            ),
-//                          ],
     );
   }
 }
