@@ -110,6 +110,11 @@ class _MyHomePageState extends State<SearchPage> {
               padding: const EdgeInsets.all(8.0),
               child: TextField(
                 onChanged: (value) {
+                  if (value.isEmpty) {
+                    setState(() {
+                      mainProduct.clear();
+                    });
+                  }
                   //  filterSearchResults(value);
                   Future.delayed(const Duration(milliseconds: 1000), () {
                     Utils.checkInternet().then((connected) {
@@ -1461,6 +1466,7 @@ class _MyHomePageState extends State<SearchPage> {
   Future incrementCount(Product product) async {
     if (product.count < product.inventory) {
       product.count = product.count + 1;
+
       await _database.update(product);
       Future.delayed(const Duration(milliseconds: 500), () {
         widget.listener.onCartUpdate();

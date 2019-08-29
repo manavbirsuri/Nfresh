@@ -1203,6 +1203,13 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
                 break;
               case 3:
                 _getDrawerItemWidget(3, snapshot);
+                setState(() {
+                  showLoaderSearch = true;
+                  editingController.text = "";
+                  mainProduct.clear();
+                });
+
+                updateProducts();
                 break;
             }
           });
@@ -2190,7 +2197,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
       _database.update(product);
       Future.delayed(const Duration(milliseconds: 500), () {
         onCartUpdate();
-        //updateProducts();
+        // updateProducts();
       });
     } else {
       Toast.show(
@@ -2762,7 +2769,7 @@ class _MyHomePageState extends State<DashBoard> implements CountListener {
 // Methods for Search page
 //***************************************************************
   searchViewWidget() {
-    updateSearchProducts2();
+    //updateSearchProducts2();
     return Scaffold(
       body: Container(
         child: Column(

@@ -356,6 +356,22 @@ class _MyCustomFormState extends State<CartPage> {
 
                                             return;
                                           }
+                                          if (date == "" ||
+                                              date == "Select Date") {
+                                            Toast.show("Select date", context,
+                                                duration: 3,
+                                                gravity: Toast.BOTTOM);
+                                            dialog.hide();
+                                            return;
+                                          }
+                                          if (slot == "" ||
+                                              slot == "Select Slot") {
+                                            Toast.show("Select Slot", context,
+                                                duration: 3,
+                                                gravity: Toast.BOTTOM);
+                                            dialog.hide();
+                                            return;
+                                          }
                                           if (selectedMethod ==
                                               "Cash on delivery") {
                                             Utils.checkInternet()
@@ -385,24 +401,7 @@ class _MyCustomFormState extends State<CartPage> {
 //                                              response: response,
 //                                              cartExtra: data,
 //                                              contexte: context);
-                                                  if (date == "" ||
-                                                      date == "Select Date") {
-                                                    Toast.show(
-                                                        "Select date", context,
-                                                        duration: 3,
-                                                        gravity: Toast.BOTTOM);
-                                                    dialog.hide();
-                                                    return;
-                                                  }
-                                                  if (slot == "" ||
-                                                      slot == "Select Slot") {
-                                                    Toast.show(
-                                                        "Select Slot", context,
-                                                        duration: 3,
-                                                        gravity: Toast.BOTTOM);
-                                                    dialog.hide();
-                                                    return;
-                                                  }
+
                                                   Navigator.push(
                                                       context,
                                                       MaterialPageRoute(
@@ -463,6 +462,30 @@ class _MyCustomFormState extends State<CartPage> {
                                                           0 &&
                                                       checkoutTotal == 0) {
                                                     if (profile != null) {
+                                                      if (date == "" ||
+                                                          date ==
+                                                              "Select Date") {
+                                                        Toast.show(
+                                                            "Select date",
+                                                            context,
+                                                            duration: 3,
+                                                            gravity:
+                                                                Toast.BOTTOM);
+                                                        dialog.hide();
+                                                        return;
+                                                      }
+                                                      if (slot == "" ||
+                                                          slot ==
+                                                              "Select Slot") {
+                                                        Toast.show(
+                                                            "Select Slot",
+                                                            context,
+                                                            duration: 3,
+                                                            gravity:
+                                                                Toast.BOTTOM);
+                                                        dialog.hide();
+                                                        return;
+                                                      }
                                                       dialog =
                                                           new ProgressDialog(
                                                               context,
@@ -488,30 +511,7 @@ class _MyCustomFormState extends State<CartPage> {
 //                                                  response: response,
 //                                                  cartExtra: data,
 //                                                  contexte: context);
-                                                      if (date == "" ||
-                                                          date ==
-                                                              "Select Date") {
-                                                        Toast.show(
-                                                            "Select date",
-                                                            context,
-                                                            duration: 3,
-                                                            gravity:
-                                                                Toast.BOTTOM);
-                                                        dialog.hide();
-                                                        return;
-                                                      }
-                                                      if (slot == "" ||
-                                                          slot ==
-                                                              "Select Slot") {
-                                                        Toast.show(
-                                                            "Select Slot",
-                                                            context,
-                                                            duration: 3,
-                                                            gravity:
-                                                                Toast.BOTTOM);
-                                                        dialog.hide();
-                                                        return;
-                                                      }
+
                                                       Navigator.push(
                                                           context,
                                                           MaterialPageRoute(
@@ -1775,6 +1775,16 @@ class _MyCustomFormState extends State<CartPage> {
     if (response.contains("KITKAT")) {
       print(response);
     } else {
+      if (date == "" || date == "Select Date") {
+        Toast.show("Select date", context, duration: 3, gravity: Toast.BOTTOM);
+        dialog.hide();
+        return;
+      }
+      if (slot == "" || slot == "Select Slot") {
+        Toast.show("Select Slot", context, duration: 3, gravity: Toast.BOTTOM);
+        dialog.hide();
+        return;
+      }
       // Navigator.of(context).pop();
       Map<String, dynamic> data = {
         'total': checkoutTotal,
@@ -1786,16 +1796,7 @@ class _MyCustomFormState extends State<CartPage> {
         'wallet_use_amount': walletDiscount,
         'coupon_code': couponCode,
       };
-      if (date == "" || date == "Select Date") {
-        Toast.show("Select date", context, duration: 3, gravity: Toast.BOTTOM);
-        dialog.hide();
-        return;
-      }
-      if (slot == "" || slot == "Select Slot") {
-        Toast.show("Select Slot", context, duration: 3, gravity: Toast.BOTTOM);
-        dialog.hide();
-        return;
-      }
+
       Navigator.push(
           context,
           MaterialPageRoute(
@@ -1814,6 +1815,16 @@ class _MyCustomFormState extends State<CartPage> {
   }
 
   getCheckSum(context) {
+    if (date == "" || date == "Select Date") {
+      Toast.show("Select date", context, duration: 3, gravity: Toast.BOTTOM);
+      dialog.hide();
+      return;
+    }
+    if (slot == "" || slot == "Select Slot") {
+      Toast.show("Select Slot", context, duration: 3, gravity: Toast.BOTTOM);
+      dialog.hide();
+      return;
+    }
 //    Future.delayed(const Duration(milliseconds: 3000), () {
     dialog = new ProgressDialog(context, ProgressDialogType.Normal);
     dialog.setMessage("Please wait...");

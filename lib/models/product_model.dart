@@ -88,7 +88,7 @@ class Product {
     fav = json['fav'];
     List<Packing> temp = [];
     var newJson = jsonDecode(json['packings']);
-    print("NEW JSON: $newJson");
+    print("NEW JSONdd: $newJson");
     for (int i = 0; i < newJson.length; i++) {
       Packing result = Packing(newJson[i]);
       temp.add(result);
