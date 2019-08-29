@@ -54,6 +54,7 @@ class _MyCustomFormState extends State<CartPage> {
   int checkoutTotal = 0;
   num discount = 0;
   int walletDiscount = 0;
+  int selectedPosition = -1;
   ProfileModel profile;
   var blocInventory = CheckInventoryBloc();
   List<Map<String, dynamic>> lineItems = [];
@@ -390,6 +391,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                         "Select date", context,
                                                         duration: 3,
                                                         gravity: Toast.BOTTOM);
+                                                    dialog.hide();
                                                     return;
                                                   }
                                                   if (slot == "" ||
@@ -398,6 +400,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                         "Select Slot", context,
                                                         duration: 3,
                                                         gravity: Toast.BOTTOM);
+                                                    dialog.hide();
                                                     return;
                                                   }
                                                   Navigator.push(
@@ -494,6 +497,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                             duration: 3,
                                                             gravity:
                                                                 Toast.BOTTOM);
+                                                        dialog.hide();
                                                         return;
                                                       }
                                                       if (slot == "" ||
@@ -505,6 +509,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                             duration: 3,
                                                             gravity:
                                                                 Toast.BOTTOM);
+                                                        dialog.hide();
                                                         return;
                                                       }
                                                       Navigator.push(
@@ -549,6 +554,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                           duration: 3,
                                                           gravity:
                                                               Toast.BOTTOM);
+                                                      dialog.hide();
                                                       return;
                                                     }
                                                     if (slot == "" ||
@@ -558,6 +564,7 @@ class _MyCustomFormState extends State<CartPage> {
                                                           duration: 3,
                                                           gravity:
                                                               Toast.BOTTOM);
+                                                      dialog.hide();
                                                       return;
                                                     }
                                                     Navigator.push(
@@ -1134,7 +1141,7 @@ class _MyCustomFormState extends State<CartPage> {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 8, left: 10),
+            padding: EdgeInsets.only(top: 8, left: 0),
             child: ListTile(
               //contentPadding: EdgeInsets.only(top: 0),
               title: Text(
@@ -1183,43 +1190,80 @@ class _MyCustomFormState extends State<CartPage> {
                                     duration: Toast.LENGTH_LONG,
                                     gravity: Toast.BOTTOM);
                               } else {
-                                showDialog(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return Material(
-                                        type: MaterialType.transparency,
-                                        child: Container(
-                                          child:
-                                              showCustomDialog2(timeslot, date),
-                                          padding: EdgeInsets.only(
-                                              top: 40, bottom: 40),
-                                        ),
-                                      );
-                                    }).then((value) async {
-                                  setState(() {
-                                    if (value != null &&
-                                        value != "" &&
-                                        value != "Select Slot") {
-                                      if (diffDays == 0) {
-                                        validSlot =
-                                            checkTimeSlotValidity(value);
-                                        if (!validSlot) {
-                                          Toast.show(
-                                              "Time slot you have selected is over, please select next slot if available or you can select next date for avialable slots.",
-                                              context,
-                                              duration: 6,
-                                              gravity: Toast.BOTTOM);
-                                          return;
+                                if (profile == null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LoginPage(
+                                        from: 0,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return Material(
+                                          type: MaterialType.transparency,
+                                          child: Container(
+                                            child: showCustomDialog2(timeslot,
+                                                date, selectedPosition),
+                                            padding: EdgeInsets.only(
+                                                top: 40, bottom: 40),
+                                          ),
+                                        );
+                                      }).then((value) async {
+                                    setState(() {
+                                      if (value != null &&
+                                          value != "" &&
+                                          value != "Select Slot") {
+                                        if (diffDays == 0) {
+                                          validSlot =
+                                              checkTimeSlotValidity(value);
+                                          if (!validSlot) {
+                                            Toast.show(
+                                                "Time slot you have selected is over, please select next slot if available or you can select next date for avialable slots.",
+                                                context,
+                                                duration: 6,
+                                                gravity: Toast.BOTTOM);
+                                            return;
+                                          }
+                                          for (int k = 0;
+                                              k < timeslot.length;
+                                              k++) {
+                                            var from = value.split("-");
+                                            if (from[0].trim() ==
+                                                    timeslot[k].time_from &&
+                                                from[1].trim() ==
+                                                    timeslot[k].time_to) {
+                                              setState(() {
+                                                selectedPosition = k;
+                                              });
+                                            }
+                                          }
+                                          slot = value;
+                                        } else {
+                                          for (int k = 0;
+                                              k < timeslot.length;
+                                              k++) {
+                                            var from = value.split("-");
+                                            if (from[0].trim() ==
+                                                    timeslot[k].time_from &&
+                                                from[1].trim() ==
+                                                    timeslot[k].time_to) {
+                                              setState(() {
+                                                selectedPosition = k;
+                                              });
+                                            }
+                                          }
+                                          slot = value;
                                         }
-                                        slot = value;
-                                      } else {
-                                        slot = value;
                                       }
-                                    }
 //                              setState(() {
 //                                walletDiscount = onValue as int;
+                                    });
                                   });
-                                });
+                                }
                               }
                             },
                             child: Container(
@@ -1744,10 +1788,12 @@ class _MyCustomFormState extends State<CartPage> {
       };
       if (date == "" || date == "Select Date") {
         Toast.show("Select date", context, duration: 3, gravity: Toast.BOTTOM);
+        dialog.hide();
         return;
       }
       if (slot == "" || slot == "Select Slot") {
         Toast.show("Select Slot", context, duration: 3, gravity: Toast.BOTTOM);
+        dialog.hide();
         return;
       }
       Navigator.push(
@@ -2226,7 +2272,7 @@ class _MyCustomFormState extends State<CartPage> {
       DateTime aprilFirst = DateTime.utc(picked.year, picked.month, picked.day);
       DateTime marchThirty = DateTime.utc(now1.year, now1.month, now1.day);
       var diffDays2 = aprilFirst.difference(marchThirty).inDays;
-      if (diffDays < 0) {
+      if (diffDays2 < 0) {
         Toast.show("You cannot select past date.", context,
             duration: 6, gravity: Toast.BOTTOM);
         return;
@@ -2688,8 +2734,11 @@ class _DynamicDialogState extends State<DynamicDialog> {
 class showCustomDialog2 extends StatefulWidget {
   List<TimeSlot> timeslot = [];
   String date = "";
-  showCustomDialog2(List<TimeSlot> timeslot, String date) {
+  int selectedPosition = -1;
+  showCustomDialog2(
+      List<TimeSlot> timeslot, String date, int selectedPosition) {
     this.timeslot = timeslot;
+    this.selectedPosition = selectedPosition;
     //this.date = date;
   }
   @override
@@ -2714,6 +2763,11 @@ class _MyDialogState extends State<showCustomDialog2> {
       }
     });
     for (int i = 0; i < timeslot.length; i++) {
+      if (widget.selectedPosition == i) {
+        setState(() {
+          _picked = timeslot[i].time_from + " - " + timeslot[i].time_to;
+        });
+      }
       array.add(timeslot[i].time_from + " - " + timeslot[i].time_to);
     }
   }
@@ -2787,10 +2841,11 @@ class _MyDialogState extends State<showCustomDialog2> {
                                 decoration: new BoxDecoration(
                                     color: Colors.mygreen,
                                     borderRadius: new BorderRadius.only(
-                                        topLeft: const Radius.circular(2.0),
-                                        bottomLeft: const Radius.circular(2.0),
-                                        bottomRight: const Radius.circular(2.0),
-                                        topRight: const Radius.circular(2.0))),
+                                        topLeft: const Radius.circular(40.0),
+                                        bottomLeft: const Radius.circular(40.0),
+                                        bottomRight:
+                                            const Radius.circular(40.0),
+                                        topRight: const Radius.circular(40.0))),
                                 child: new Center(
                                   child: new Text(("Done"),
                                       style: new TextStyle(
@@ -2819,10 +2874,11 @@ class _MyDialogState extends State<showCustomDialog2> {
                                 decoration: new BoxDecoration(
                                     color: Colors.mygreen,
                                     borderRadius: new BorderRadius.only(
-                                        topLeft: const Radius.circular(2.0),
-                                        bottomLeft: const Radius.circular(2.0),
-                                        bottomRight: const Radius.circular(2.0),
-                                        topRight: const Radius.circular(2.0))),
+                                        topLeft: const Radius.circular(40.0),
+                                        bottomLeft: const Radius.circular(40.0),
+                                        bottomRight:
+                                            const Radius.circular(40.0),
+                                        topRight: const Radius.circular(40.0))),
                                 child: new Center(
                                   child: new Text(("Cancel"),
                                       style: new TextStyle(
