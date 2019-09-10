@@ -9,10 +9,14 @@ class ResponseProfile {
   ResponseProfile.fromJson(Map<String, dynamic> json) {
     status = json['status'];
     msg = json['msg'];
+
     profile = ProfileModel(json['profile']);
-    for (int i = 0; i < json['timeslote'].length; i++) {
-      var product = TimeSlot(json['timeslote'][i]);
-      timeslot.add(product);
+
+    if (json.containsKey("timeslote")) {
+      for (int i = 0; i < json['timeslote'].length; i++) {
+        var product = TimeSlot(json['timeslote'][i]);
+        timeslot.add(product);
+      }
     }
   }
 }

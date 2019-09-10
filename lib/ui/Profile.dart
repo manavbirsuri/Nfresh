@@ -872,14 +872,17 @@ class StateProfilePage extends State<stateProfile> {
                                     duration: 6, gravity: Toast.BOTTOM);
                               });
                             } else {
+                              dialog.hide();
                               Toast.show("Not connected to internet", context,
                                   duration: 6, gravity: Toast.BOTTOM);
                             }
                           });
                         } else {
+                          dialog.hide();
                           Toast.show("Address cannot be empty", context,
                               duration: 6, gravity: Toast.BOTTOM);
                         }
+                        dialog.hide();
                       },
                       child: Text(
                         'Submit',
