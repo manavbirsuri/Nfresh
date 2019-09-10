@@ -10,7 +10,6 @@ class ResponseProfile {
     status = json['status'];
     msg = json['msg'];
 
-
     profile = ProfileModel(json['profile']);
 
     if (json.containsKey("timeslote")) {
