@@ -330,14 +330,36 @@ class ProState extends State<ProductDetailPage> {
                                                             return new DropdownMenuItem<
                                                                 Packing>(
                                                               value: value,
-                                                              child: new Text(
-                                                                value
-                                                                    .unitQtyShow,
-                                                                style: TextStyle(
-                                                                    color: Colors
-                                                                        .grey,
-                                                                    fontSize:
-                                                                        12),
+                                                              child: Row(
+                                                                crossAxisAlignment:
+                                                                    CrossAxisAlignment
+                                                                        .stretch,
+                                                                mainAxisAlignment:
+                                                                    MainAxisAlignment
+                                                                        .spaceBetween,
+                                                                children: <
+                                                                    Widget>[
+                                                                  new Text(
+                                                                    value
+                                                                        .unitQtyShow,
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .grey,
+                                                                        fontSize:
+                                                                            12),
+                                                                  ),
+                                                                  new Text(
+                                                                    "₹" +
+                                                                        value
+                                                                            .price
+                                                                            .toString(),
+                                                                    style: TextStyle(
+                                                                        color: Colors
+                                                                            .grey,
+                                                                        fontSize:
+                                                                            12),
+                                                                  ),
+                                                                ],
                                                               ),
                                                             );
                                                           }).toList(),
@@ -894,7 +916,7 @@ class ProState extends State<ProductDetailPage> {
                                   children: <Widget>[
                                     Container(
                                       height: 35,
-                                      width: 120,
+                                      width: 130,
                                       decoration: myBoxDecoration3(),
                                       child: Center(
                                         child: Padding(
@@ -915,10 +937,27 @@ class ProState extends State<ProductDetailPage> {
                                               return new DropdownMenuItem<
                                                   Packing>(
                                                 value: value,
-                                                child: new Text(
-                                                  value.unitQtyShow,
-                                                  style: TextStyle(
-                                                      color: Colors.grey),
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .stretch,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: <Widget>[
+                                                    new Text(
+                                                      value.unitQtyShow,
+                                                      style: TextStyle(
+                                                          color: Colors.grey),
+                                                    ),
+                                                    new Text(
+                                                      "₹" +
+                                                          value.price
+                                                              .toString(),
+                                                      style: TextStyle(
+                                                          color: Colors.grey),
+                                                    ),
+                                                  ],
                                                 ),
                                               );
                                             }).toList(),

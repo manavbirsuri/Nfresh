@@ -473,12 +473,12 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                   children: <Widget>[
                                     Container(
                                       height: 35,
-                                      width: 120,
+                                      width: 132,
                                       decoration: myBoxDecoration3(),
                                       child: Center(
                                         child: Padding(
                                           padding: EdgeInsets.only(
-                                              right: 8, left: 8),
+                                              right: 6, left: 6),
                                           child:
                                               DropdownButtonFormField<Packing>(
                                             decoration:
@@ -494,10 +494,27 @@ class HOrderPage extends State<HomePage> with WidgetsBindingObserver {
                                               return new DropdownMenuItem<
                                                   Packing>(
                                                 value: value,
-                                                child: new Text(
-                                                  value.unitQtyShow,
-                                                  style: TextStyle(
-                                                      color: Colors.grey),
+                                                child: Row(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment
+                                                          .stretch,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: <Widget>[
+                                                    new Text(
+                                                      value.unitQtyShow,
+                                                      style: TextStyle(
+                                                          color: Colors.grey),
+                                                    ),
+                                                    new Text(
+                                                      "₹" +
+                                                          value.price
+                                                              .toString(),
+                                                      style: TextStyle(
+                                                          color: Colors.grey),
+                                                    ),
+                                                  ],
                                                 ),
                                               );
                                             }).toList(),

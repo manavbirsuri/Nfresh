@@ -796,13 +796,13 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                               children: <Widget>[
                                                 Container(
                                                   height: 32,
-                                                  width: 115,
+                                                  width: 125,
                                                   decoration:
                                                       myBoxDecoration3(),
                                                   child: Center(
                                                     child: Padding(
                                                       padding: EdgeInsets.only(
-                                                          right: 8, left: 8),
+                                                          right: 6, left: 6),
                                                       child:
                                                           DropdownButtonFormField<
                                                               Packing>(
@@ -818,11 +818,32 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                                                           return new DropdownMenuItem<
                                                               Packing>(
                                                             value: value,
-                                                            child: new Text(
-                                                              value.unitQtyShow,
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .grey),
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .stretch,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: <
+                                                                  Widget>[
+                                                                new Text(
+                                                                  value
+                                                                      .unitQtyShow,
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .grey),
+                                                                ),
+                                                                new Text(
+                                                                  "₹" +
+                                                                      value
+                                                                          .price
+                                                                          .toString(),
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .grey),
+                                                                ),
+                                                              ],
                                                             ),
                                                           );
                                                         }).toList(),
@@ -1866,11 +1887,11 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                     children: <Widget>[
                       Container(
                         height: 35,
-                        width: 120,
+                        width: 132,
                         decoration: myBoxDecoration3(),
                         child: Center(
                           child: Padding(
-                            padding: EdgeInsets.only(right: 8, left: 8),
+                            padding: EdgeInsets.only(right: 6, left: 6),
                             child: DropdownButtonFormField<Packing>(
                               decoration: InputDecoration.collapsed(
                                   hintText:
@@ -1880,9 +1901,21 @@ class _ShowCategoryDetailPageState extends State<ShowCategoryDetailPage> {
                               items: product.packing.map((Packing value) {
                                 return new DropdownMenuItem<Packing>(
                                   value: value,
-                                  child: new Text(
-                                    value.unitQtyShow,
-                                    style: TextStyle(color: Colors.grey),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: <Widget>[
+                                      new Text(
+                                        value.unitQtyShow,
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                      new Text(
+                                        "₹" + value.price.toString(),
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
                                   ),
                                 );
                               }).toList(),

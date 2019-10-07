@@ -384,7 +384,7 @@ class _MyHomePageState extends State<SearchPageActivity> {
                                               children: <Widget>[
                                                 Container(
                                                   height: 32,
-                                                  width: 115,
+                                                  width: 125,
                                                   decoration:
                                                       myBoxDecoration3(),
                                                   child: Center(
@@ -406,11 +406,32 @@ class _MyHomePageState extends State<SearchPageActivity> {
                                                           return new DropdownMenuItem<
                                                               Packing>(
                                                             value: value,
-                                                            child: new Text(
-                                                              value.unitQtyShow,
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .grey),
+                                                            child: Row(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .stretch,
+                                                              mainAxisAlignment:
+                                                                  MainAxisAlignment
+                                                                      .spaceBetween,
+                                                              children: <
+                                                                  Widget>[
+                                                                new Text(
+                                                                  value
+                                                                      .unitQtyShow,
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .grey),
+                                                                ),
+                                                                new Text(
+                                                                  "₹" +
+                                                                      value
+                                                                          .price
+                                                                          .toString(),
+                                                                  style: TextStyle(
+                                                                      color: Colors
+                                                                          .grey),
+                                                                ),
+                                                              ],
                                                             ),
                                                           );
                                                         }).toList(),
@@ -1171,7 +1192,7 @@ class _MyHomePageState extends State<SearchPageActivity> {
                     children: <Widget>[
                       Container(
                         height: 35,
-                        width: 120,
+                        width: 130,
                         decoration: myBoxDecoration3(),
                         child: Center(
                           child: Padding(
@@ -1185,9 +1206,21 @@ class _MyHomePageState extends State<SearchPageActivity> {
                               items: product.packing.map((Packing value) {
                                 return new DropdownMenuItem<Packing>(
                                   value: value,
-                                  child: new Text(
-                                    value.unitQtyShow,
-                                    style: TextStyle(color: Colors.grey),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      new Text(
+                                        value.unitQtyShow,
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                      new Text(
+                                        "₹" + value.price.toString(),
+                                        style: TextStyle(color: Colors.grey),
+                                      ),
+                                    ],
                                   ),
                                 );
                               }).toList(),
